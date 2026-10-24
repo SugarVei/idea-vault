@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>创意仓库 · Idea Vault</title>
+<meta name="description" content="收着我做过的可交互小世界：日落柑橘港、锦池、小小世界，以及后面的新点子。">
+<meta name="theme-color" content="#0c111b">
+<meta property="og:title" content="创意仓库 · Idea Vault">
+<meta property="og:description" content="A vault of small interactive worlds — open any card and play.">
+<meta property="og:image" content="assets/harbor-1.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='6' height='6' rx='1.5' fill='%23ff8a1f'/%3E%3Crect x='9' y='1' width='6' height='6' rx='1.5' fill='%233fb8a8'/%3E%3Crect x='1' y='9' width='6' height='6' rx='1.5' fill='%234a7bd0'/%3E%3Crect x='9' y='9' width='6' height='6' rx='1.5' fill='%23f07ba5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div><div class="blob d"></div></div>
+
+<div class="wrap">
+  <header class="top glass">
+    <a class="brand" href="./">
+      <span class="mark" aria-hidden="true"><i style="background:#ff8a1f"></i><i style="background:#3fb8a8"></i><i style="background:#4a7bd0"></i><i style="background:#f07ba5"></i></span>
+      <span data-t="brand"></span><small data-t="brandSub"></small>
+    </a>
+    <div class="top-right">
+      <div class="admin-bar" id="adminBar" hidden></div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="zh">中</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow" data-t="eyebrow"></p>
+    <h1 data-t="title"></h1>
+    <p data-t="sub"></p>
+    <div class="stats glass" id="stats"></div>
+  </section>
+
+  <main>
+    <div class="bar">
+      <div class="chips" id="chips" role="group"></div>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div class="grid" id="grid" aria-busy="true"></div>
+  </main>
+
+  <footer>
+    <span data-t="foot"></span>
+    <span class="foot-note" id="source"></span>
+  </footer>
+</div>
+
+<dialog class="sheet glass" id="sheet" aria-labelledby="sheet-title"></dialog>
+<dialog class="sheet glass form-sheet" id="login" aria-labelledby="login-title"></dialog>
+<dialog class="sheet glass form-sheet" id="editor" aria-labelledby="editor-title"></dialog>
+<div class="toast glass" id="toast" role="status" hidden></div>
+</body>
+</html>

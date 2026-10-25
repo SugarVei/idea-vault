@@ -220,5 +220,60 @@
     ],
     "tech": "Three.js · Vercel · Supabase",
     "host": "Vercel"
+  },
+  {
+    "sort": 80,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#7c9bc7",
+    "url": "https://sugarvei.github.io/daily-travel-journal/",
+    "repo": "https://github.com/SugarVei/daily-travel-journal",
+    "images": [
+      "assets/travel-journal-1.jpg",
+      "assets/travel-journal-2.jpg",
+      "assets/travel-journal-3.jpg",
+      "assets/travel-journal-4.jpg"
+    ],
+    "title_zh": "日常旅行手账",
+    "title_en": "Daily Travel Journal",
+    "kind_zh": "旅行手账交互网页",
+    "kind_en": "Interactive travel journal",
+    "line_zh": "把旅行收进纸质文件夹，翻看城市与地点，再用照片、贴纸和手绘拼出一页回忆。",
+    "line_en": "Collect trips in paper folders, browse places, and build a page of memories with photos, stickers and drawing.",
+    "lead_zh": "以纸质文件夹为灵感的旅行手账，内置巴黎、马尔代夫、巴塞罗那、巴厘岛、东京和迪拜六组示例旅行。可以搜索相册、查看地点笔记，也可以从时间线回看行程。\n\n拼贴编辑器支持拖动素材、添加贴纸、编辑文字、导入本机照片和自由涂画，并可播放拼贴幻灯片。整个网页由一个 HTML 文件组成，无需安装或构建；编辑内容只保留在当前浏览器会话中，刷新后会重置。",
+    "lead_en": "A travel journal inspired by paper folders, with six sample trips: Paris, the Maldives, Barcelona, Bali, Tokyo and Dubai. Search albums, explore place notes or revisit trips on the timeline.\n\nThe collage editor supports dragging items, stickers, editable text, local photo import and freehand drawing, plus a collage slideshow. Everything runs from one HTML file with no installation or build step. Edits last only for the current browser session and reset after a reload.",
+    "tags_zh": [
+      "旅行相册",
+      "拼贴编辑",
+      "手绘涂鸦",
+      "原生 JavaScript"
+    ],
+    "tags_en": [
+      "Travel albums",
+      "Collage editor",
+      "Freehand drawing",
+      "Vanilla JavaScript"
+    ],
+    "facts": [
+      {
+        "n": "6",
+        "zh": "组示例旅行",
+        "en": "sample trips"
+      },
+      {
+        "n": "1",
+        "zh": "个 HTML 文件",
+        "en": "HTML file"
+      },
+      {
+        "n": "0",
+        "zh": "构建步骤",
+        "en": "build steps"
+      }
+    ],
+    "tech": "HTML · CSS · JavaScript · Canvas 2D",
+    "host": "GitHub Pages"
   }
 ]

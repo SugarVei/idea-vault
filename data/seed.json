@@ -166,5 +166,59 @@
     ],
     "tech": "Canvas 2D · Pointer Events · Web Components",
     "host": "GitHub Pages"
+  },
+  {
+    "sort": 70,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#b7c5a3",
+    "url": "https://usb-flip-game.vercel.app/",
+    "repo": "https://github.com/SugarVei/usb-flip-game",
+    "images": [
+      "assets/usb-1.jpg",
+      "assets/usb-2.jpg",
+      "assets/usb-3.jpg"
+    ],
+    "title_zh": "插个 U 盘",
+    "title_en": "USB Flip Runner",
+    "kind_zh": "3D 交互游戏",
+    "kind_en": "3D interactive game",
+    "line_zh": "U 盘自动向前，对准接口，再翻个面。插对继续加速，插错就得重来。",
+    "line_en": "Keep the USB moving: line up with the port and flip it the right way. Plug in to speed up; miss and start again.",
+    "lead_zh": "一个斜上方桌面视角的 3D 小游戏。U 盘持续向前，电脑从上方落下；用方向键、A/D 或手指滑动，在三个接口位置之间移动，再用空格或翻转按钮切换正反面。\n\n插对后电脑散架，下一段速度提高 5%；插错则本局结束。昵称会保存在本机，结束后自动保存成绩。可以查看全国排行榜与全部挑战历史，桌面侧栏和手机弹窗都提供操作演示。",
+    "lead_en": "A 3D runner viewed from above the desk. The USB moves forward while computers drop into its path. Use arrow keys, A/D or a swipe to line up with one of three port positions, then press Space or tap Flip to turn it over.\n\nA correct insertion breaks the computer apart and raises the next speed by 5%. A miss ends the run. Your nickname stays on the device, and scores save automatically. Browse the shared leaderboard and attempt history, with a tutorial available on desktop and mobile.",
+    "tags_zh": [
+      "Three.js",
+      "翻转方向",
+      "触屏操作",
+      "全国排行榜"
+    ],
+    "tags_en": [
+      "Three.js",
+      "USB flipping",
+      "Touch controls",
+      "Shared leaderboard"
+    ],
+    "facts": [
+      {
+        "n": "3",
+        "zh": "个接口位置",
+        "en": "port positions"
+      },
+      {
+        "n": "180°",
+        "zh": "方向翻转",
+        "en": "USB flip"
+      },
+      {
+        "n": "+5%",
+        "zh": "每次插入加速",
+        "en": "speed per insertion"
+      }
+    ],
+    "tech": "Three.js · Vercel · Supabase",
+    "host": "Vercel"
   }
 ]

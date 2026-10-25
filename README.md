@@ -12,7 +12,7 @@
 | `style.css` | 全部样式 |
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
-| `data/seed.json` | 内置的六个作品；数据库连不上时用它显示 |
+| `data/seed.json` | 内置的七个作品；数据库连不上时用它显示 |
 | `assets/` | 内置作品的配图 |
 | `supabase/migrations/` | 数据库表、权限和图片存储桶的定义 |
 | `serve.mjs` | 本地预览服务器 |

@@ -58,5 +58,113 @@
     "tags_en": ["Blender", "Gaze tracking", "Plush character", "Touch interaction"],
     "facts": [{"n": "95", "zh": "张原生渲染", "en": "native renders"}, {"n": "1,241", "zh": "个交互姿态", "en": "pose frames"}, {"n": "720×960", "zh": "最高帧图分辨率", "en": "max frame resolution"}],
     "tech": "Blender · Canvas 2D · Three.js", "host": "GitHub Pages"
+  },
+  {
+    "sort": 50,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#b8e600",
+    "url": "https://sugarvei.github.io/sugar-particle-intro/",
+    "repo": "https://github.com/SugarVei/sugar-particle-intro",
+    "images": [
+      "assets/sugar-neon-1.jpg",
+      "assets/sugar-neon-2.jpg",
+      "assets/sugar-neon-3.jpg"
+    ],
+    "title_zh": "SUGAR 粒子 · 黑底荧光",
+    "title_en": "SUGAR Particles — Neon",
+    "kind_zh": "粒子交互网页",
+    "kind_en": "Interactive particle website",
+    "line_zh": "荧光粒子聚成 SUGAR。移过鼠标，拨动光点，移开后慢慢归位。",
+    "line_en": "Lime particles gather into SUGAR. Move your pointer to stir the dots, then let them spring back.",
+    "lead_zh": "全屏黑底上，黄绿色粒子从散布状态收敛为 SUGAR。鼠标经过字母时，附近的粒子会被推开，并随移动方向产生轻微拖曳；移开鼠标或松开手指后，光点弹性归位。\n\n点击“进入”，粒子向外散开，露出同页首页，地址不变。支持手机触屏，可直接在浏览器体验。",
+    "lead_en": "Yellow-green particles on a black canvas gather into SUGAR. Moving across the letters pushes nearby dots aside with a little directional drag. Move away or lift your finger and the dots spring home.\n\nChoose Enter to scatter the particles and reveal the homepage without changing the URL. Mouse and touch input are supported.",
+    "tags_zh": [
+      "Canvas 2D",
+      "鼠标扰动",
+      "弹性归位",
+      "触屏交互"
+    ],
+    "tags_en": [
+      "Canvas 2D",
+      "Pointer interaction",
+      "Elastic return",
+      "Touch input"
+    ],
+    "facts": [
+      {
+        "n": "5",
+        "zh": "个粒子字母",
+        "en": "particle letters"
+      },
+      {
+        "n": "≈3s",
+        "zh": "聚合成形",
+        "en": "to assemble"
+      },
+      {
+        "n": "0.9s",
+        "zh": "进入过渡",
+        "en": "entry transition"
+      }
+    ],
+    "tech": "Canvas 2D · Pointer Events · Web Components",
+    "host": "GitHub Pages"
+  },
+  {
+    "sort": 60,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#9ba1ab",
+    "url": "https://sugarvei.github.io/sugar-particle-white/",
+    "repo": "https://github.com/SugarVei/sugar-particle-white",
+    "images": [
+      "assets/sugar-mono-1.jpg",
+      "assets/sugar-mono-2.jpg",
+      "assets/sugar-mono-3.jpg"
+    ],
+    "title_zh": "SUGAR 粒子 · 白底黑点",
+    "title_en": "SUGAR Particles — Monochrome",
+    "kind_zh": "粒子交互网页",
+    "kind_en": "Interactive particle website",
+    "line_zh": "白色画布上的黑色粒子，随鼠标散开、牵动，再弹回 SUGAR。",
+    "line_en": "Black particles on a white canvas scatter and follow your pointer, then spring back into SUGAR.",
+    "lead_zh": "白色画布上，大小不一的黑色粒子从散布状态收敛为 SUGAR。鼠标经过字母时，附近的粒子会被推开，并随移动方向产生轻微拖曳；移开鼠标或松开手指后，光点弹性归位。\n\n点击“进入”，粒子向外散开，露出同页首页，地址不变。支持手机触屏，可直接在浏览器体验。",
+    "lead_en": "Black particles of different sizes gather into SUGAR on a white canvas. Moving across the letters pushes nearby dots aside with a little directional drag. Move away or lift your finger and the dots spring home.\n\nChoose Enter to scatter the particles and reveal the homepage without changing the URL. Mouse and touch input are supported.",
+    "tags_zh": [
+      "Canvas 2D",
+      "鼠标扰动",
+      "弹性归位",
+      "触屏交互"
+    ],
+    "tags_en": [
+      "Canvas 2D",
+      "Pointer interaction",
+      "Elastic return",
+      "Touch input"
+    ],
+    "facts": [
+      {
+        "n": "5",
+        "zh": "个粒子字母",
+        "en": "particle letters"
+      },
+      {
+        "n": "≈3s",
+        "zh": "聚合成形",
+        "en": "to assemble"
+      },
+      {
+        "n": "0.9s",
+        "zh": "进入过渡",
+        "en": "entry transition"
+      }
+    ],
+    "tech": "Canvas 2D · Pointer Events · Web Components",
+    "host": "GitHub Pages"
   }
 ]

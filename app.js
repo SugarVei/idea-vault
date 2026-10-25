@@ -5,7 +5,7 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 const UI = {
   zh: {
     brand: '创意仓库', brandSub: 'Idea Vault', eyebrow: 'Creative vault · 2026', title: '我的创意仓库',
-    sub: '这里收着我做过的小世界：一座可以走进去的港湾，一池可以触摸的水，一颗可以转动的地球。每张卡片都能点开，直接玩。',
+    sub: '这里收着我做过的小世界：一座可以走进去的港湾，一池可以触摸的水，一颗可以转动的地球，还有会与你对上目光的毛绒伙伴。每张卡片都能点开，直接玩。',
     stats: ['件作品', '个已上线', '持续更新'],
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '其他' },
     status: { live: '已上线', wip: '制作中', idea: '点子' }, draft: '草稿',
@@ -42,7 +42,7 @@ const UI = {
   },
   en: {
     brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor you can walk into, a pond you can touch, a planet you can spin. Open any card and play.',
+    sub: 'Small worlds I have built: a harbor you can walk into, a pond you can touch, a planet you can spin, and a plush companion who meets your gaze. Open any card and play.',
     stats: ['works', 'live', 'ongoing'],
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',

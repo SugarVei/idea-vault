@@ -43,5 +43,20 @@
     "tags_en": ["Three.js", "30 dioramas", "Time of day", "Postcards"],
     "facts": [{"n": "18", "zh": "座城市", "en": "cities"}, {"n": "12", "zh": "类地貌", "en": "landscapes"}, {"n": "4", "zh": "种光影", "en": "lighting moods"}],
     "tech": "Three.js", "host": "Vercel"
+  },
+  {
+    "sort": 40, "published": true, "category": "3d", "status": "live", "year": 2026, "hue": "#c8a686",
+    "url": "https://sugarvei.github.io/jolly-muse-site/", "repo": "https://github.com/SugarVei/jolly-muse-site",
+    "images": ["assets/jolly-1.jpg", "assets/jolly-2.jpg", "assets/jolly-3.jpg", "assets/jolly-4.jpg"],
+    "title_zh": "Jolly 陪伴空间", "title_en": "Jolly Muse",
+    "kind_zh": "毛绒角色交互", "kind_en": "Interactive plush character",
+    "line_zh": "移动鼠标，和戴着耳机的毛绒 Jolly 对上目光。也可以拉近看看，安静地陪伴一会儿。",
+    "line_en": "Move your pointer to meet Jolly's gaze. Come closer to this headphone-wearing plush companion, or pause and stay a while.",
+    "lead_zh": "戴着耳机的奶油色毛绒伙伴，会随着鼠标或手指的移动轻轻转头。可以暂停跟随、回到正面，也可以拉近看看卷绒、五官和耳机。\n\n由同一份 Blender 模型渲染出 95 个真实姿态，配合 1,146 张光流补间形成 1,241 张姿态图。首页用 Canvas 2D 播放；“关于 Jolly”里还可以打开 Three.js 三维探索。",
+    "lead_en": "A cream-colored plush companion in headphones gently turns its head toward your pointer or touch. Pause its gaze, return to the front, or come closer to see the fleece, face and headphones.\n\nThe same Blender model provides 95 native renders, joined by 1,146 optical-flow intermediates for 1,241 pose frames. The main experience uses Canvas 2D; a separate Three.js exploration mode is available through About Jolly.",
+    "tags_zh": ["Blender", "目光跟随", "毛绒角色", "触屏交互"],
+    "tags_en": ["Blender", "Gaze tracking", "Plush character", "Touch interaction"],
+    "facts": [{"n": "95", "zh": "张原生渲染", "en": "native renders"}, {"n": "1,241", "zh": "个交互姿态", "en": "pose frames"}, {"n": "720×960", "zh": "最高帧图分辨率", "en": "max frame resolution"}],
+    "tech": "Blender · Canvas 2D · Three.js", "host": "GitHub Pages"
   }
 ]

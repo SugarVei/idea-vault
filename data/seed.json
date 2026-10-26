@@ -46,7 +46,7 @@
   },
   {
     "sort": 40, "published": true, "category": "3d", "status": "live", "year": 2026, "hue": "#c8a686",
-    "url": "https://sugarvei.github.io/jolly-muse-site/", "repo": "https://github.com/SugarVei/jolly-muse-site",
+    "url": "https://sugarvei.github.io/jolly-muse-site/?v=3.1.0", "repo": "https://github.com/SugarVei/jolly-muse-site",
     "images": ["assets/jolly-1.jpg", "assets/jolly-2.jpg", "assets/jolly-3.jpg", "assets/jolly-4.jpg"],
     "title_zh": "Jolly 陪伴空间", "title_en": "Jolly Muse",
     "kind_zh": "毛绒角色交互", "kind_en": "Interactive plush character",

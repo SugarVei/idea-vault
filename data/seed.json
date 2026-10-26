@@ -387,5 +387,37 @@
     ],
     "tech": "Node.js · SVG · JavaScript · WebGL",
     "host": "GitHub · 官方文档 / Official docs"
+  },
+  {
+    "sort": 110,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#567a84",
+    "url": "https://car-parts-atlas-rose.vercel.app/",
+    "repo": "https://github.com/SugarVei/car-parts-atlas",
+    "images": [
+      "assets/car-atlas-1.jpg",
+      "assets/car-atlas-2.jpg",
+      "assets/car-atlas-3.jpg"
+    ],
+    "title_zh": "Model 3 汽车拆解图谱",
+    "title_en": "Model 3 Atlas",
+    "kind_zh": "3D 汽车零部件交互",
+    "kind_en": "Interactive 3D car parts",
+    "line_zh": "一键展开汽车，把车身、座舱、电池和底盘逐层拆开，再让每个零件回到原位。",
+    "line_en": "Take a car apart with one click, explore its body, cabin, battery and chassis, then bring every part home.",
+    "lead_zh": "从一辆完整的 Model 3 开始，用一键拆解或滑块展开 73 个独立部件。拖动旋转、滚轮缩放，也可以在八类系统之间筛选，隐藏车身观察内部结构。\n\n点选零件可查看名称与所属系统、单独显示，并调整它的展开方向；一键组装后，零件准确回到原位。支持线框查看、保存视图和手机触屏操作。\n\n内置汽车是简化参考模型，非原厂工程数据，用于结构交互展示。",
+    "lead_en": "Start with a complete Model 3 and use one-click disassembly or the slider to separate 73 independent parts. Drag to orbit, scroll to zoom, browse eight systems, or hide the body to reveal the structure inside.\n\nSelect a part to see its name and system, isolate it, or adjust its explosion direction. One-click assembly returns every part to its original position. Wireframe, saved views and touch controls are supported.\n\nThe built-in car is a simplified reference model for interactive exploration, rather than factory engineering data.",
+    "tags_zh": ["Three.js", "一键拆装", "零部件检查", "触屏交互"],
+    "tags_en": ["Three.js", "Explode / assemble", "Part inspection", "Touch controls"],
+    "facts": [
+      { "n": "73", "zh": "个内置参考部件", "en": "built-in reference parts" },
+      { "n": "8", "zh": "类系统", "en": "part systems" },
+      { "n": "360°", "zh": "旋转查看", "en": "orbit exploration" }
+    ],
+    "tech": "React · Three.js · Supabase",
+    "host": "Vercel"
   }
 ]

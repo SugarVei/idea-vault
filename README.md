@@ -12,7 +12,7 @@
 | `style.css` | 全部样式 |
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
-| `data/seed.json` | 内置的十个条目（八件个人作品、两项开源收藏）；数据库连不上时用它显示 |
+| `data/seed.json` | 内置的十一个条目（九件个人作品、两项开源收藏）；数据库连不上时用它显示 |
 | `assets/` | 内置作品的配图 |
 | `supabase/migrations/` | 数据库表、权限和图片存储桶的定义 |
 | `serve.mjs` | 本地预览服务器 |
@@ -47,6 +47,7 @@ GitHub Pages，从 `main` 分支根目录发布。推送到 `main` 后约 1 分�
 
 ## 开源收藏与图片来源
 
+- Model 3 汽车拆解图谱：`assets/car-atlas-*.jpg` 为线上网页的真实运行截图，展示内置参考模型的拆解、装配和部件详情。该模型为简化展示，非原厂工程数据。
 - Factory Anatomy：原作者 Senthee / 吴斌与协作助手，[原仓库](https://github.com/Sentheecode/factory-anatomy)。`assets/factory-anatomy-*.webp` 为原仓库的六张场景预览图，[MIT 许可](assets/licenses/factory-anatomy-MIT.txt)。
 - Anatomy：原作者 Ryan / wheresryan22，[原仓库](https://github.com/wheresryan22/anatomy)。`assets/anatomy-skill-*.webp` 为原仓库的发动机、波纹水槽和旋钮示例截图，[MIT 许可](assets/licenses/anatomy-MIT.txt)。
 - 上述两项在卡片及详情中标注为开源收藏，访问入口保留原项目链接。

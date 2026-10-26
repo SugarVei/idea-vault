@@ -5,15 +5,15 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 const UI = {
   zh: {
     brand: '创意仓库', brandSub: 'Idea Vault', eyebrow: 'Creative vault · 2026', title: '我的创意仓库',
-    sub: '这里收着我做过的小世界：可以走进去的港湾、可以触摸的水、可以转动的地球、会与你对上目光的毛绒伙伴，还有随鼠标流动的粒子和一局局加速的插盘小游戏。每张卡片都能点开，直接玩。',
-    stats: ['件作品', '个已上线', '持续更新'],
-    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '其他' },
+    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏和旅行手账。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
+    stats: ['条内容', '个已上线', '持续更新'],
+    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '技能 / 工具' },
     status: { live: '已上线', wip: '制作中', idea: '点子' }, draft: '草稿',
-    count: n => `${n} 件`, play: '去玩', open: '在线体验', source: '源码',
+    count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码',
     tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
     next: '下一个点子', nextSub: '正在酝酿，很快放进来',
     add: '导入新创意', addSub: '上传图片、填写文案，发布后所有人都能看到',
-    foot: '每个作品都可以在浏览器里直接打开', offline: '暂时连不上数据库，显示的是内置数据',
+    foot: '我的作品与开源收藏，都可以从这里打开', offline: '暂时连不上数据库，显示的是内置数据',
     login: '管理员登录', managing: '管理中', signOut: '退出', notAdmin: '未授权', importBtn: '导入',
     edit: '编辑', remove: '删除', confirmDelete: name => `确定删除「${name}」吗？图片也会一起删除，无法恢复。`,
     deleted: '已删除', saved: '已发布', savedDraft: '已保存为草稿',
@@ -42,15 +42,15 @@ const UI = {
   },
   en: {
     brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor you can walk into, a pond you can touch, a planet you can spin, a plush companion who meets your gaze, particles you can stir, and a USB runner that keeps getting faster. Open any card and play.',
-    stats: ['works', 'live', 'ongoing'],
-    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Other' },
+    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game and a travel journal. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
+    stats: ['entries', 'live', 'ongoing'],
+    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',
-    count: n => `${n} ${n === 1 ? 'work' : 'works'}`, play: 'Play', open: 'Play online', source: 'Source',
+    count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source',
     tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
     next: 'Next idea', nextSub: 'Brewing — coming soon',
     add: 'Import a new idea', addSub: 'Upload images and write it up — everyone sees it once published',
-    foot: 'Every piece opens right in your browser', offline: 'Database unreachable — showing built-in data',
+    foot: 'My projects and open-source finds, all within reach', offline: 'Database unreachable — showing built-in data',
     login: 'Admin sign in', managing: 'Managing', signOut: 'Sign out', notAdmin: 'Not authorised', importBtn: 'Import',
     edit: 'Edit', remove: 'Delete', confirmDelete: name => `Delete "${name}"? Its images go too, and this can't be undone.`,
     deleted: 'Deleted', saved: 'Published', savedDraft: 'Saved as draft',
@@ -179,7 +179,7 @@ function cardHtml(idea, i) {
   const badge = draft ? s.draft : s.status[idea.status] || s.status.live;
   const dot = draft ? 'var(--ink-3)' : `var(--${idea.status || 'live'})`;
   const sub = state.lang === 'zh' && idea.title_en ? `<small>${esc(idea.title_en)}</small>` : '';
-  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener">${s.play} ↗</a>` : '';
+  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener">${idea.category === 'other' ? s.view : s.play} ↗</a>` : '';
   return `<article class="card glass${draft ? ' draft' : ''}" data-id="${esc(idea.id ?? i)}" data-cat="${esc(idea.category)}" style="--i:${i};--hue:${esc(idea.hue)}">
     <div class="media">${media}<span class="chiplet badge" style="--dot:${dot}">${esc(badge)}</span><span class="chiplet num">${String(i + 1).padStart(2, '0')}</span>${dots}</div>
     <div class="body">
@@ -278,7 +278,7 @@ function openSheet(idea) {
       ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
       ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       <div class="actions">
-        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${s.open} ↗</a>` : ''}
+        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${idea.category === 'other' ? s.openResource : s.open} ↗</a>` : ''}
         ${isHttp(idea.repo) ? `<a class="btn ghost" href="${esc(idea.repo)}" target="_blank" rel="noopener">${s.source} ↗</a>` : ''}
         ${state.isAdmin && idea.id ? `<span class="admin-actions"><button type="button" class="btn ghost" data-edit>${s.edit}</button><button type="button" class="btn danger" data-delete>${s.remove}</button></span>` : ''}
       </div>

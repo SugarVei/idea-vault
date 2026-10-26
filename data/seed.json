@@ -275,5 +275,117 @@
     ],
     "tech": "HTML · CSS · JavaScript · Canvas 2D",
     "host": "GitHub Pages"
+  },
+  {
+    "sort": 90,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#a9b8c7",
+    "url": "https://sentheecode.github.io/factory-anatomy/",
+    "repo": "https://github.com/Sentheecode/factory-anatomy",
+    "images": [
+      "assets/factory-anatomy-1.webp",
+      "assets/factory-anatomy-2.webp",
+      "assets/factory-anatomy-3.webp",
+      "assets/factory-anatomy-4.webp",
+      "assets/factory-anatomy-5.webp",
+      "assets/factory-anatomy-6.webp"
+    ],
+    "title_zh": "Factory Anatomy · 工厂图鉴",
+    "title_en": "Factory Anatomy",
+    "kind_zh": "开源作品收藏 · Senthee",
+    "kind_en": "Open-source collection · Senthee",
+    "line_zh": "从冲压到总装，用细密的等轴测图形看汽车工厂如何运转。原作：Senthee / 吴斌。",
+    "line_en": "Follow a car factory from stamping to final assembly through detailed isometric scenes. Created by Senthee / Wu Bin.",
+    "lead_zh": "收藏自 Senthee / 吴斌的 Factory Anatomy。包含冲压、焊装、涂装、总装、电池包和电驱六类场景，以及三合一电驱总成爆炸图，共七个独立交互网页。\n\n作品基于 Anatomy 绘图工具，以 SVG 组织设备和零件，用 JavaScript 驱动机械臂、输送线及物料流转。冲压示例展示五机同步、5 秒一冲、8 件满架后由 AGV 运走的动作节拍。大场景建议在桌面浏览器打开。\n\n本条目为开源作品收藏；原作者为 Senthee / 吴斌与协作助手，绘图工具来自 Ryan 的 Anatomy，均按 MIT 许可提供。在线体验与源码链接均指向原项目。",
+    "lead_en": "An open-source project collected from Senthee / Wu Bin. Explore six factory areas—stamping, body shop, paint shop, final assembly, battery pack and electric drive—plus an exploded 3-in-1 drive unit, across seven standalone interactive pages.\n\nBuilt with the Anatomy drawing kit, SVG parts form the equipment while JavaScript drives robot arms, conveyors and material flow. The stamping demo synchronizes five presses on a five-second cycle, with an AGV collecting each rack of eight parts. Desktop browsers are recommended for the large scenes.\n\nThis is a collected project by Senthee / Wu Bin and assistants, using Ryan's Anatomy kit. Both are MIT-licensed. The experience and source links lead to the original project.",
+    "tags_zh": [
+      "SVG 等轴测",
+      "工艺动画",
+      "开源收藏",
+      "MIT"
+    ],
+    "tags_en": [
+      "Isometric SVG",
+      "Process animation",
+      "Open-source find",
+      "MIT"
+    ],
+    "facts": [
+      {
+        "n": "6",
+        "zh": "类工厂场景",
+        "en": "factory areas"
+      },
+      {
+        "n": "7",
+        "zh": "个交互网页",
+        "en": "interactive pages"
+      },
+      {
+        "n": "5s",
+        "zh": "冲压示例节拍",
+        "en": "stamping demo cycle"
+      }
+    ],
+    "tech": "SVG · JavaScript · Anatomy",
+    "host": "GitHub Pages"
+  },
+  {
+    "sort": 100,
+    "published": true,
+    "category": "other",
+    "status": "live",
+    "year": 2026,
+    "hue": "#d4b7a6",
+    "url": "https://skills.wheresryan.sh/anatomy",
+    "repo": "https://github.com/wheresryan22/anatomy",
+    "images": [
+      "assets/anatomy-skill-1.webp",
+      "assets/anatomy-skill-2.webp",
+      "assets/anatomy-skill-3.webp",
+      "assets/anatomy-skill-4.webp"
+    ],
+    "title_zh": "Anatomy · 等轴测创作技能",
+    "title_en": "Anatomy · Isometric Skill",
+    "kind_zh": "开源技能收藏 · Ryan",
+    "kind_en": "Open-source skill · Ryan",
+    "line_zh": "让 AI 用可交互的机械、仪器与立体图解讲清一个原理。原作：Ryan / wheresryan22。",
+    "line_en": "An AI coding skill for explaining ideas through interactive machines, instruments and isometric diagrams. By Ryan / wheresryan22.",
+    "lead_zh": "收藏自 Ryan / wheresryan22 的 Anatomy 开源技能，也是 Factory Anatomy 使用的绘图工具来源。它为 AI 编程助手提供绘制规范、零件工具、完整示例，以及截图和几何检查方法。\n\n核心以三维坐标构造零件，再投影为带明暗与遮挡的 SVG；需要火焰、水面或发光时，可叠加 WebGL。适用于机构原理、产品拆解和交互式技术图解，可输出独立 HTML、SVG 或 React / Next.js 组件。\n\n本机已安装，可在 Codex 中用 $anatomy 加上具体需求调用。预览图为原项目示例，包括发动机、波纹水槽与旋钮机构；本条目为开源技能收藏，原作者为 Ryan，采用 MIT 许可。",
+    "lead_en": "An open-source skill by Ryan / wheresryan22, whose drawing kit also powers Factory Anatomy. It gives AI coding assistants visual rules, part-building tools, complete examples, and methods for screenshot and geometry checks.\n\nParts are defined in 3D coordinates and projected into shaded, depth-ordered SVG. Optional WebGL layers add fire, water and light. Use it for mechanisms, product breakdowns and interactive technical explainers, delivered as standalone HTML, SVG or React / Next.js components.\n\nInstalled in my local Codex environment; invoke it with $anatomy followed by a concrete brief. Preview images show the original project's engine, ripple-tank and dial examples. This is a collected skill created by Ryan and released under the MIT license.",
+    "tags_zh": [
+      "AI Skill",
+      "SVG / WebGL",
+      "Codex",
+      "MIT"
+    ],
+    "tags_en": [
+      "AI Skill",
+      "SVG / WebGL",
+      "Codex",
+      "MIT"
+    ],
+    "facts": [
+      {
+        "n": "SVG",
+        "zh": "矢量绘图",
+        "en": "vector graphics"
+      },
+      {
+        "n": "WebGL",
+        "zh": "可选特效",
+        "en": "optional effects"
+      },
+      {
+        "n": "MIT",
+        "zh": "开源许可",
+        "en": "open-source license"
+      }
+    ],
+    "tech": "Node.js · SVG · JavaScript · WebGL",
+    "host": "GitHub · 官方文档 / Official docs"
   }
 ]

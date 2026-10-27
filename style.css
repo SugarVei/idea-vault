@@ -164,6 +164,8 @@ dialog.sheet::backdrop { background: rgba(5, 8, 14, .5); -webkit-backdrop-filter
 .sheet-in { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; padding: 14px; }
 .gallery .main { aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden; background: var(--hair); }
 .gallery .main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery .main.video { aspect-ratio: 16 / 9; }
+.gallery .main video { width: 100%; height: 100%; object-fit: contain; display: block; }
 .thumbs { display: flex; gap: 8px; margin-top: 10px; }
 .thumbs button { flex: 1; max-width: 25%; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; opacity: .55; transition: opacity .3s; outline-offset: 2px; }
 .thumbs button[aria-current="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }

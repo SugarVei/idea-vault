@@ -5,11 +5,11 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 const UI = {
   zh: {
     brand: '创意仓库', brandSub: 'Idea Vault', eyebrow: 'Creative vault · 2026', title: '我的创意仓库',
-    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏、旅行手账和汽车拆解。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
+    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏、旅行手账、汽车拆解，还有一支纯代码做的宣传片。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
     stats: ['条内容', '个已上线', '持续更新'],
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '技能 / 工具' },
     status: { live: '已上线', wip: '制作中', idea: '点子' }, draft: '草稿',
-    count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码',
+    count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
     tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
     next: '下一个点子', nextSub: '正在酝酿，很快放进来',
     add: '导入新创意', addSub: '上传图片、填写文案，发布后所有人都能看到',
@@ -42,11 +42,11 @@ const UI = {
   },
   en: {
     brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal and a car you can take apart. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
+    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart and a promo film animated entirely in code. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
     stats: ['entries', 'live', 'ongoing'],
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',
-    count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source',
+    count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
     tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
     next: 'Next idea', nextSub: 'Brewing — coming soon',
     add: 'Import a new idea', addSub: 'Upload images and write it up — everyone sees it once published',
@@ -92,6 +92,9 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
 const imgSrc = p => (isHttp(p) || /^assets\/[\w./-]+$/.test(p || '')) ? p : '';
+// 在线地址是 mp4 时当作视频作品：详情里直接播放，封面用同名的 .jpg
+const isVideo = u => isHttp(u) && /\.mp4(?=$|[?#])/i.test(u);
+const posterOf = u => u.replace(/\.mp4(?=$|[?#])/i, '.jpg');
 
 const state = {
   lang: store.get('vault-lang') === 'en' ? 'en' : 'zh',
@@ -179,7 +182,8 @@ function cardHtml(idea, i) {
   const badge = draft ? s.draft : s.status[idea.status] || s.status.live;
   const dot = draft ? 'var(--ink-3)' : `var(--${idea.status || 'live'})`;
   const sub = state.lang === 'zh' && idea.title_en ? `<small>${esc(idea.title_en)}</small>` : '';
-  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener">${idea.category === 'other' ? s.view : s.play} ↗</a>` : '';
+  const goLabel = isVideo(idea.url) ? s.watch : idea.category === 'other' ? s.view : s.play;
+  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener">${goLabel} ↗</a>` : '';
   return `<article class="card glass${draft ? ' draft' : ''}" data-id="${esc(idea.id ?? i)}" data-cat="${esc(idea.category)}" style="--i:${i};--hue:${esc(idea.hue)}">
     <div class="media">${media}<span class="chiplet badge" style="--dot:${dot}">${esc(badge)}</span><span class="chiplet num">${String(i + 1).padStart(2, '0')}</span>${dots}</div>
     <div class="body">
@@ -265,10 +269,14 @@ function openSheet(idea) {
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
   const facts = (idea.facts || []).filter(f => f && f.n);
   const meta = [[s.tech, idea.tech], [s.host, idea.host], [s.year, idea.year]].filter(([, v]) => v);
+  const video = isVideo(idea.url);
+  const mainHtml = video
+    ? `<video src="${esc(idea.url)}" poster="${esc(posterOf(idea.url))}" controls playsinline preload="none" aria-label="${esc(title)}"></video>`
+    : imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="empty">${esc(title.slice(0, 1))}</span></div>`;
   sheet.innerHTML = `<div class="sheet-in">
     <div class="gallery">
-      <div class="main">${imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="empty">${esc(title.slice(0, 1))}</span></div>`}</div>
-      ${imgs.length > 1 ? `<div class="thumbs">${imgs.map((src, j) => `<button type="button" aria-label="${j + 1}" aria-current="${j === 0}" data-src="${esc(src)}"><img src="${esc(src)}" alt=""></button>`).join('')}</div>` : ''}
+      <div class="main${video ? ' video' : ''}">${mainHtml}</div>
+      ${imgs.length > 1 && !video ? `<div class="thumbs">${imgs.map((src, j) => `<button type="button" aria-label="${j + 1}" aria-current="${j === 0}" data-src="${esc(src)}"><img src="${esc(src)}" alt=""></button>`).join('')}</div>` : ''}
     </div>
     <div class="info">
       <button type="button" class="close" aria-label="${s.close}">×</button>
@@ -278,7 +286,7 @@ function openSheet(idea) {
       ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
       ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       <div class="actions">
-        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${idea.category === 'other' ? s.openResource : s.open} ↗</a>` : ''}
+        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${video ? s.openVideo : idea.category === 'other' ? s.openResource : s.open} ↗</a>` : ''}
         ${isHttp(idea.repo) ? `<a class="btn ghost" href="${esc(idea.repo)}" target="_blank" rel="noopener">${s.source} ↗</a>` : ''}
         ${state.isAdmin && idea.id ? `<span class="admin-actions"><button type="button" class="btn ghost" data-edit>${s.edit}</button><button type="button" class="btn danger" data-delete>${s.remove}</button></span>` : ''}
       </div>
@@ -299,6 +307,7 @@ function openSheet(idea) {
 for (const d of document.querySelectorAll('dialog')) {
   d.addEventListener('click', e => { if (e.target === d && d.id !== 'editor') d.close(); });
 }
+sheet.addEventListener('close', () => sheet.querySelector('video')?.pause());
 
 /* ---------------- 登录 ---------------- */
 

@@ -419,5 +419,60 @@
     ],
     "tech": "React · Three.js · Supabase",
     "host": "Vercel"
+  },
+  {
+    "sort": 120,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#ff7a1a",
+    "url": "https://sugarvei.github.io/idea-vault/assets/sugarv-promo.mp4",
+    "repo": null,
+    "images": [
+      "assets/sugarv-1.jpg",
+      "assets/sugarv-2.jpg",
+      "assets/sugarv-3.jpg",
+      "assets/sugarv-4.jpg"
+    ],
+    "title_zh": "Sugar 求职系统宣传片",
+    "title_en": "Sugar Job Hunt Promo",
+    "kind_zh": "一镜到底代码动画",
+    "kind_en": "Single-take code animation",
+    "line_zh": "42 秒一镜到底，一只橙色像素光标带你逛完 Sugar 求职系统，画面和音效全部由代码生成。",
+    "line_en": "A 42-second single take: a little orange pixel cursor tours the Sugar job-hunt system. Every frame and every sound is generated in code.",
+    "lead_zh": "为我的求职网站 www.sugarv.mom 做的宣传片。橙色像素光标小人从桌面醒来，打开网站后一分为四，分别展开简历库、公司库、总览、面试日历 + Offer 管理；再把内容拖到时间线上，投递 → 面试 → Offer 三个节点踩着节拍依次亮起。最后时间线变成向上的轨迹，小人一路滑过四个成果，收成一句「让求职更有节奏」。\n\n整片只有一个连续镜头。每一帧只由时间决定，用 Playwright 逐帧截图、ffmpeg 合成；节拍音效也是程序合成的，重音对准三个节点亮起的瞬间。画面里没有任何真实账号数据，图表都是示意。",
+    "lead_en": "A promo film for my job-hunt site, www.sugarv.mom. A little orange pixel cursor wakes up on the desktop, opens the site and splits into four to open the resume library, company library, overview, and interview calendar + offer manager. The clones drag their content onto a timeline, where Apply → Interview → Offer light up on the beat. The timeline then bends into a rising track, the cursor rides past all four results, and everything gathers into one line: give your job hunt a rhythm.\n\nThe whole film is one continuous shot. Every frame depends only on time; Playwright captures it frame by frame and ffmpeg assembles the video. The beat track is synthesized in code as well, with accents landing exactly as each node lights up. No real account data appears on screen, and every chart is illustrative.",
+    "tags_zh": [
+      "一镜到底",
+      "Canvas 2D",
+      "逐帧渲染",
+      "程序音效"
+    ],
+    "tags_en": [
+      "Single take",
+      "Canvas 2D",
+      "Frame-by-frame render",
+      "Generated audio"
+    ],
+    "facts": [
+      {
+        "n": "42.5",
+        "zh": "秒一镜到底",
+        "en": "s in a single take"
+      },
+      {
+        "n": "1275",
+        "zh": "帧逐帧渲染",
+        "en": "frames rendered"
+      },
+      {
+        "n": "0",
+        "zh": "段素材或现成音乐",
+        "en": "stock clips or music"
+      }
+    ],
+    "tech": "Canvas 2D · Playwright · ffmpeg",
+    "host": "GitHub Pages"
   }
 ]

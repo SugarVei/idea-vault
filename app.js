@@ -42,7 +42,7 @@ const UI = {
   },
   en: {
     brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart a promo film animated entirely in code, and a disk-space visualization tool. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
+    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart, a promo film animated entirely in code, and a disk-space visualization tool. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
     stats: ['entries', 'live', 'ongoing'],
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',

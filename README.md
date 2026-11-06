@@ -12,7 +12,7 @@
 | `style.css` | 全部样式 |
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
-| `data/seed.json` | 内置的十二个条目（十件个人作品、两项开源收藏）；数据库连不上时用它显示 |
+| `data/seed.json` | 内置的十三个条目（十一件个人作品、两项开源收藏）；数据库连不上时用它显示 |
 | `assets/` | 内置作品的配图 |
 | `supabase/migrations/` | 数据库表、权限和图片存储桶的定义 |
 | `serve.mjs` | 本地预览服务器 |
@@ -51,3 +51,7 @@ GitHub Pages，从 `main` 分支根目录发布。推送到 `main` 后约 1 分�
 - Factory Anatomy：原作者 Senthee / 吴斌与协作助手，[原仓库](https://github.com/Sentheecode/factory-anatomy)。`assets/factory-anatomy-*.webp` 为原仓库的六张场景预览图，[MIT 许可](assets/licenses/factory-anatomy-MIT.txt)。
 - Anatomy：原作者 Ryan / wheresryan22，[原仓库](https://github.com/wheresryan22/anatomy)。`assets/anatomy-skill-*.webp` 为原仓库的发动机、波纹水槽和旋钮示例截图，[MIT 许可](assets/licenses/anatomy-MIT.txt)。
 - 上述两项在卡片及详情中标注为开源收藏，访问入口保留原项目链接。
+
+## 石间 · 磁盘空间
+
+新增石间工具条目，包含石头 / 3D 热力柱 / 手机端的真实网页截图；在线体验为 https://sugarvei.github.io/shijian-stone-space/ ，源码及 Windows 便携包安装说明见 https://github.com/SugarVei/shijian-stone-space 。网页使用固定分类数据，桌面版扫描真实目录；安装包在仓库 Releases。

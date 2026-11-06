@@ -5,7 +5,7 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 const UI = {
   zh: {
     brand: '创意仓库', brandSub: 'Idea Vault', eyebrow: 'Creative vault · 2026', title: '我的创意仓库',
-    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏、旅行手账、汽车拆解，还有一支纯代码做的宣传片。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
+    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏、旅行手账、汽车拆解，一支纯代码做的宣传片，以及石间磁盘可视化工具。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
     stats: ['条内容', '个已上线', '持续更新'],
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '技能 / 工具' },
     status: { live: '已上线', wip: '制作中', idea: '点子' }, draft: '草稿',
@@ -42,7 +42,7 @@ const UI = {
   },
   en: {
     brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart and a promo film animated entirely in code. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
+    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart a promo film animated entirely in code, and a disk-space visualization tool. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
     stats: ['entries', 'live', 'ongoing'],
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',

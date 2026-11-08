@@ -718,8 +718,8 @@
     "images": [
       "assets/ui-gallery-cover.png"
     ],
-    "title_zh": "UI 灵感画廊",
-    "title_en": "UI Inspiration Gallery",
+    "title_zh": "GPT-UI设计画廊",
+    "title_en": "GPT-UI Design Gallery",
     "kind_zh": "设计灵感收集工具",
     "kind_en": "Design inspiration collection",
     "line_zh": "收集简约网站、精致交互和产品 UI，慢慢建立自己的审美。",

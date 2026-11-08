@@ -758,14 +758,14 @@
     "category": "2d",
     "status": "live",
     "year": 2026,
-    "hue": "#d8401f",
+    "hue": "#763449",
     "url": "https://sugarvei.github.io/idea-vault/inspiration-gallery/",
     "repo": "https://github.com/SugarVei/idea-vault/tree/main/inspiration-gallery",
     "images": [
-      "assets/inspiration-gallery-cover.jpg"
+      "assets/muse-ui-cover.jpg"
     ],
-    "title_zh": "灵感画廊",
-    "title_en": "Inspiration Gallery",
+    "title_zh": "Muse-UI设计",
+    "title_en": "Muse UI Design",
     "kind_zh": "Awwwards 设计案例收藏",
     "kind_en": "Awwwards design reference gallery",
     "line_zh": "从 62 个网站案例里，寻找简约设计、交互动效和 UI 灵感。",

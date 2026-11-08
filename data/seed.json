@@ -704,5 +704,51 @@
     ],
     "tech": "React · Electron · Three.js · SVG · DeepSeek",
     "host": "GitHub Pages · ChatGPT Sites"
+  },
+  {
+    "id": "5745ae64-cfb2-49d6-b104-a3352abf893c",
+    "sort": 140,
+    "published": true,
+    "category": "other",
+    "status": "live",
+    "year": 2026,
+    "hue": "#44614b",
+    "url": "https://sugarvei.github.io/idea-vault/ui-gallery/",
+    "repo": "https://github.com/SugarVei/idea-vault/tree/main/ui-gallery",
+    "images": [
+      "assets/ui-gallery-cover.png"
+    ],
+    "title_zh": "UI 灵感画廊",
+    "title_en": "UI Inspiration Gallery",
+    "kind_zh": "设计灵感收集工具",
+    "kind_en": "Design inspiration collection",
+    "line_zh": "收集简约网站、精致交互和产品 UI，慢慢建立自己的审美。",
+    "line_en": "Collect minimal websites, thoughtful interactions and product UI.",
+    "lead_zh": "一个暖白、低饱和的 UI 灵感空间。收录 9 个公开设计参考，支持搜索、分类、收藏、添加链接与笔记，以及 JSON 导入导出。封面为索引设计，点击卡片可访问原作。每位访客的新增、收藏与笔记只保存在自己的浏览器，不会公开或跨设备同步。",
+    "lead_en": "A calm gallery of nine public design references, with search, categories, favorites, personal notes and JSON import/export. Index covers link to the original work. Each visitor’s additions and notes stay in their own browser and are not published or synced.",
+    "tags_zh": [
+      "极简设计",
+      "交互动效",
+      "本地收藏"
+    ],
+    "tags_en": [
+      "Minimal design",
+      "Interaction",
+      "Local-first"
+    ],
+    "facts": [
+      {
+        "n": "9",
+        "zh": "个精选参考",
+        "en": "curated references"
+      },
+      {
+        "n": "4",
+        "zh": "类灵感方向",
+        "en": "inspiration categories"
+      }
+    ],
+    "tech": "HTML · CSS · JavaScript · localStorage",
+    "host": "GitHub Pages"
   }
 ]

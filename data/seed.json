@@ -752,64 +752,10 @@
     "host": "GitHub Pages"
   },
   {
-    "sort": 150,
-    "category": "2d",
-    "status": "live",
-    "year": 2026,
-    "hue": "#f49e5e",
-    "url": "https://muse.ai/s/ling-gan-hua-lang-2-yxp72xpxzxidexuxy/MfMBsP9mAGUEl6xZBnrgQ3YuUJKofrRTlFuBpYqZ144",
-    "repo": null,
-    "images": [
-      "assets/muse-ui-1.jpg",
-      "assets/muse-ui-2.jpg",
-      "assets/muse-ui-3.webp"
-    ],
-    "title_zh": "Muse-UI设计",
-    "title_en": "Muse UI Design",
-    "kind_zh": "UI 设计灵感库",
-    "kind_en": "UI design inspiration library",
-    "line_zh": "十个获奖网站的设计灵感，按简约、交互动效、UI 设计三个方向收着。",
-    "line_en": "Ten award-winning websites, collected for minimal design, interaction and UI craft.",
-    "lead_zh": "一面获奖网站设计墙：Bruno Simon、Linear、Stripe、Cuberto、Framer 等十个真实案例，每个都配原站截图，点开能看设计亮点拆解、代表色板和原站链接。支持按简约、交互动效、UI 设计筛选，也能关键词搜索或随机抽一张。",
-    "lead_en": "A wall of award-winning web design: ten real cases including Bruno Simon, Linear, Stripe, Cuberto and Framer, each with a live screenshot, a breakdown of its design highlights, a colour palette and a link to the original site. Filter by minimal, interactive or UI design, search by keyword, or draw one at random.",
-    "tags_zh": [
-      "Awwwards",
-      "简约设计",
-      "交互动效",
-      "UI 设计"
-    ],
-    "tags_en": [
-      "Awwwards",
-      "Minimal design",
-      "Interaction",
-      "UI design"
-    ],
-    "facts": [
-      {
-        "n": "10",
-        "zh": "个获奖案例",
-        "en": "award-winning cases"
-      },
-      {
-        "n": "3",
-        "zh": "个方向",
-        "en": "directions"
-      },
-      {
-        "n": "4",
-        "zh": "个 Awwwards 日榜",
-        "en": "Awwwards Site of the Day"
-      }
-    ],
-    "tech": "Muse · 静态站",
-    "host": "Muse",
-    "published": true
-  },
-  {
-    "id": "32ad5c33-b99a-4c0b-9b12-a6468caad33c",
+    "id": "7fb494b2-8939-4070-9b6a-be648741584d",
     "sort": 150,
     "published": true,
-    "category": "other",
+    "category": "2d",
     "status": "live",
     "year": 2026,
     "hue": "#d8401f",
@@ -824,8 +770,8 @@
     "kind_en": "Awwwards design reference gallery",
     "line_zh": "从 62 个网站案例里，寻找简约设计、交互动效和 UI 灵感。",
     "line_en": "Explore 62 website references for minimal design, interactions and UI.",
-    "lead_zh": "基于上传 HTML 发布的独立灵感画廊，整理了 62 个 Awwwards 网站案例与 30 张内嵌截图，可按简约设计、交互动效、UI 设计及标签筛选，查看案例介绍、评分和设计亮点，并访问原作。案例数据为文件内 2026 年 11 月 8 日的快照，不会自动更新。收藏、笔记与手动收录仅在本次打开期间保留，刷新或关闭后重置。截图与案例内容归原作者及其来源所有。",
-    "lead_en": "A standalone gallery published from the uploaded HTML, with 62 Awwwards website references and 30 embedded screenshots. Filter by design direction or tags, inspect descriptions, ratings and highlights, then visit the original work. The file contains a static November 8, 2026 snapshot, not an automatic feed. Favorites, notes and manual additions last only for the current session and reset on reload. Screenshots and referenced work belong to their original creators and sources.",
+    "lead_zh": "收录 2026 年 11 月 8 日的 62 个 Awwwards 网站案例，配有 30 张截图。可以按设计方向和标签筛选，搜索网站，查看评分和设计亮点，并访问原站。收藏、笔记和手动收录在当前打开期间保留。截图与案例内容归原作者及其来源所有。",
+    "lead_en": "Explore 62 Awwwards website references from November 8, 2026, with 30 screenshots. Search for sites, filter by design direction or tag, check ratings and design highlights, and visit the original sites. Favorites, notes and manually added sites are available for the current session. Screenshots and featured work belong to their original creators and sources.",
     "tags_zh": [
       "Awwwards",
       "案例筛选",

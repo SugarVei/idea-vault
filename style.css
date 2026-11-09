@@ -1,5 +1,3 @@
-@property --tint { syntax: '<color>'; inherits: true; initial-value: #ff9a3c; }
-
 :root {
   color-scheme: dark;
   --bg: #0c111b;
@@ -12,8 +10,6 @@
   --edge: rgba(255, 255, 255, .14);
   --hair: rgba(255, 255, 255, .08);
   --shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 28px 56px -28px rgba(0, 0, 0, .7);
-  --blob-b: #4cc3b5; --blob-c: #5b86e5; --blob-d: #f07ba5;
-  --tint: #ff9a3c;
   --live: #2fbf71; --wip: #f5a524; --idea: #a78bfa; --danger: #ff6b6b;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -24,29 +20,24 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   min-height: 100vh; background: var(--bg); color: var(--ink);
   font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased; transition: --tint 1.2s var(--ease);
+  -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 [hidden] { display: none !important; }
 
-/* 背景：缓慢漂移的色块，给磨砂玻璃提供可以“磨”的颜色；第一块随悬停的卡片变色 */
-.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.blob { position: absolute; width: 56vmax; height: 56vmax; border-radius: 50%; filter: blur(80px); opacity: .38; animation: drift 30s var(--ease) infinite alternate; }
-.blob.a { background: var(--tint); top: -22vmax; left: -14vmax; }
-.blob.b { background: var(--blob-b); top: -18vmax; right: -20vmax; animation-duration: 36s; animation-delay: -8s; }
-.blob.c { background: var(--blob-c); bottom: -30vmax; left: 4vmax; animation-duration: 42s; animation-delay: -16s; }
-.blob.d { background: var(--blob-d); bottom: -26vmax; right: -12vmax; width: 44vmax; height: 44vmax; animation-duration: 34s; animation-delay: -4s; }
-@keyframes drift {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(6vmax, 4vmax) scale(1.08); }
-  100% { transform: translate(-4vmax, 7vmax) scale(.96); }
-}
-.ambient::after {
-  content: ""; position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
+/* Bencho 粒子交互背景：单画布，最高 60 帧；静止、后台或弹窗打开时停止重绘。 */
+body { isolation: isolate; }
+.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
+#particle-background { display: block; width: 100%; height: 100%; color: #8aabac; opacity: .58; pointer-events: none; }
+.background-tools { position: absolute; right: 0; bottom: 36px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; color: var(--ink-3); }
+.background-tools > span { font-size: 11px; letter-spacing: .1em; }
+.background-actions { display: flex; gap: 8px; }
+.background-button { padding: 7px 12px; border: 1px solid var(--hair); border-radius: 999px; font-size: 12px; color: var(--ink-2); background: rgba(12, 17, 27, .65); transition: color .2s, border-color .2s; }
+.background-button:hover { border-color: var(--edge); color: var(--ink); }
+.background-button[aria-pressed="true"] { color: var(--ink); border-color: var(--edge); }
+.background-button:disabled { cursor: default; opacity: .55; }
 
 .glass {
   background: var(--glass);
@@ -77,7 +68,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
 
 /* 开场 */
-.intro { padding: clamp(40px, 6vw, 72px) 0 32px; }
+.intro { position: relative; padding: clamp(40px, 6vw, 72px) 0 32px; }
 .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 .intro h1 { margin-top: 18px; font-size: clamp(40px, 7vw, 76px); line-height: 1.05; font-weight: 700; letter-spacing: -.02em; }
 .intro p { margin-top: 18px; max-width: 560px; font-size: clamp(15px, 1.6vw, 17px); line-height: 1.8; color: var(--ink-2); }
@@ -248,6 +239,8 @@ dialog.sheet::backdrop { background: rgba(5, 8, 14, .5); -webkit-backdrop-filter
 footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 24px 0 40px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--ink-3); }
 
 @media (max-width: 760px) {
+  #particle-background { opacity: .20; }
+  .background-tools { position: static; align-items: flex-start; margin-top: 22px; gap: 10px; }
   .sheet-in { grid-template-columns: 1fr; gap: 8px; }
   .info { padding: 10px 6px 8px; }
   #sheet .close { position: fixed; top: 22px; right: 22px; z-index: 2; background: var(--glass-strong); }

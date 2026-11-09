@@ -234,7 +234,6 @@ function bindCards() {
       imgs[k].classList.add('on'); dots[k]?.classList.add('on');
     };
     card.addEventListener('pointerenter', () => {
-      document.body.style.setProperty('--tint', idea.hue);
       if (reduced || !finePointer || imgs.length < 2) return;
       timer = setInterval(() => show((k + 1) % imgs.length), 1400);
     });
@@ -300,7 +299,6 @@ function openSheet(idea) {
   sheet.querySelector('.close').addEventListener('click', () => sheet.close());
   sheet.querySelector('[data-edit]')?.addEventListener('click', () => { sheet.close(); openEditor(idea); });
   sheet.querySelector('[data-delete]')?.addEventListener('click', () => deleteIdea(idea));
-  document.body.style.setProperty('--tint', idea.hue);
   sheet.showModal();
 }
 

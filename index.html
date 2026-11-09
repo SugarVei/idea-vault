@@ -13,12 +13,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261027-promo">
+<link rel="stylesheet" href="style.css?v=20261109-particles-60">
+<script type="module" src="background-controls.js?v=20261109-particles-60"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script type="module" src="app.js?v=20261106-shijian-2"></script>
+<script type="module" src="app.js?v=20261109-particles-60"></script>
 </head>
 <body>
-<div class="ambient" aria-hidden="true"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div><div class="blob d"></div></div>
+<div class="ambient" aria-hidden="true"><canvas id="particle-background"></canvas></div>
 
 <div class="wrap">
   <header class="top glass">
@@ -40,6 +41,13 @@
     <h1 data-t="title"></h1>
     <p data-t="sub"></p>
     <div class="stats glass" id="stats"></div>
+    <div class="background-tools" hidden>
+      <span id="background-hint">移动拨动 · 点击变形</span>
+      <div class="background-actions">
+        <button type="button" class="background-button" id="background-next">变换背景</button>
+        <button type="button" class="background-button" id="background-pause" aria-pressed="false">暂停动效</button>
+      </div>
+    </div>
   </section>
 
   <main>

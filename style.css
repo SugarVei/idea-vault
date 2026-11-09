@@ -27,10 +27,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 [hidden] { display: none !important; }
 
-/* Bencho 粒子交互背景：单画布，最高 60 帧；静止、后台或弹窗打开时停止重绘。 */
-body { isolation: isolate; }
-.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
-#particle-background { display: block; width: 100%; height: 100%; color: #8aabac; opacity: .58; pointer-events: none; }
+/* 全屏粒子层由 particle-background.css 统一提供，随浏览器原生刷新绘制。 */
 .background-tools { position: absolute; right: 0; bottom: 36px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; color: var(--ink-3); }
 .background-tools > span { font-size: 11px; letter-spacing: .1em; }
 .background-actions { display: flex; gap: 8px; }
@@ -239,7 +236,6 @@ dialog.sheet::backdrop { background: rgba(5, 8, 14, .5); -webkit-backdrop-filter
 footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 24px 0 40px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--ink-3); }
 
 @media (max-width: 760px) {
-  #particle-background { opacity: .20; }
   .background-tools { position: static; align-items: flex-start; margin-top: 22px; gap: 10px; }
   .sheet-in { grid-template-columns: 1fr; gap: 8px; }
   .info { padding: 10px 6px 8px; }

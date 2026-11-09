@@ -11,7 +11,8 @@
 | `index.html` | 页面骨架 |
 | `style.css` | 全部样式 |
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
-| `particles-background.js` | Bencho 粒子背景：推开、回弹、圆形 / 方形 / 花朵变形，最高 60 帧 |
+| `particles-background.js` | 覆盖完整视口的粒子场：推开、点击扩散、回弹，跟随浏览器原生刷新率，不设帧率上限 |
+| `particle-background.css` | 首页与两个设计画廊共用的背景层，适配各页面配色 |
 | `background-controls.js` | 背景控制按钮与中英文、减少动态效果设置同步 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
 | `data/seed.json` | 内置的十三个条目（十一件个人作品、两项开源收藏）；数据库连不上时用它显示 |
@@ -49,7 +50,7 @@ GitHub Pages，从 `main` 分支根目录发布。推送到 `main` 后约 1 分�
 
 ## 开源收藏与图片来源
 
-- 交互背景改编自 Bencho Particles（用户提供的 MIT 许可源码，[原站许可说明](https://bencho.dev/licence)）；保留原有算法注释。新增 60 FPS 上限、形状缓存、静止休眠、后台及弹窗暂停；按钮、链接和手机滚动保留原有行为。画布使用现有深色主题。FPS 是上限，实际表现取决于设备和浏览器。
+- 交互背景沿用 Bencho Particles 的推开、冲击波和弹簧回弹机制（用户提供的 MIT 许可源码，[原站许可说明](https://bencho.dev/licence)），保留相关物理解释注释。粒子均匀铺满整个视口，滚动到页面任何位置仍有背景；首页、GPT-UI 设计画廊和 Muse-UI 设计画廊均接入。没有圆形等聚合轮廓，也不设人为帧率上限，每个可用的浏览器动画帧均可更新。保留静止休眠、后台及弹窗暂停；按钮、链接和手机滚动行为不变。背景色跟随各页面原有主题。
 
 - Model 3 汽车拆解图谱：`assets/car-atlas-*.jpg` 为线上网页的真实运行截图，展示内置参考模型的拆解、装配和部件详情。该模型为简化展示，非原厂工程数据。
 - Factory Anatomy：原作者 Senthee / 吴斌与协作助手，[原仓库](https://github.com/Sentheecode/factory-anatomy)。`assets/factory-anatomy-*.webp` 为原仓库的六张场景预览图，[MIT 许可](assets/licenses/factory-anatomy-MIT.txt)。

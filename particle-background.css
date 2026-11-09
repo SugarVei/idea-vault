@@ -1,0 +1,18 @@
+/* Shared full-viewport particle layer. The canvas never captures page input. */
+body { isolation: isolate; }
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+#particle-background {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--particle-ink, #8aabac);
+  opacity: var(--particle-opacity, .42);
+  pointer-events: none;
+}

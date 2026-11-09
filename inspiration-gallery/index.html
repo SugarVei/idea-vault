@@ -7,8 +7,12 @@
     <link rel="icon" href="data:," />
     <title>Muse-UI设计</title>
     <meta name="description" content="浏览 Awwwards 网站设计案例，按简约设计、交互动效和 UI 设计筛选，查看评分、设计亮点与原站。" />
-    <style>
+    <link rel="stylesheet" href="../particle-background.css?v=20261109-particle-field">
+<script type="module" src="../background-controls.js?v=20261109-particle-field"></script>
+<style>
       :root {
+        --particle-ink: #6b5863;
+        --particle-opacity: .22;
         --bg: #f1f2f3;
         --surface: #fafafa;
         --text: #232126;
@@ -26,6 +30,8 @@
       }
       @media (prefers-color-scheme: dark) {
         :root {
+          --particle-ink: #b69ca8;
+          --particle-opacity: .30;
           --bg: #1c1b20;
           --surface: #25242a;
           --text: #efedf0;
@@ -584,6 +590,8 @@
     </style>
   </head>
   <body id="top">
+<div class="ambient" aria-hidden="true"><canvas id="particle-background"></canvas></div>
+
     <a class="skip" href="#catalog">跳到案例索引</a>
     <header class="wrap masthead">
       <a class="wordmark" href="#top" aria-label="Muse-UI设计首页">MUSE-UI <span aria-hidden="true">✳</span></a>

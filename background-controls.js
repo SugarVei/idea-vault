@@ -1,4 +1,4 @@
-import { initParticleBackground } from './particles-background.js?v=20261109-particle-field';
+import { initParticleBackground } from './particles-background.js?v=20261109-particle-field-bright';
 
 const canvas = document.getElementById('particle-background');
 const controls = document.querySelector('.background-tools');

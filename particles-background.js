@@ -10,7 +10,7 @@
    as a splash rather than a scatter of points. */
 
 const TAU = Math.PI * 2;
-const MAX_DOTS = 4800;
+const MAX_DOTS = 7200;
 const MAX_PIXELS = 2500000;
 const STRENGTH = 6.6;
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -32,7 +32,7 @@ export function initParticleBackground(canvas) {
   let previousFrame = null;
   let rawHand = null;
   let gesture = null;
-  let color = getComputedStyle(canvas).color || '#8aabac';
+  let color = getComputedStyle(canvas).color || '#9dbfc0';
   let cssWidth = 0;
   let cssHeight = 0;
   let canvasLeft = 0;
@@ -62,7 +62,7 @@ export function initParticleBackground(canvas) {
     // A lightly jittered hex grid fills every viewport region, including a
     // two-row bleed outside its edges. Density is bounded on large displays.
     const bleed = 60;
-    let spacing = width < 800 ? 26 : 30;
+    let spacing = width < 800 ? 21 : 24;
     const dimensions = () => ({
       rows: Math.ceil((height + bleed * 2) / (spacing * Math.sqrt(3) / 2)) + 1,
       columns: Math.ceil((width + bleed * 2) / spacing) + 1,
@@ -228,7 +228,7 @@ export function initParticleBackground(canvas) {
   }
 
   function refreshColor() {
-    color = getComputedStyle(canvas).color || '#8aabac';
+    color = getComputedStyle(canvas).color || '#9dbfc0';
     wake(true);
   }
 

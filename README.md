@@ -13,7 +13,7 @@
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
 | `particles-background.js` | 覆盖完整视口的粒子场：推开、点击扩散、回弹，跟随浏览器原生刷新率，不设帧率上限 |
 | `particle-background.css` | 首页与两个设计画廊共用的背景层，适配各页面配色 |
-| `background-controls.js` | 背景控制按钮与中英文、减少动态效果设置同步 |
+| `background-controls.js` | 启动粒子背景，离开页面时释放 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
 | `data/seed.json` | 内置的十三个条目（十一件个人作品、两项开源收藏）；数据库连不上时用它显示 |
 | `assets/` | 内置作品的配图 |
@@ -55,7 +55,8 @@ GitHub Pages，从 `main` 分支根目录发布。推送到 `main` 后约 1 分�
 - Model 3 汽车拆解图谱：`assets/car-atlas-*.jpg` 为线上网页的真实运行截图，展示内置参考模型的拆解、装配和部件详情。该模型为简化展示，非原厂工程数据。
 - Factory Anatomy：原作者 Senthee / 吴斌与协作助手，[原仓库](https://github.com/Sentheecode/factory-anatomy)。`assets/factory-anatomy-*.webp` 为原仓库的六张场景预览图，[MIT 许可](assets/licenses/factory-anatomy-MIT.txt)。
 - Anatomy：原作者 Ryan / wheresryan22，[原仓库](https://github.com/wheresryan22/anatomy)。`assets/anatomy-skill-*.webp` 为原仓库的发动机、波纹水槽和旋钮示例截图，[MIT 许可](assets/licenses/anatomy-MIT.txt)。
-- 上述两项在卡片及详情中标注为开源收藏，访问入口保留原项目链接。
+- 上述两项在卡片介绍中署名原作者，详情中标注为开源收藏，访问入口保留原项目链接。
+- 字体：中文为 MiSans（通过 jsDelivr 按需分片加载），西文为 Geist（`assets/fonts/Geist-Latin.woff2` 为拉丁字符子集，[OFL 许可](assets/licenses/geist-OFL.txt)）。
 
 ## 石间 · 磁盘空间
 

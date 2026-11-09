@@ -4,35 +4,32 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 
 const UI = {
   zh: {
-    brand: '创意仓库', brandSub: 'Idea Vault', eyebrow: 'Creative vault · 2026', title: '我的创意仓库',
-    sub: '这里收着我做过的小世界：港湾、锦池、地球、毛绒伙伴、粒子、小游戏、旅行手账、汽车拆解，一支纯代码做的宣传片，以及石间磁盘可视化工具。也收藏喜欢的开源作品与创作工具，每张卡片都能点开了解、体验或访问原项目。',
-    stats: ['条内容', '个已上线', '持续更新'],
+    brand: '创意仓库', title: '我的创意仓库',
+    sub: '收着我做过的小世界，和喜欢的开源作品。',
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '技能 / 工具' },
-    status: { live: '已上线', wip: '制作中', idea: '点子' }, draft: '草稿',
+    status: { live: '已上线', wip: '制作中', idea: '点子' },
     count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
-    tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
-    next: '下一个点子', nextSub: '正在酝酿，很快放进来',
-    add: '导入新创意', addSub: '上传图片、填写文案，发布后所有人都能看到',
-    foot: '我的作品与开源收藏，都可以从这里打开', offline: '暂时连不上数据库，显示的是内置数据',
-    login: '管理员登录', managing: '管理中', signOut: '退出', notAdmin: '未授权', importBtn: '导入',
+    type: '类型', tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
+    add: '导入新创意',
+    offline: '暂时连不上数据库，显示的是内置数据',
+    login: '管理员登录', signOut: '退出', notAdmin: '未授权', importBtn: '导入',
     edit: '编辑', remove: '删除', confirmDelete: name => `确定删除「${name}」吗？图片也会一起删除，无法恢复。`,
     deleted: '已删除', saved: '已发布', savedDraft: '已保存为草稿',
-    loginTitle: '管理员登录', loginHint: '登录后可以导入、编辑和删除创意。',
+    loginTitle: '管理员登录',
     email: '邮箱', password: '密码', signIn: '登录', signUp: '首次注册',
     pwShort: '密码至少 8 位', needEmail: '请填写邮箱和密码',
     signUpDone: '注册成功。请去邮箱点确认链接（确认后跳转的页面打不开也没关系），然后回到这里登录。',
     notAdminTitle: '已登录，但还不是管理员', notAdminHint: '把下面这串账号 ID 发给 Claude（或在 Supabase 里把它加入 vault_admins 表），之后刷新页面就能导入创意。',
     copy: '复制', copied: '已复制',
     editorNew: '导入新创意', editorEdit: '编辑创意',
-    editorHint: '带 * 的必填。英文留空时，英文版会显示中文内容。',
-    secImages: '图片', dropTitle: '拖入图片，或点击选择', dropSub: '最多 6 张，第一张是封面；会自动压缩成 WebP',
+    secImages: '图片', dropTitle: '拖入图片，或点击选择',
     cover: '封面', moveUp: '前移', del: '移除',
     secBasic: '基本信息', titleZh: '中文标题 *', titleEn: 'English title', category: '分类', statusL: '状态', yearL: '年份', hue: '主色',
     secCopy: '文案', kindZh: '类型', kindEn: 'Type (EN)', lineZh: '一句话介绍', lineEn: 'One-liner (EN)',
-    leadZh: '详细介绍', leadEn: 'Description (EN)', tagsZh: '标签', tagsEn: 'Tags (EN)', tagsHint: '用逗号分隔',
+    leadZh: '详细介绍', leadEn: 'Description (EN)', tagsZh: '标签', tagsEn: 'Tags (EN)',
     secFacts: '数据亮点', factN: '数字', factZh: '中文说明', factEn: 'English label',
     secLinks: '链接', url: '在线地址', repo: '源码地址', techL: '技术', hostL: '托管平台',
-    publish: '发布（取消勾选则只有管理员能看到）',
+    publish: '发布',
     jsonImport: '从 JSON 导入', jsonExport: '导出全部 JSON', jsonTemplate: '下载 JSON 模板',
     cancel: '取消', save: '保存', saving: '保存中…', uploading: (i, n) => `上传图片 ${i}/${n}…`,
     needTitle: '请填写中文标题', badUrl: '链接需要以 http:// 或 https:// 开头', tooMany: '最多 6 张图片',
@@ -41,35 +38,32 @@ const UI = {
     jsonFilled: '已从 JSON 填入表单，检查后保存'
   },
   en: {
-    brand: 'Idea Vault', brandSub: '', eyebrow: 'Creative vault · 2026', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built: a harbor, a pond, a planet, a plush companion, particles, a game, a travel journal, a car you can take apart, a promo film animated entirely in code, and a disk-space visualization tool. Alongside them are open-source projects and creative tools I collect. Open a card to explore, try it out or visit the original project.',
-    stats: ['entries', 'live', 'ongoing'],
+    brand: 'Idea Vault', title: 'A vault of small worlds',
+    sub: 'Small worlds I have built, and open-source work I love.',
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
-    status: { live: 'Live', wip: 'In progress', idea: 'Idea' }, draft: 'Draft',
+    status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
     count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
-    tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
-    next: 'Next idea', nextSub: 'Brewing — coming soon',
-    add: 'Import a new idea', addSub: 'Upload images and write it up — everyone sees it once published',
-    foot: 'My projects and open-source finds, all within reach', offline: 'Database unreachable — showing built-in data',
-    login: 'Admin sign in', managing: 'Managing', signOut: 'Sign out', notAdmin: 'Not authorised', importBtn: 'Import',
+    type: 'Type', tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
+    add: 'Import a new idea',
+    offline: 'Database unreachable — showing built-in data',
+    login: 'Admin sign in', signOut: 'Sign out', notAdmin: 'Not authorised', importBtn: 'Import',
     edit: 'Edit', remove: 'Delete', confirmDelete: name => `Delete "${name}"? Its images go too, and this can't be undone.`,
     deleted: 'Deleted', saved: 'Published', savedDraft: 'Saved as draft',
-    loginTitle: 'Admin sign in', loginHint: 'Sign in to import, edit and delete ideas.',
+    loginTitle: 'Admin sign in',
     email: 'Email', password: 'Password', signIn: 'Sign in', signUp: 'First-time sign up',
     pwShort: 'Password needs at least 8 characters', needEmail: 'Enter your email and password',
     signUpDone: 'Signed up. Open the confirmation link in your email (it is fine if the page it lands on fails to load), then come back and sign in.',
     notAdminTitle: 'Signed in, but not an admin yet', notAdminHint: 'Send this account ID to Claude (or add it to the vault_admins table in Supabase), then reload to start importing.',
     copy: 'Copy', copied: 'Copied',
     editorNew: 'Import a new idea', editorEdit: 'Edit idea',
-    editorHint: 'Fields marked * are required. Empty English fields fall back to Chinese.',
-    secImages: 'Images', dropTitle: 'Drop images here, or click to choose', dropSub: 'Up to 6; the first is the cover. Converted to WebP automatically.',
+    secImages: 'Images', dropTitle: 'Drop images here, or click to choose',
     cover: 'Cover', moveUp: 'Move earlier', del: 'Remove',
     secBasic: 'Basics', titleZh: 'Chinese title *', titleEn: 'English title', category: 'Category', statusL: 'Status', yearL: 'Year', hue: 'Accent colour',
     secCopy: 'Copy', kindZh: 'Type (中文)', kindEn: 'Type (EN)', lineZh: 'One-liner (中文)', lineEn: 'One-liner (EN)',
-    leadZh: 'Description (中文)', leadEn: 'Description (EN)', tagsZh: 'Tags (中文)', tagsEn: 'Tags (EN)', tagsHint: 'comma separated',
+    leadZh: 'Description (中文)', leadEn: 'Description (EN)', tagsZh: 'Tags (中文)', tagsEn: 'Tags (EN)',
     secFacts: 'Key numbers', factN: 'Number', factZh: 'Label (中文)', factEn: 'Label (EN)',
     secLinks: 'Links', url: 'Live URL', repo: 'Source URL', techL: 'Tech', hostL: 'Hosting',
-    publish: 'Publish (untick to keep it visible to admins only)',
+    publish: 'Publish',
     jsonImport: 'Import JSON', jsonExport: 'Export all as JSON', jsonTemplate: 'JSON template',
     cancel: 'Cancel', save: 'Save', saving: 'Saving…', uploading: (i, n) => `Uploading image ${i}/${n}…`,
     needTitle: 'Enter a Chinese title', badUrl: 'Links must start with http:// or https://', tooMany: 'Up to 6 images',
@@ -140,17 +134,34 @@ function renderStatic() {
   document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = s[el.dataset.t]; });
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
-  const shown = state.ideas.filter(i => i.published !== false);
-  const years = shown.map(i => i.year).filter(Boolean);
-  const vals = [shown.length, shown.filter(i => i.status === 'live').length, years.length ? Math.max(...years) : new Date().getFullYear()];
-  $('#stats').innerHTML = vals.map((v, i) => `<div><b>${typeof v === 'number' && v < 100 ? String(v).padStart(2, '0') : v}</b><span>${s.stats[i]}</span></div>`).join('');
+  renderTitle();
   const cats = ['all', '3d', '2d'];
   if (state.ideas.some(i => i.category === 'other')) cats.push('other');
   if (!cats.includes(state.filter)) state.filter = 'all';
-  $('#chips').innerHTML = cats.map(k =>
-    `<button type="button" class="chip glass" data-filter="${k}" aria-pressed="${k === state.filter}">${s.filters[k]}</button>`).join('');
-  $('#source').textContent = state.source === 'seed' ? s.offline : `© ${new Date().getFullYear()} SugarVei`;
+  $('#chips').innerHTML = '<span class="thumb" aria-hidden="true"></span>' + cats.map(k =>
+    `<button type="button" class="chip" data-filter="${k}" aria-pressed="${k === state.filter}">${s.filters[k]}</button>`).join('');
+  moveThumb();
+  requestAnimationFrame(() => $('#chips .thumb')?.classList.add('anim'));
   renderAdminBar();
+}
+
+// 标题拆成单个字（英文按单词），逐个从模糊中浮现
+function renderTitle() {
+  const h = $('#title'), text = t().title;
+  if (h.dataset.text === text) return;
+  h.dataset.text = text;
+  h.setAttribute('aria-label', text);
+  const zh = state.lang === 'zh';
+  h.innerHTML = (zh ? [...text] : text.split(' '))
+    .map((part, i) => `<span class="ch" aria-hidden="true" style="--i:${i}">${esc(part)}</span>`)
+    .join(zh ? '' : ' ');
+}
+
+function moveThumb() {
+  const on = $('#chips [aria-pressed="true"]'), thumb = $('#chips .thumb');
+  if (!on || !thumb) return;
+  thumb.style.width = `${on.offsetWidth}px`;
+  thumb.style.transform = `translateX(${on.offsetLeft}px)`;
 }
 
 function renderAdminBar() {
@@ -158,7 +169,6 @@ function renderAdminBar() {
   let html = '';
   if (state.user && state.isAdmin) {
     html = `<button type="button" class="pill solid" data-act="add">＋ ${s.importBtn}</button>
-      <span class="pill" title="${esc(state.user.email)}"><span class="dot"></span>${s.managing}</span>
       <button type="button" class="pill" data-act="signout">${s.signOut}</button>`;
   } else if (state.user) {
     html = `<button type="button" class="pill" data-act="login">${s.notAdmin}</button>
@@ -170,90 +180,162 @@ function renderAdminBar() {
   bar.hidden = !html;
 }
 
+const arrow = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5l7-7M5 3.5h5.5V9"/></svg>';
+
 function cardHtml(idea, i) {
   const s = t();
   const title = pick(idea, 'title');
+  const line = pick(idea, 'line');
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
   const media = imgs.length
-    ? imgs.map((src, j) => `<img src="${esc(src)}" alt="${esc(title)}" ${j ? 'loading="lazy"' : ''} class="${j ? '' : 'on'}">`).join('')
+    ? imgs.map((src, j) => `<img src="${esc(src)}" alt="${j ? '' : esc(title)}" decoding="async" ${j || i > 5 ? 'loading="lazy"' : ''} class="${j ? '' : 'on'}">`).join('')
     : `<span class="empty">${esc(title.slice(0, 1))}</span>`;
-  const dots = imgs.length > 1 ? `<span class="dots">${imgs.map((_, j) => `<i class="${j ? '' : 'on'}"></i>`).join('')}</span>` : '';
   const draft = idea.published === false;
-  const badge = draft ? s.draft : s.status[idea.status] || s.status.live;
-  const dot = draft ? 'var(--ink-3)' : `var(--${idea.status || 'live'})`;
-  const sub = state.lang === 'zh' && idea.title_en ? `<small>${esc(idea.title_en)}</small>` : '';
   const goLabel = isVideo(idea.url) ? s.watch : idea.category === 'other' ? s.view : s.play;
-  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener">${goLabel} ↗</a>` : '';
-  return `<article class="card glass${draft ? ' draft' : ''}" data-id="${esc(idea.id ?? i)}" data-cat="${esc(idea.category)}" style="--i:${i};--hue:${esc(idea.hue)}">
-    <div class="media">${media}<span class="chiplet badge" style="--dot:${dot}">${esc(badge)}</span><span class="chiplet num">${String(i + 1).padStart(2, '0')}</span>${dots}</div>
-    <div class="body">
-      <span class="kind">${esc(pick(idea, 'kind'))}</span>
-      <h3>${esc(title)}${sub}</h3>
-      <p>${esc(pick(idea, 'line'))}</p>
-      <div class="tags">${tagsOf(idea).map(x => `<span>${esc(x)}</span>`).join('')}</div>
-      <div class="foot"><span class="year">${esc(idea.year ?? '')}</span>${go}</div>
+  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener" aria-label="${esc(`${goLabel}：${title}`)}">${arrow}</a>` : '';
+  return `<article class="card glass${draft ? ' draft' : ''}" data-id="${esc(idea.id ?? i)}" data-cat="${esc(idea.category)}" style="--hue:${esc(idea.hue)}">
+    <div class="media">${media}
+      <div class="panel">
+        <div class="panel-text"><h3>${esc(title)}</h3>${line ? `<div class="more"><p>${esc(line)}</p></div>` : ''}</div>
+        ${go}
+      </div>
     </div>
     <button type="button" class="open" aria-label="${esc(s.details + title)}"></button>
   </article>`;
 }
 
+let firstGrid = true;
 function renderGrid() {
   const s = t();
   const tail = state.isAdmin
-    ? `<button type="button" class="card next" data-cat="next" data-act="add" style="--i:${state.ideas.length}">
-        <span class="plus glass" aria-hidden="true">+</span><h3>${s.add}</h3><p>${s.addSub}</p></button>`
-    : `<article class="card next" data-cat="next" style="--i:${state.ideas.length}">
-        <span class="plus glass" aria-hidden="true">+</span><h3>${s.next}</h3><p>${s.nextSub}</p></article>`;
+    ? `<button type="button" class="card glass next" data-cat="next" data-act="add"><span class="plus" aria-hidden="true">+</span><h3>${s.add}</h3></button>`
+    : '';
   const grid = $('#grid');
   grid.innerHTML = state.ideas.map(cardHtml).join('') + tail;
   grid.removeAttribute('aria-busy');
   applyFilter();
   bindCards();
+  if (firstGrid) reveal();
+  else grid.querySelectorAll('.card').forEach(card => {
+    // 重新渲染时已在屏幕上的卡片不再播放入场，屏幕下方的仍等滚动到才出现
+    if (!revealer || card.getBoundingClientRect().top < innerHeight) card.classList.add('in');
+    else revealer.observe(card);
+  });
+  firstGrid = false;
+}
+
+// 六列网格里，一行两张（各占 3 列）和一行三张（各占 2 列）交替。
+// 张数总能拆成这两种整行，所以任何筛选结果都不会在末尾留下空位。
+function rowSpans(n) {
+  if (n < 2) return n ? [3] : [];
+  let wide = (2 * n) % 3 || 3;
+  if (n < wide * 2) wide = 0;
+  let narrow = (n - wide * 2) / 3;
+  const spans = [];
+  while (wide || narrow) {
+    if (wide) { spans.push(3, 3); wide--; }
+    for (let k = Math.ceil(narrow / (wide + 1)); k > 0; k--) { spans.push(2, 2, 2); narrow--; }
+  }
+  return spans;
 }
 
 function applyFilter() {
-  let n = 0;
-  document.querySelectorAll('#grid .card').forEach(card => {
+  const shown = [...document.querySelectorAll('#grid .card')].filter(card => {
     const show = state.filter === 'all' || card.dataset.cat === state.filter || card.dataset.cat === 'next';
     card.hidden = !show;
-    if (show && card.dataset.cat !== 'next') n++;
+    return show;
   });
-  $('#count').textContent = t().count(n);
+  const spans = rowSpans(shown.length);
+  let col = 0;
+  shown.forEach((card, i) => {
+    card.dataset.span = spans[i];
+    card.toggleAttribute('data-solo', i === 0 && shown.length % 2 === 1);
+    card.style.setProperty('--d', `${col * 32}ms`);
+    col = (col + spans[i]) % 6;
+  });
+  $('#count').textContent = t().count(shown.filter(card => card.dataset.cat !== 'next').length);
+}
+
+// 卡片滚动到视口时才入场，同一行从左到右错开
+const revealer = !reduced && 'IntersectionObserver' in window
+  ? new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('in', 'rise');
+      revealer.unobserve(entry.target);
+    }
+  }, { rootMargin: '0px 0px -6% 0px', threshold: .04 })
+  : null;
+
+function reveal() {
+  document.querySelectorAll('#grid .card:not([hidden])').forEach(card => {
+    if (!revealer) { card.classList.add('in'); return; }
+    card.classList.remove('in', 'rise');
+    revealer.observe(card);
+  });
+}
+
+// 切换分类：旧内容快速淡出，新内容再按入场动效出现
+let filterRun = 0;
+async function setFilter(next) {
+  if (next === state.filter) return;
+  state.filter = next;
+  document.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === next)));
+  moveThumb();
+  const grid = $('#grid'), run = ++filterRun;
+  if (!reduced) {
+    await grid.animate({ opacity: [1, 0], transform: ['none', 'translateY(6px)'] }, { duration: 140, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'both' }).finished.catch(() => {});
+    if (run !== filterRun) return;
+  }
+  applyFilter();
+  reveal();
+  grid.getAnimations().forEach(a => a.cancel());
+}
+
+function bindPreview(card, url) {
+  const media = card.querySelector('.media');
+  let video = null, wait = 0;
+  card.addEventListener('pointerenter', () => {
+    wait = setTimeout(() => {
+      if (!video) {
+        video = Object.assign(document.createElement('video'), { src: url, muted: true, loop: true, playsInline: true, preload: 'auto' });
+        video.setAttribute('aria-hidden', 'true');
+        video.addEventListener('playing', () => video.classList.add('on'));
+        media.insertBefore(video, media.querySelector('.panel'));
+      }
+      video.play().catch(() => {});
+    }, 180);
+  });
+  card.addEventListener('pointerleave', () => {
+    clearTimeout(wait);
+    if (!video) return;
+    video.classList.remove('on');
+    video.pause();
+  });
 }
 
 function bindCards() {
   document.querySelectorAll('#grid .card[data-id]').forEach((card, idx) => {
     const idea = state.ideas[idx];
     const imgs = card.querySelectorAll('.media img');
-    const dots = card.querySelectorAll('.dots i');
-    let k = 0, timer = null;
-    const show = j => {
-      if (!imgs.length) return;
-      imgs[k].classList.remove('on'); dots[k]?.classList.remove('on');
-      k = j;
-      imgs[k].classList.add('on'); dots[k]?.classList.add('on');
-    };
-    card.addEventListener('pointerenter', () => {
-      if (reduced || !finePointer || imgs.length < 2) return;
-      timer = setInterval(() => show((k + 1) % imgs.length), 1400);
+    imgs.forEach(img => {
+      if (img.complete && img.naturalWidth) img.classList.add('ready');
+      else img.addEventListener('load', () => img.classList.add('ready'), { once: true });
     });
-    card.addEventListener('pointerleave', () => {
-      clearInterval(timer); show(0);
-      card.classList.remove('moving');
-      card.style.removeProperty('--rx'); card.style.removeProperty('--ry');
-    });
-    if (!reduced && finePointer) {
-      card.addEventListener('pointermove', e => {
-        const r = card.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-        card.classList.add('moving');
-        card.style.setProperty('--ry', `${(x - .5) * 8}deg`);
-        card.style.setProperty('--rx', `${(.5 - y) * 8}deg`);
-        card.style.setProperty('--mx', `${x * 100}%`);
-        card.style.setProperty('--my', `${y * 100}%`);
-      });
+    card.querySelector('.open').addEventListener('click', () => openSheet(idea, card));
+    if (reduced || !finePointer) return;
+    if (isVideo(idea.url)) bindPreview(card, idea.url);
+    else if (imgs.length > 1) {
+      let k = 0, timer = null;
+      const show = j => { imgs[k].classList.remove('on'); k = j; imgs[k].classList.add('on'); };
+      card.addEventListener('pointerenter', () => { timer = setInterval(() => show((k + 1) % imgs.length), 1400); });
+      card.addEventListener('pointerleave', () => { clearInterval(timer); show(0); });
     }
-    card.querySelector('.open').addEventListener('click', () => openSheet(idea));
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
   });
 }
 
@@ -262,12 +344,12 @@ function renderAll() { renderStatic(); renderGrid(); }
 /* ---------------- 详情 ---------------- */
 
 const sheet = $('#sheet');
-function openSheet(idea) {
+function openSheet(idea, origin) {
   const s = t();
   const title = pick(idea, 'title');
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
   const facts = (idea.facts || []).filter(f => f && f.n);
-  const meta = [[s.tech, idea.tech], [s.host, idea.host], [s.year, idea.year]].filter(([, v]) => v);
+  const meta = [[s.type, pick(idea, 'kind')], [s.tech, idea.tech], [s.host, idea.host], [s.year, idea.year]].filter(([, v]) => v);
   const video = isVideo(idea.url);
   const mainHtml = video
     ? `<video src="${esc(idea.url)}" poster="${esc(posterOf(idea.url))}" controls playsinline preload="none" aria-label="${esc(title)}"></video>`
@@ -279,8 +361,7 @@ function openSheet(idea) {
     </div>
     <div class="info">
       <button type="button" class="close" aria-label="${s.close}">×</button>
-      <span class="kind">${esc(pick(idea, 'kind'))}</span>
-      <h2 id="sheet-title">${esc(title)}${state.lang === 'zh' && idea.title_en ? `<small>${esc(idea.title_en)}</small>` : ''}</h2>
+      <h2 id="sheet-title">${esc(title)}</h2>
       ${pick(idea, 'lead') || pick(idea, 'line') ? `<p class="lead">${esc(pick(idea, 'lead') || pick(idea, 'line'))}</p>` : ''}
       ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
       ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
@@ -300,6 +381,10 @@ function openSheet(idea) {
   sheet.querySelector('[data-edit]')?.addEventListener('click', () => { sheet.close(); openEditor(idea); });
   sheet.querySelector('[data-delete]')?.addEventListener('click', () => deleteIdea(idea));
   sheet.showModal();
+  if (origin) {
+    const c = origin.getBoundingClientRect();
+    sheet.style.transformOrigin = `${c.left + c.width / 2 - sheet.offsetLeft}px ${c.top + c.height / 2 - sheet.offsetTop}px`;
+  }
 }
 
 for (const d of document.querySelectorAll('dialog')) {
@@ -328,7 +413,6 @@ function openLogin() {
     loginDlg.innerHTML = `<form class="form" novalidate>
       <button type="button" class="close" aria-label="${s.close}">×</button>
       <h2 id="login-title">${s.loginTitle}</h2>
-      <p class="hint">${s.loginHint}</p>
       <section class="row" style="grid-template-columns:1fr">
         <label class="field"><span>${s.email}</span><input name="email" type="email" autocomplete="username" required></label>
         <label class="field"><span>${s.password}</span><input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
@@ -392,7 +476,6 @@ function openEditor(idea = null) {
   editor.innerHTML = `<form class="form" novalidate>
     <button type="button" class="close" aria-label="${s.close}">×</button>
     <h2 id="editor-title">${idea ? s.editorEdit : s.editorNew}</h2>
-    <p class="hint">${s.editorHint}</p>
     <div class="json-tools">
       <label class="pill">${s.jsonImport}<input type="file" accept="application/json,.json" data-json></label>
       <button type="button" class="pill" data-export>${s.jsonExport}</button>
@@ -401,7 +484,7 @@ function openEditor(idea = null) {
 
     <section>
       <h3>${s.secImages}</h3>
-      <label class="drop" data-drop><b>${s.dropTitle}</b><span>${s.dropSub}</span><input type="file" accept="image/*" multiple data-files></label>
+      <label class="drop" data-drop><b>${s.dropTitle}</b><input type="file" accept="image/*" multiple data-files></label>
       <div class="pics" data-pics></div>
     </section>
 
@@ -422,8 +505,8 @@ function openEditor(idea = null) {
       <div class="row two" style="margin-top:12px">${area('line_zh', s.lineZh, v.line_zh, 'maxlength="120" style="min-height:72px"')}${area('line_en', s.lineEn, v.line_en, 'maxlength="240" style="min-height:72px"')}</div>
       <div class="row two" style="margin-top:12px">${area('lead_zh', s.leadZh, v.lead_zh, 'maxlength="1200"')}${area('lead_en', s.leadEn, v.lead_en, 'maxlength="2400"')}</div>
       <div class="row two" style="margin-top:12px">
-        ${inp('tags_zh', `${s.tagsZh} <em>· ${s.tagsHint}</em>`, (v.tags_zh || []).join(', '))}
-        ${inp('tags_en', `${s.tagsEn} <em>· ${s.tagsHint}</em>`, (v.tags_en || []).join(', '))}
+        ${inp('tags_zh', s.tagsZh, (v.tags_zh || []).join(', '))}
+        ${inp('tags_en', s.tagsEn, (v.tags_en || []).join(', '))}
       </div>
     </section>
 
@@ -671,11 +754,7 @@ document.addEventListener('click', e => {
   const l = e.target.closest('[data-lang]');
   if (l && l.dataset.lang !== state.lang) { state.lang = l.dataset.lang; store.set('vault-lang', state.lang); renderAll(); }
   const f = e.target.closest('[data-filter]');
-  if (f) {
-    state.filter = f.dataset.filter;
-    document.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === f)));
-    applyFilter();
-  }
+  if (f) setFilter(f.dataset.filter);
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (act === 'add') openEditor();
   if (act === 'login') openLogin();
@@ -683,8 +762,11 @@ document.addEventListener('click', e => {
 });
 addEventListener('hashchange', renderAdminBar);
 
+new IntersectionObserver(([entry]) => $('.top').classList.toggle('stuck', !entry.isIntersecting)).observe($('#topSentinel'));
+new ResizeObserver(moveThumb).observe($('#chips'));
+
 renderStatic();
-$('#grid').innerHTML = '<div class="skeleton"></div>'.repeat(3);
+$('#grid').innerHTML = [3, 3, 2, 2, 2].map(n => `<div class="skeleton" data-span="${n}"></div>`).join('');
 // 数据库较慢时先用内置数据把卡片显示出来，数据库返回后再替换
 let loaded = false;
 const early = setTimeout(async () => {
@@ -698,6 +780,7 @@ await Promise.all([authReady, loadIdeas()]);
 loaded = true;
 clearTimeout(early);
 renderAll();
+if (state.source === 'seed' && location.hash === '#admin') toast(t().offline);
 if (sb) {
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') return;

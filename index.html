@@ -5,29 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>创意仓库 · Idea Vault</title>
 <meta name="description" content="我的交互作品与开源收藏：日落柑橘港、锦池、Jolly、旅行手账、Model 3 汽车拆解、Sugar 求职系统宣传片、石间磁盘空间，以及 Factory Anatomy 工厂场景与 Anatomy 创作技能。">
-<meta name="theme-color" content="#0c111b">
+<meta name="theme-color" content="#0b0c10">
 <meta property="og:title" content="创意仓库 · Idea Vault">
 <meta property="og:description" content="My interactive projects and open-source finds — explore the work, discover tools and visit their creators.">
 <meta property="og:image" content="assets/harbor-1.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='6' height='6' rx='1.5' fill='%23ff8a1f'/%3E%3Crect x='9' y='1' width='6' height='6' rx='1.5' fill='%233fb8a8'/%3E%3Crect x='1' y='9' width='6' height='6' rx='1.5' fill='%234a7bd0'/%3E%3Crect x='9' y='9' width='6' height='6' rx='1.5' fill='%23f07ba5'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261109-particle-field-bright">
-<link rel="stylesheet" href="particle-background.css?v=20261109-particle-field-bright">
-<script type="module" src="background-controls.js?v=20261109-particle-field-bright"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" href="assets/fonts/Geist-Latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSansVF.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.css?v=20261109-glass">
+<link rel="stylesheet" href="particle-background.css?v=20261109-glass">
+<script type="module" src="background-controls.js?v=20261109-glass"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script type="module" src="app.js?v=20261109-particles-60"></script>
+<script type="module" src="app.js?v=20261109-glass"></script>
 </head>
 <body>
 <div class="ambient" aria-hidden="true"><canvas id="particle-background"></canvas></div>
 
 <div class="wrap">
-  <header class="top glass">
-    <a class="brand" href="./">
-      <span class="mark" aria-hidden="true"><i style="background:#ff8a1f"></i><i style="background:#3fb8a8"></i><i style="background:#4a7bd0"></i><i style="background:#f07ba5"></i></span>
-      <span data-t="brand"></span><small data-t="brandSub"></small>
-    </a>
+  <span class="top-sentinel" id="topSentinel" aria-hidden="true"></span>
+  <header class="top">
+    <a class="brand" href="./" data-t="brand"></a>
     <div class="top-right">
       <div class="admin-bar" id="adminBar" hidden></div>
       <div class="lang" role="group" aria-label="Language">
@@ -38,31 +36,15 @@
   </header>
 
   <section class="intro">
-    <p class="eyebrow" data-t="eyebrow"></p>
-    <h1 data-t="title"></h1>
-    <p data-t="sub"></p>
-    <div class="stats glass" id="stats"></div>
-    <div class="background-tools" hidden>
-      <span id="background-hint">移动拨动 · 点击扩散</span>
-      <div class="background-actions">
-        <button type="button" class="background-button" id="background-pulse">扩散粒子</button>
-        <button type="button" class="background-button" id="background-pause" aria-pressed="false">暂停动效</button>
-      </div>
-    </div>
+    <h1 id="title"></h1>
+    <p class="lede" data-t="sub"></p>
   </section>
 
   <main>
-    <div class="bar">
-      <div class="chips" id="chips" role="group"></div>
-      <span class="count" id="count" aria-live="polite"></span>
-    </div>
+    <div class="bar"><div class="chips glass" id="chips" role="group"></div></div>
+    <span class="sr-only" id="count" aria-live="polite"></span>
     <div class="grid" id="grid" aria-busy="true"></div>
   </main>
-
-  <footer>
-    <span data-t="foot"></span>
-    <span class="foot-note" id="source"></span>
-  </footer>
 </div>
 
 <dialog class="sheet glass" id="sheet" aria-labelledby="sheet-title"></dialog>

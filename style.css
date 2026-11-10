@@ -127,7 +127,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .media img.ready { filter: none; transform: scale(1.001); }
 .media img.on.ready { opacity: 1; }
 .media video { opacity: 0; transition: opacity .3s var(--ease-out); }
-.media video.on { opacity: 1; }
+.media video.on, .media video.still { opacity: 1; }
 .media .empty { position: absolute; inset: 0; display: grid; place-items: center; padding-bottom: 40px; font-size: 56px; font-weight: 300; color: rgba(255, 255, 255, .55); }
 
 /* 毛玻璃标题栏：模糊的是卡片自己的封面，所以每张卡的玻璃颜色都不同 */

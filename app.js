@@ -6,7 +6,7 @@ const UI = {
   zh: {
     brand: '创意仓库', title: '我的创意仓库',
     sub: '收着我做过的小世界，和喜欢的开源作品。',
-    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', other: '技能 / 工具' },
+    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频生成', other: '技能 / 工具' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
     count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
     type: '类型', tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
@@ -40,7 +40,7 @@ const UI = {
   en: {
     brand: 'Idea Vault', title: 'A vault of small worlds',
     sub: 'Small worlds I have built, and open-source work I love.',
-    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', other: 'Skills / tools' },
+    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Video creation', other: 'Skills / tools' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
     count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
     type: 'Type', tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
@@ -88,7 +88,6 @@ const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
 const imgSrc = p => (isHttp(p) || /^assets\/[\w./-]+$/.test(p || '')) ? p : '';
 // 在线地址是 mp4 时当作视频作品：详情里直接播放，封面用同名的 .jpg
 const isVideo = u => isHttp(u) && /\.mp4(?=$|[?#])/i.test(u);
-const posterOf = u => u.replace(/\.mp4(?=$|[?#])/i, '.jpg');
 
 const state = {
   lang: store.get('vault-lang') === 'en' ? 'en' : 'zh',
@@ -135,7 +134,7 @@ function renderStatic() {
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = s[el.dataset.t]; });
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
   renderTitle();
-  const cats = ['all', '3d', '2d'];
+  const cats = ['all', '3d', '2d', 'video'];
   if (state.ideas.some(i => i.category === 'other')) cats.push('other');
   if (!cats.includes(state.filter)) state.filter = 'all';
   $('#chips').innerHTML = '<span class="thumb" aria-hidden="true"></span>' + cats.map(k =>
@@ -189,7 +188,9 @@ function cardHtml(idea, i) {
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
   const media = imgs.length
     ? imgs.map((src, j) => `<img src="${esc(src)}" alt="${j ? '' : esc(title)}" decoding="async" ${j || i > 5 ? 'loading="lazy"' : ''} class="${j ? '' : 'on'}">`).join('')
-    : `<span class="empty">${esc(title.slice(0, 1))}</span>`;
+    : isVideo(idea.url)
+      ? `<video class="still" src="${esc(idea.url)}#t=0.1" muted playsinline preload="metadata" aria-hidden="true"></video>`
+      : `<span class="empty">${esc(title.slice(0, 1))}</span>`;
   const draft = idea.published === false;
   const goLabel = isVideo(idea.url) ? s.watch : idea.category === 'other' ? s.view : s.play;
   const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener" aria-label="${esc(`${goLabel}：${title}`)}">${arrow}</a>` : '';
@@ -294,11 +295,13 @@ async function setFilter(next) {
 
 function bindPreview(card, url) {
   const media = card.querySelector('.media');
-  let video = null, wait = 0;
+  let video = media.querySelector('video.still'), wait = 0;
   card.addEventListener('pointerenter', () => {
     wait = setTimeout(() => {
-      if (!video) {
+      if (!video || video.classList.contains('still')) {
+        const still = video?.classList.contains('still') ? video : null;
         video = Object.assign(document.createElement('video'), { src: url, muted: true, loop: true, playsInline: true, preload: 'auto' });
+        still?.remove();
         video.setAttribute('aria-hidden', 'true');
         video.addEventListener('playing', () => video.classList.add('on'));
         media.insertBefore(video, media.querySelector('.panel'));
@@ -352,7 +355,7 @@ function openSheet(idea, origin) {
   const meta = [[s.type, pick(idea, 'kind')], [s.tech, idea.tech], [s.host, idea.host], [s.year, idea.year]].filter(([, v]) => v);
   const video = isVideo(idea.url);
   const mainHtml = video
-    ? `<video src="${esc(idea.url)}" poster="${esc(posterOf(idea.url))}" controls playsinline preload="none" aria-label="${esc(title)}"></video>`
+    ? `<video src="${esc(idea.url)}" ${imgs.length ? `poster="${esc(imgs[0])}"` : ''} controls playsinline preload="metadata" aria-label="${esc(title)}"></video>`
     : imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="empty">${esc(title.slice(0, 1))}</span></div>`;
   sheet.innerHTML = `<div class="sheet-in">
     <div class="gallery">

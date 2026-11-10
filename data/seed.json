@@ -861,7 +861,9 @@
     "hue": "#d33235",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/hesai-film.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/hesai-film-cover.webp"
+    ],
     "title_zh": "禾赛宣传片",
     "title_en": "Hesai Promo Film",
     "kind_zh": "210 秒宣传片",
@@ -885,7 +887,9 @@
     "hue": "#f68a50",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/resume-site-ad.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/resume-site-ad-cover.webp"
+    ],
     "title_zh": "简历网站广告宣传片",
     "title_en": "Resume Site Advertisement",
     "kind_zh": "69 秒广告片",
@@ -909,7 +913,9 @@
     "hue": "#587cbd",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/tangwei-dunk.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/tangwei-dunk-cover.webp"
+    ],
     "title_zh": "唐维扣篮",
     "title_en": "Tang Wei Dunk",
     "kind_zh": "10 秒短片",
@@ -933,7 +939,9 @@
     "hue": "#b7a692",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/jolly-film.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/jolly-film-cover.webp"
+    ],
     "title_zh": "Jolly 角色短片",
     "title_en": "Jolly Character Film",
     "kind_zh": "30 秒角色短片",
@@ -957,7 +965,9 @@
     "hue": "#b4b5ac",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/sugar-flyover.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/sugar-flyover-cover.webp"
+    ],
     "title_zh": "SUGAR 网站俯瞰短片",
     "title_en": "SUGAR Website Flyover",
     "kind_zh": "网站展示短片",
@@ -981,7 +991,9 @@
     "hue": "#9ba9b0",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/sugar-landing.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/sugar-landing-cover.webp"
+    ],
     "title_zh": "SUGAR 网站进入短片",
     "title_en": "SUGAR Website Landing",
     "kind_zh": "网站展示短片",
@@ -1005,7 +1017,9 @@
     "hue": "#8d4143",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/video-d9d8b4c4.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/video-d9d8b4c4-cover.webp"
+    ],
     "title_zh": "X 界面动画短片",
     "title_en": "X Interface Animation",
     "kind_zh": "15 秒动画",
@@ -1029,7 +1043,9 @@
     "hue": "#81958d",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/shijian-film.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/shijian-film-cover.webp"
+    ],
     "title_zh": "石间宣传视频",
     "title_en": "Shijian Promo Film",
     "kind_zh": "35 秒宣传片",
@@ -1053,7 +1069,9 @@
     "hue": "#c4b69e",
     "url": "https://cdn.jsdelivr.net/gh/SugarVei/idea-vault@840d5a2ec3435a9052070933b6620bcb588b8727/assets/jolly-poses.mp4",
     "repo": null,
-    "images": [],
+    "images": [
+      "assets/jolly-poses-cover.webp"
+    ],
     "title_zh": "Jolly 动作合集",
     "title_en": "Jolly Pose Reel",
     "kind_zh": "动作展示合集",

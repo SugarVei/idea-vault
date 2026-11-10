@@ -796,5 +796,60 @@
     ],
     "tech": "HTML · CSS · JavaScript",
     "host": "GitHub Pages"
+  },
+  {
+    "sort": 170,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#f2a03a",
+    "url": "https://sugarvei.github.io/idea-vault/assets/pelican-ride.mp4",
+    "repo": null,
+    "images": [
+      "assets/pelican-1.jpg",
+      "assets/pelican-2.jpg",
+      "assets/pelican-3.jpg",
+      "assets/pelican-4.jpg"
+    ],
+    "title_zh": "鹈鹕骑自行车",
+    "title_en": "A Pelican, Riding a Bicycle",
+    "kind_zh": "33 秒三维动画短片",
+    "kind_en": "33-second 3D animated short",
+    "line_zh": "大家都在用 HTML 和 SVG 画鹈鹕骑车，这次是真实路径追踪：2.4 万根羽毛、一辆真能转的自行车，和一条被吃掉的鱼。",
+    "line_en": "Everyone draws this one in HTML and SVG. This one is path-traced: 24,000 feathers, a bicycle that really works, and one unlucky fish.",
+    "lead_zh": "每次有新模型发布，大家都拿“鹈鹕骑自行车”来测试，结果几乎都是 HTML 和 SVG 动画。这部短片换了一种做法：由 Claude Opus 5.5 编写脚本，在 Blender Cycles 里从零建模并路径追踪，起点是下面这段提示词。\n\n天空来自一个用 Rust 写的体积云渲染器；白鹈鹕身上约 2.4 万根羽毛逐根生成，按真实的羽区排列；自行车有 36 根交叉编织的辐条和 92 节会运转的链条；配乐和音效全部由程序合成。792 帧在一块 GTX 1650 Ti 上渲染了约 9 小时。\n\n提示词：\n每次有新模型发布，大家都让它画“一只骑自行车的鹈鹕”来判断空间能力，而且几乎都是用 HTML 和 SVG 做动画。我真的看腻了，所以我想让你做出最复杂、最精细、最漂亮的“鹈鹕骑自行车”动画视频。什么技术都可以用。不着急，你可以花一整天来画。",
+    "lead_en": "Every time a new model comes out, everyone tests it with \"a pelican riding a bicycle\", and nearly every answer is an HTML and SVG animation. This short takes another route: Claude Opus 5.5 wrote the scripts, then modelled and path-traced everything from scratch in Blender Cycles, starting from the prompt below.\n\nThe sky comes from a volumetric cloud renderer written in Rust. The great white pelican wears about 24,000 individually generated feathers, laid out in real feather tracts. The bicycle has 36 laced spokes and 92 working chain links, and the score and sound effects are all synthesized in code. The 792 frames took about 9 hours on a single GTX 1650 Ti.\n\nPrompt:\nEvery time a new model comes out, everyone has it draw \"a pelican riding a bicycle\" to judge its spatial ability, and it's almost always animated with HTML and SVG. I'm honestly tired of looking at them, so I want you to make the most complex, most detailed, most beautiful animated video of \"a pelican riding a bicycle\". You can use any technology. There's no rush; you can spend a whole day drawing it.",
+    "tags_zh": [
+      "路径追踪",
+      "程序化建模",
+      "Blender Cycles",
+      "生成音乐"
+    ],
+    "tags_en": [
+      "Path tracing",
+      "Procedural modelling",
+      "Blender Cycles",
+      "Generated audio"
+    ],
+    "facts": [
+      {
+        "n": "24K",
+        "zh": "根独立羽毛",
+        "en": "individual feathers"
+      },
+      {
+        "n": "792",
+        "zh": "帧路径追踪",
+        "en": "path-traced frames"
+      },
+      {
+        "n": "0",
+        "zh": "现成模型、贴图或音乐",
+        "en": "stock models, textures or music"
+      }
+    ],
+    "tech": "Blender Cycles · Python · Rust · ffmpeg",
+    "host": "GitHub Pages"
   }
 ]

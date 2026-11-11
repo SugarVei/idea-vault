@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-1';
+import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -230,6 +231,7 @@ function cardHtml(idea, index) {
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const film = isVideo(idea.url);
   const url = previewUrl(idea.url, film);
+  const demo = film ? undefined : cardDemo(url);
   const kind = url ? (film ? 'film' : 'site') : 'cover';
   const details = esc(s.details + title);
   const previewTitle = esc(s.preview + ' · ' + title);
@@ -243,16 +245,18 @@ function cardHtml(idea, index) {
     : kind === 'site'
       ? '<button class="preview-toggle" type="button" aria-label="' + esc(s.coverToggle) + '" title="' + esc(s.coverToggle) + '" aria-pressed="false" hidden>' + icon('image') + '</button>'
       : '';
+  const media = demo
+    ? '<div class="card-demo" data-demo="' + demo + '"></div>'
+    : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';
+  const hint = idea.published === false ? s.draft : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
   return '<article class="project-card" data-index="' + index + '">' +
     '<div class="stage">' +
       '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
-      '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' +
-        poster + control +
-      '</div>' +
+      media +
       '<button type="button" class="bookmark icon-button" data-bookmark aria-pressed="' + active + '" aria-label="' + bookmarkLabel + '" title="' + bookmarkLabel + '">' + icon('bookmark') + '</button>' +
     '</div>' +
     '<div class="card-caption"><h2><button type="button" class="project-title" data-card-details aria-label="' + details + '">' + esc(title) + '</button></h2>' +
-    '<span class="project-kind">' + (idea.published === false ? esc(s.draft) : kind === 'film' ? esc(s.film) : kind === 'site' ? esc(s.preview) : esc(s.cover)) + '</span></div>' +
+    '<span class="project-kind">' + esc(hint) + '</span></div>' +
   '</article>';
 }
 
@@ -261,6 +265,17 @@ function renderGrid() {
   grid.innerHTML = state.ideas.map(cardHtml).join('') +
     (state.isAdmin ? '<button type="button" class="stage import-card" data-act="add"><span aria-hidden="true">+</span>' + esc(t().add) + '</button>' : '');
   grid.removeAttribute('aria-busy');
+  for (const card of grid.querySelectorAll('.project-card')) {
+    const demo = card.querySelector('.card-demo');
+    if (demo) {
+      mountCardDemo(demo, state.lang);
+    } else {
+      const host = card.querySelector('.project-frame');
+      if (host.dataset.kind === 'film') continue;
+      const idea = state.ideas[Number(card.dataset.index)];
+      mountCoverPreview(host, (idea.images || []).map(imgSrc).filter(Boolean), state.lang);
+    }
+  }
   livePreviews.reset(grid.querySelectorAll('.project-frame[data-preview-url]:not([data-kind="cover"])'));
   applyFilter();
 }

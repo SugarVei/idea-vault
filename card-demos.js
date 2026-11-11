@@ -1,6 +1,5 @@
 const demoUrls = new Map([
   ['https://sunset-citrus-harbor.vercel.app', 'harbor'],
-  ['https://sugarvei.github.io/koi-pond', 'pond'],
   ['https://little-earth-livid.vercel.app', 'earth'],
   ['https://sugarvei.github.io/jolly-muse-site', 'jolly'],
   ['https://sugarvei.github.io/sugar-particle-intro', 'neon'],
@@ -74,34 +73,6 @@ function harbor(host, zh) {
   view.append(...frames);
   choices.append(...controls);
   host.append(view, choices);
-}
-
-function pond(host, zh) {
-  const view = button('demo-view pond-view', zh ? '触碰水面，产生涟漪' : 'Touch the pond to make a ripple');
-  view.append(image('koi-1.jpg'));
-  let previous = -Infinity;
-  function ripple(x, y) {
-    const ring = element('span', 'pond-ripple');
-    ring.style.left = x + '%';
-    ring.style.top = y + '%';
-    view.append(ring);
-    ring.addEventListener('animationend', () => ring.remove(), { once: true });
-    setTimeout(() => ring.remove(), 1000);
-  }
-  function rippleAt(event) {
-    const rect = view.getBoundingClientRect();
-    ripple(100 * (event.clientX - rect.left) / rect.width, 100 * (event.clientY - rect.top) / rect.height);
-  }
-  view.addEventListener('pointermove', event => {
-    if (event.pointerType !== 'mouse' || reducedMotion.matches || performance.now() - previous < 140) return;
-    previous = performance.now();
-    rippleAt(event);
-  });
-  view.addEventListener('click', event => {
-    if (event.detail === 0) ripple(50, 50);
-    else rippleAt(event);
-  });
-  host.append(view);
 }
 
 let texture;
@@ -212,28 +183,96 @@ function earth(host, zh) {
 }
 
 function jolly(host, zh) {
+  const columns = 9;
+  const rows = 7;
+  const middleX = (columns - 1) / 2;
+  const middleY = (rows - 1) / 2;
   const view = button('jolly-gaze', zh ? '移动指针或轻触，让 Jolly 看向你' : 'Move the pointer or tap to make Jolly look');
-  let pose = 4;
-  function look(next) {
-    pose = next;
-    view.dataset.pose = String(next);
-    view.style.backgroundPosition = (next % 3) * 50 + '% ' + Math.floor(next / 3) * 50 + '%';
+  const stage = host.closest('.stage');
+  const sprite = image('card-jolly-smooth.webp');
+  sprite.className = 'jolly-sprite';
+  sprite.draggable = false;
+  sprite.style.width = columns * 100 + '%';
+  sprite.style.height = rows * 100 + '%';
+  let currentX = middleX;
+  let currentY = middleY;
+  let targetX = middleX;
+  let targetY = middleY;
+  let lastPose = -1;
+  let pointer;
+  let frame = 0;
+  let lastTime = 0;
+  let turned = false;
+
+  function paint() {
+    const column = Math.round(currentX);
+    const row = Math.round(currentY);
+    const pose = row * columns + column;
+    if (pose === lastPose) return;
+    lastPose = pose;
+    sprite.style.transform = 'translate3d(' + (-column / columns * 100) + '%, ' + (-row / rows * 100) + '%, 0)';
   }
-  look(4);
-  view.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch' || reducedMotion.matches) return;
-    const rect = view.getBoundingClientRect();
-    const col = clamp(Math.floor((event.clientX - rect.left) / rect.width * 3), 0, 2);
-    const row = clamp(Math.floor((event.clientY - rect.top) / rect.height * 3), 0, 2);
-    if (pose !== row * 3 + col) look(row * 3 + col);
-  });
-  view.addEventListener('pointerleave', event => { if (event.pointerType !== 'touch') look(4); });
-  view.addEventListener('click', event => {
-    const rect = view.getBoundingClientRect();
-    const col = event.detail ? ((event.clientX - rect.left) < rect.width / 2 ? 0 : 2) : 2;
-    look(pose === 4 ? 3 + col : 4);
-  });
+
+  function animate(now) {
+    frame = 0;
+    if (!view.isConnected || stage.closest('[hidden]')) {
+      lastTime = 0;
+      return;
+    }
+    if (pointer) {
+      const bounds = stage.getBoundingClientRect();
+      if (bounds.width && bounds.height) {
+        targetX = (columns - 1) * clamp((pointer.x - bounds.left) / bounds.width, 0, 1);
+        targetY = (rows - 1) * clamp((pointer.y - bounds.top) / bounds.height, 0, 1);
+      }
+      pointer = undefined;
+    }
+    const dt = lastTime ? Math.min(now - lastTime, 40) : 16.7;
+    const ease = reducedMotion.matches ? 1 : 1 - Math.exp(-dt / 24);
+    currentX += (targetX - currentX) * ease;
+    currentY += (targetY - currentY) * ease;
+    if (Math.abs(targetX - currentX) < 0.04 && Math.abs(targetY - currentY) < 0.04) {
+      currentX = targetX;
+      currentY = targetY;
+      lastTime = 0;
+    } else {
+      lastTime = now;
+      wake();
+    }
+    paint();
+  }
+
+  function wake() {
+    if (!frame) frame = requestAnimationFrame(animate);
+  }
+
+  function aim(x, y) {
+    pointer = undefined;
+    targetX = x;
+    targetY = y;
+    wake();
+  }
+
+  paint();
+  view.append(sprite);
   host.append(view);
+  sprite.decode().then(() => { view.dataset.ready = 'true'; }).catch(() => { /* Keep the original neutral portrait. */ });
+  stage.addEventListener('pointermove', event => {
+    if (event.pointerType === 'touch' || reducedMotion.matches) return;
+    pointer = { x: event.clientX, y: event.clientY };
+    wake();
+  });
+  stage.addEventListener('pointerleave', event => {
+    if (event.pointerType === 'touch') return;
+    turned = false;
+    aim(middleX, middleY);
+  });
+  view.addEventListener('click', event => {
+    const bounds = view.getBoundingClientRect();
+    const side = event.detail && event.clientX < bounds.left + bounds.width / 2 ? 0 : columns - 1;
+    turned = !turned;
+    aim(turned ? side : middleX, middleY);
+  });
 }
 
 function particles(host, zh, mono) {
@@ -316,7 +355,6 @@ export function mountCardDemo(host, language) {
   const zh = language === 'zh';
   switch (host.dataset.demo) {
     case 'harbor': harbor(host, zh); break;
-    case 'pond': pond(host, zh); break;
     case 'earth': earth(host, zh); break;
     case 'jolly': jolly(host, zh); break;
     case 'neon': particles(host, zh, false); break;

@@ -1,6 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
-import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-1';
-import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=1';
+import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
+import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 

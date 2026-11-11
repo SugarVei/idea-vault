@@ -3,6 +3,10 @@
 const FRAME_WIDTH = 800;
 const FRAME_HEIGHT = 450;
 const LOAD_TIMEOUT = 12000;
+const POND_ORIGIN = 'https://sugarvei.github.io';
+const POND_WIDTH = 720;
+const POND_HEIGHT = 332;
+const isPond = url => url.origin === POND_ORIGIN && url.pathname.replace(/\/+$/, '') === '/koi-pond';
 
 export function previewUrl(value, isFilm) {
   try {
@@ -12,6 +16,7 @@ export function previewUrl(value, isFilm) {
       const pagePath = path => path.replace(/\/index\.html$/, '/').replace(/\/$/, '');
       if (pagePath(url.pathname) === pagePath(location.pathname)) return '';
     }
+    if (!isFilm && isPond(url)) url.searchParams.set('embed', '1');
     return url.href;
   } catch {
     return '';
@@ -62,6 +67,12 @@ export class LivePreviews {
       this.schedule();
     });
     window.addEventListener('resize', () => this.schedule());
+    window.addEventListener('message', event => {
+      if (event.origin !== POND_ORIGIN || event.data?.type !== 'koi-pond:ready') return;
+      for (const site of this.sites.values()) {
+        if (site.pond && site.frame?.contentWindow === event.source) this.showFrame(site);
+      }
+    });
   }
 
   reset(hosts) {
@@ -71,7 +82,9 @@ export class LivePreviews {
     this.sites.clear();
     hosts.forEach(host => {
       if (host.dataset.kind === 'site') {
-        const site = { host, frame: null, nearby: false, cover: false, timer: 0 };
+        const pond = isPond(new URL(host.dataset.previewUrl));
+        host.classList.toggle('pond-preview', pond);
+        const site = { host, pond, frame: null, nearby: false, cover: false, timer: 0 };
         this.sites.set(host, site);
         const toggle = host.querySelector('.preview-toggle');
         toggle.addEventListener('click', () => {
@@ -101,6 +114,7 @@ export class LivePreviews {
       const bounds = site.host.getBoundingClientRect();
       if (!bounds.width || !bounds.height) return;
       const visible = Math.max(0, Math.min(innerHeight, bounds.bottom) - Math.max(60, bounds.top));
+      if (site.pond && visible === 0) return;
       eligible.push({ site, score: visible / bounds.height, top: bounds.top });
     });
     eligible.sort((a, b) => b.score - a.score || a.top - b.top);
@@ -116,7 +130,7 @@ export class LivePreviews {
   }
 
   scale(site) {
-    const scale = site.host.clientWidth / FRAME_WIDTH;
+    const scale = site.host.clientWidth / site.frame.width;
     site.frame.style.transform = 'scale(' + scale + ')';
   }
 
@@ -125,8 +139,8 @@ export class LivePreviews {
     const frame = document.createElement('iframe');
     frame.className = 'site-preview';
     frame.title = host.dataset.title;
-    frame.width = FRAME_WIDTH;
-    frame.height = FRAME_HEIGHT;
+    frame.width = site.pond ? POND_WIDTH : FRAME_WIDTH;
+    frame.height = site.pond ? POND_HEIGHT : FRAME_HEIGHT;
     frame.referrerPolicy = 'strict-origin-when-cross-origin';
     const url = new URL(host.dataset.previewUrl);
     const ownerPage = url.origin === location.origin && location.hostname === 'sugarvei.github.io';
@@ -145,10 +159,13 @@ export class LivePreviews {
       toggle.hidden = true;
     };
     frame.addEventListener('load', () => {
-      if (site.frame !== frame) return;
-      clearTimeout(site.timer);
-      host.dataset.previewState = 'ready';
-      toggle.hidden = false;
+      if (site.frame !== frame || host.dataset.previewState === 'ready') return;
+      if (site.pond) {
+        clearTimeout(site.timer);
+        site.timer = setTimeout(() => this.showFrame(site), 1600);
+      } else {
+        this.showFrame(site);
+      }
     }, { once: true });
     frame.addEventListener('error', showCover, { once: true });
     site.timer = setTimeout(showCover, LOAD_TIMEOUT);
@@ -156,6 +173,12 @@ export class LivePreviews {
     host.append(frame);
     this.scale(site);
     this.sizes.observe(host);
+  }
+
+  showFrame(site) {
+    clearTimeout(site.timer);
+    site.host.dataset.previewState = 'ready';
+    site.host.querySelector('.preview-toggle').hidden = false;
   }
 
   unmount(site) {

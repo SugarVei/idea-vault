@@ -329,16 +329,7 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   color: var(--ink-2); pointer-events: auto;
 }
 .harbor-scenes button:hover, .harbor-scenes button[aria-pressed="true"] { color: var(--ink); background: var(--hair); }
-.pond-view, .particle-preview { cursor: crosshair; pointer-events: auto; }
-.pond-ripple {
-  position: absolute; width: 35px; height: 35px; border-radius: 50%; pointer-events: none;
-  border: 1px solid rgb(240 255 247 / 92%); box-shadow: 0 0 0 4px rgb(215 248 242 / 21%);
-  animation: pond-ripple .95s ease-out forwards;
-}
-@keyframes pond-ripple {
-  from { transform: translate(-50%, -50%) scale(.18); opacity: .95; }
-  to { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
-}
+.particle-preview { cursor: crosshair; pointer-events: auto; }
 .card-demo[data-demo="earth"] { width: min(46%, 248px); }
 .earth-globe {
   display: block; width: 100%; height: auto; cursor: grab; pointer-events: auto; touch-action: pan-y;
@@ -348,10 +339,16 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
 .card-demo[data-demo="jolly"] { width: min(43%, 210px); }
 .card-demo > img { display: block; width: 100%; border-radius: 15px; }
 .jolly-gaze {
-  display: block; width: 100%; aspect-ratio: 290 / 387; pointer-events: auto;
+  position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; overflow: hidden; pointer-events: auto;
   background: url("assets/card-jolly-gaze.webp") no-repeat center / 300% 300%;
-  filter: drop-shadow(0 7px 9px rgb(12 15 14 / 14%));
 }
+.jolly-gaze[data-ready="true"] { background-image: none; }
+.jolly-sprite {
+  position: absolute; top: 0; left: 0; display: block; max-width: none;
+  pointer-events: none; user-select: none; will-change: transform; visibility: hidden;
+}
+.jolly-gaze[data-ready="true"] .jolly-sprite { visibility: visible; }
+.project-frame.pond-preview { aspect-ratio: 720 / 332; }
 .particle-preview { aspect-ratio: 560 / 268; background: #111015; }
 .card-demo[data-demo="mono"] .particle-preview { background: #fdfdfb; }
 .particle-preview canvas { display: block; width: 100%; height: 100%; }

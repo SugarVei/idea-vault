@@ -1,14 +1,22 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
+import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const UI = {
   zh: {
-    brand: '创意仓库', title: '我的创意仓库',
-    sub: '收着我做过的小世界，和喜欢的开源作品。',
-    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频生成', other: '技能 / 工具' },
+    title: 'Sugar 的仓库',
+    sub: '我的交互作品、设计实验与开源收藏。',
+    works: '作品', browse: '浏览作品', categories: '作品分类',
+    search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
+    noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
+    savedWork: '收藏作品', bookmark: '收藏', unsave: '取消收藏',
+    dark: '切换深色模式', light: '切换浅色模式',
+    preview: '实时预览', film: '视频', draft: '草稿',
+    coverToggle: '切换实时预览和封面',
+    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', other: '其它' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
-    count: n => `${n} 件`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
+    count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
     type: '类型', tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
     add: '导入新创意',
     offline: '暂时连不上数据库，显示的是内置数据',
@@ -38,11 +46,18 @@ const UI = {
     jsonFilled: '已从 JSON 填入表单，检查后保存'
   },
   en: {
-    brand: 'Idea Vault', title: 'A vault of small worlds',
-    sub: 'Small worlds I have built, and open-source work I love.',
-    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Video creation', other: 'Skills / tools' },
+    title: 'Sugar’s Vault',
+    sub: 'My interactive projects, design experiments, and open-source finds.',
+    works: 'Work', browse: 'Browse work', categories: 'Project category',
+    search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
+    noResults: 'No matching projects', noSaved: 'No saved projects yet',
+    savedWork: 'Saved projects', bookmark: 'Save', unsave: 'Remove from saved',
+    dark: 'Switch to dark mode', light: 'Switch to light mode',
+    preview: 'Live preview', film: 'Video', draft: 'Draft',
+    coverToggle: 'Switch between live preview and cover',
+    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
-    count: n => `${n} ${n === 1 ? 'entry' : 'entries'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
+    count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
     type: 'Type', tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
     add: 'Import a new idea',
     offline: 'Database unreachable — showing built-in data',
@@ -80,8 +95,6 @@ const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} }
 };
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
@@ -128,40 +141,72 @@ async function refreshAuth(session) {
 
 /* ---------------- 页面 ---------------- */
 
+const icons = {
+  bookmark: '<path d="M7 4.75h10a1 1 0 0 1 1 1v14l-6-3.9-6 3.9v-14a1 1 0 0 1 1-1Z"/>',
+  moon: '<path d="M19.7 15a8.2 8.2 0 0 1-10.7-10.7A8.25 8.25 0 1 0 19.7 15Z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/>',
+  play: '<path d="M8 5.5 18 12 8 18.5Z" fill="currentColor" stroke="none"/>',
+  image: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m6 17 5-4 2 2 3-3 2 2"/>'
+};
+const icon = name => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + icons[name] + '</svg>';
+const search = $('#search');
+const grid = $('#grid');
+const livePreviews = new LivePreviews();
+const searchText = value => String(value ?? '').normalize('NFKC').toLowerCase();
+const bookmarkKey = idea => idea.url || idea.id || idea.title_zh;
+const searchIndex = idea => searchText([
+  idea.title_zh, idea.title_en, idea.kind_zh, idea.kind_en,
+  idea.line_zh, idea.line_en, idea.lead_zh, idea.lead_en,
+  idea.tags_zh, idea.tags_en, idea.tech, idea.host
+].flat().join(' '));
+
+function readBookmarks() {
+  try {
+    const saved = JSON.parse(store.get('vault-bookmarks'));
+    return new Set(Array.isArray(saved) ? saved : []);
+  } catch { return new Set(); }
+}
+const bookmarks = readBookmarks();
+let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
+let savedOnly = false;
+let indexedIdeas = [];
+
+function renderTheme() {
+  document.documentElement.dataset.theme = theme;
+  const dark = theme === 'dark';
+  $('meta[name="theme-color"]').content = dark ? '#151516' : '#ffffff';
+  const toggle = $('#theme');
+  toggle.innerHTML = icon(dark ? 'sun' : 'moon');
+  toggle.setAttribute('aria-label', dark ? t().light : t().dark);
+  toggle.title = dark ? t().light : t().dark;
+}
+
 function renderStatic() {
   const s = t();
   document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = s.title + ' · SugarV';
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = s[el.dataset.t]; });
-  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
-  renderTitle();
+  search.placeholder = s.search;
+  search.setAttribute('aria-label', s.search);
+  $('#search-clear').setAttribute('aria-label', s.clear);
+  $('#works').setAttribute('aria-label', s.works);
+  $('#chips').setAttribute('aria-label', s.categories);
+  const language = $('#language');
+  language.textContent = state.lang === 'zh' ? 'EN' : '中';
+  language.setAttribute('aria-label', state.lang === 'zh' ? 'Switch to English' : '切换到中文');
+  $('#saved').innerHTML = icon('bookmark');
+  $('#saved').setAttribute('aria-label', s.savedWork);
+  $('#saved').title = s.savedWork;
   const cats = ['all', '3d', '2d', 'video'];
-  if (state.ideas.some(i => i.category === 'other')) cats.push('other');
+  if (state.ideas.some(idea => idea.category === 'other')) cats.push('other');
   if (!cats.includes(state.filter)) state.filter = 'all';
-  $('#chips').innerHTML = '<span class="thumb" aria-hidden="true"></span>' + cats.map(k =>
-    `<button type="button" class="chip" data-filter="${k}" aria-pressed="${k === state.filter}">${s.filters[k]}</button>`).join('');
-  moveThumb();
-  requestAnimationFrame(() => $('#chips .thumb')?.classList.add('anim'));
+  $('#chips').innerHTML = cats.map(key =>
+    '<button type="button" class="chip" data-filter="' + key + '" aria-pressed="' + (key === state.filter) + '">' + s.filters[key] + '</button>'
+  ).join('');
+  renderTheme();
   renderAdminBar();
 }
 
-// 标题拆成单个字（英文按单词），逐个从模糊中浮现
-function renderTitle() {
-  const h = $('#title'), text = t().title;
-  if (h.dataset.text === text) return;
-  h.dataset.text = text;
-  h.setAttribute('aria-label', text);
-  const zh = state.lang === 'zh';
-  h.innerHTML = (zh ? [...text] : text.split(' '))
-    .map((part, i) => `<span class="ch" aria-hidden="true" style="--i:${i}">${esc(part)}</span>`)
-    .join(zh ? '' : ' ');
-}
-
-function moveThumb() {
-  const on = $('#chips [aria-pressed="true"]'), thumb = $('#chips .thumb');
-  if (!on || !thumb) return;
-  thumb.style.width = `${on.offsetWidth}px`;
-  thumb.style.transform = `translateX(${on.offsetLeft}px)`;
-}
 
 function renderAdminBar() {
   const s = t(), bar = $('#adminBar');
@@ -179,175 +224,106 @@ function renderAdminBar() {
   bar.hidden = !html;
 }
 
-const arrow = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5l7-7M5 3.5h5.5V9"/></svg>';
-
-function cardHtml(idea, i) {
+function cardHtml(idea, index) {
   const s = t();
   const title = pick(idea, 'title');
-  const line = pick(idea, 'line');
-  const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
-  const media = imgs.length
-    ? imgs.map((src, j) => `<img src="${esc(src)}" alt="${j ? '' : esc(title)}" decoding="async" ${j || i > 5 ? 'loading="lazy"' : ''} class="${j ? '' : 'on'}">`).join('')
-    : isVideo(idea.url)
-      ? `<video class="still" src="${esc(idea.url)}#t=0.1" muted playsinline preload="metadata" aria-hidden="true"></video>`
-      : `<span class="empty">${esc(title.slice(0, 1))}</span>`;
-  const draft = idea.published === false;
-  const goLabel = isVideo(idea.url) ? s.watch : idea.category === 'other' ? s.view : s.play;
-  const go = isHttp(idea.url) ? `<a class="go" href="${esc(idea.url)}" target="_blank" rel="noopener" aria-label="${esc(`${goLabel}：${title}`)}">${arrow}</a>` : '';
-  return `<article class="card glass${draft ? ' draft' : ''}" data-id="${esc(idea.id ?? i)}" data-cat="${esc(idea.category)}" style="--hue:${esc(idea.hue)}">
-    <div class="media">${media}
-      <div class="panel">
-        <div class="panel-text"><h3>${esc(title)}</h3>${line ? `<div class="more"><p>${esc(line)}</p></div>` : ''}</div>
-        ${go}
-      </div>
-    </div>
-    <button type="button" class="open" aria-label="${esc(s.details + title)}"></button>
-  </article>`;
+  const cover = (idea.images || []).map(imgSrc).find(Boolean);
+  const film = isVideo(idea.url);
+  const url = previewUrl(idea.url, film);
+  const kind = url ? (film ? 'film' : 'site') : 'cover';
+  const details = esc(s.details + title);
+  const previewTitle = esc(s.preview + ' · ' + title);
+  const active = bookmarks.has(bookmarkKey(idea));
+  const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
+  const poster = cover
+    ? '<img src="' + esc(cover) + '" alt="" decoding="async"' + (index > 5 ? ' loading="lazy"' : '') + '>'
+    : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
+  const control = kind === 'film'
+    ? '<button class="video-start" type="button" aria-label="' + esc(s.watch + ' · ' + title) + '">' + icon('play') + '</button>'
+    : kind === 'site'
+      ? '<button class="preview-toggle" type="button" aria-label="' + esc(s.coverToggle) + '" title="' + esc(s.coverToggle) + '" aria-pressed="false" hidden>' + icon('image') + '</button>'
+      : '';
+  return '<article class="project-card" data-index="' + index + '">' +
+    '<div class="stage">' +
+      '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
+      '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' +
+        poster + control +
+      '</div>' +
+      '<button type="button" class="bookmark icon-button" data-bookmark aria-pressed="' + active + '" aria-label="' + bookmarkLabel + '" title="' + bookmarkLabel + '">' + icon('bookmark') + '</button>' +
+    '</div>' +
+    '<div class="card-caption"><h2><button type="button" class="project-title" data-card-details aria-label="' + details + '">' + esc(title) + '</button></h2>' +
+    '<span class="project-kind">' + (idea.published === false ? esc(s.draft) : kind === 'film' ? esc(s.film) : kind === 'site' ? esc(s.preview) : esc(s.cover)) + '</span></div>' +
+  '</article>';
 }
 
-let firstGrid = true;
 function renderGrid() {
-  const s = t();
-  const tail = state.isAdmin
-    ? `<button type="button" class="card glass next" data-cat="next" data-act="add"><span class="plus" aria-hidden="true">+</span><h3>${s.add}</h3></button>`
-    : '';
-  const grid = $('#grid');
-  grid.innerHTML = state.ideas.map(cardHtml).join('') + tail;
+  indexedIdeas = state.ideas.map(searchIndex);
+  grid.innerHTML = state.ideas.map(cardHtml).join('') +
+    (state.isAdmin ? '<button type="button" class="stage import-card" data-act="add"><span aria-hidden="true">+</span>' + esc(t().add) + '</button>' : '');
   grid.removeAttribute('aria-busy');
+  livePreviews.reset(grid.querySelectorAll('.project-frame[data-preview-url]:not([data-kind="cover"])'));
   applyFilter();
-  bindCards();
-  if (firstGrid) reveal();
-  else grid.querySelectorAll('.card').forEach(card => {
-    // 重新渲染时已在屏幕上的卡片不再播放入场，屏幕下方的仍等滚动到才出现
-    if (!revealer || card.getBoundingClientRect().top < innerHeight) card.classList.add('in');
-    else revealer.observe(card);
-  });
-  firstGrid = false;
-}
-
-// 六列网格里，一行两张（各占 3 列）和一行三张（各占 2 列）交替。
-// 张数总能拆成这两种整行，所以任何筛选结果都不会在末尾留下空位。
-function rowSpans(n) {
-  if (n < 2) return n ? [3] : [];
-  let wide = (2 * n) % 3 || 3;
-  if (n < wide * 2) wide = 0;
-  let narrow = (n - wide * 2) / 3;
-  const spans = [];
-  while (wide || narrow) {
-    if (wide) { spans.push(3, 3); wide--; }
-    for (let k = Math.ceil(narrow / (wide + 1)); k > 0; k--) { spans.push(2, 2, 2); narrow--; }
-  }
-  return spans;
 }
 
 function applyFilter() {
-  const shown = [...document.querySelectorAll('#grid .card')].filter(card => {
-    const show = state.filter === 'all' || card.dataset.cat === state.filter || card.dataset.cat === 'next';
-    card.hidden = !show;
-    return show;
+  const query = searchText(search.value).trim();
+  const terms = query ? query.split(/\s+/) : [];
+  let count = 0;
+  grid.querySelectorAll('.project-card').forEach(card => {
+    const index = Number(card.dataset.index);
+    const idea = state.ideas[index];
+    const shown = (state.filter === 'all' || idea.category === state.filter) &&
+      (!savedOnly || bookmarks.has(bookmarkKey(idea))) &&
+      terms.every(term => indexedIdeas[index].includes(term));
+    card.hidden = !shown;
+    if (shown) count++;
+    else card.querySelector('video')?.pause();
   });
-  const spans = rowSpans(shown.length);
-  let col = 0;
-  shown.forEach((card, i) => {
-    card.dataset.span = spans[i];
-    card.toggleAttribute('data-solo', i === 0 && shown.length % 2 === 1);
-    card.style.setProperty('--d', `${col * 32}ms`);
-    col = (col + spans[i]) % 6;
+  const importing = grid.querySelector('.import-card');
+  if (importing) importing.hidden = savedOnly || Boolean(query);
+  $('.intro').hidden = savedOnly || Boolean(query);
+  $('#works').classList.toggle('filtered', savedOnly || Boolean(query));
+  $('#search-clear').hidden = !search.value;
+  $('#shortcut').classList.toggle('shortcut-hidden', Boolean(search.value));
+  $('#saved').setAttribute('aria-pressed', String(savedOnly));
+  document.querySelectorAll('[data-filter]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.filter === state.filter));
   });
-  $('#count').textContent = t().count(shown.filter(card => card.dataset.cat !== 'next').length);
+  const ready = !grid.hasAttribute('aria-busy');
+  $('#count').textContent = ready ? t().count(count) : '';
+  $('#empty-results').hidden = !ready || count > 0 || (importing && !importing.hidden);
+  $('#empty-message').textContent = savedOnly && !bookmarks.size ? t().noSaved : t().noResults;
+  livePreviews.schedule();
 }
 
-// 卡片滚动到视口时才入场，同一行从左到右错开
-const revealer = !reduced && 'IntersectionObserver' in window
-  ? new IntersectionObserver(entries => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add('in', 'rise');
-      revealer.unobserve(entry.target);
-    }
-  }, { rootMargin: '0px 0px -6% 0px', threshold: .04 })
-  : null;
-
-function reveal() {
-  document.querySelectorAll('#grid .card:not([hidden])').forEach(card => {
-    if (!revealer) { card.classList.add('in'); return; }
-    card.classList.remove('in', 'rise');
-    revealer.observe(card);
-  });
-}
-
-// 切换分类：旧内容快速淡出，新内容再按入场动效出现
-let filterRun = 0;
-async function setFilter(next) {
-  if (next === state.filter) return;
-  state.filter = next;
-  document.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === next)));
-  moveThumb();
-  const grid = $('#grid'), run = ++filterRun;
-  if (!reduced) {
-    await grid.animate({ opacity: [1, 0], transform: ['none', 'translateY(6px)'] }, { duration: 140, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'both' }).finished.catch(() => {});
-    if (run !== filterRun) return;
-  }
+function resetFilters() {
+  state.filter = 'all';
+  search.value = '';
+  savedOnly = false;
   applyFilter();
-  reveal();
-  grid.getAnimations().forEach(a => a.cancel());
 }
 
-function bindPreview(card, url) {
-  const media = card.querySelector('.media');
-  let video = media.querySelector('video.still'), wait = 0;
-  card.addEventListener('pointerenter', () => {
-    wait = setTimeout(() => {
-      if (!video || video.classList.contains('still')) {
-        const still = video?.classList.contains('still') ? video : null;
-        video = Object.assign(document.createElement('video'), { src: url, muted: true, loop: true, playsInline: true, preload: 'auto' });
-        still?.remove();
-        video.setAttribute('aria-hidden', 'true');
-        video.addEventListener('playing', () => video.classList.add('on'));
-        media.insertBefore(video, media.querySelector('.panel'));
-      }
-      video.play().catch(() => {});
-    }, 180);
-  });
-  card.addEventListener('pointerleave', () => {
-    clearTimeout(wait);
-    if (!video) return;
-    video.classList.remove('on');
-    video.pause();
-  });
-}
-
-function bindCards() {
-  document.querySelectorAll('#grid .card[data-id]').forEach((card, idx) => {
-    const idea = state.ideas[idx];
-    const imgs = card.querySelectorAll('.media img');
-    imgs.forEach(img => {
-      if (img.complete && img.naturalWidth) img.classList.add('ready');
-      else img.addEventListener('load', () => img.classList.add('ready'), { once: true });
-    });
-    card.querySelector('.open').addEventListener('click', () => openSheet(idea, card));
-    if (reduced || !finePointer) return;
-    if (isVideo(idea.url)) bindPreview(card, idea.url);
-    else if (imgs.length > 1) {
-      let k = 0, timer = null;
-      const show = j => { imgs[k].classList.remove('on'); k = j; imgs[k].classList.add('on'); };
-      card.addEventListener('pointerenter', () => { timer = setInterval(() => show((k + 1) % imgs.length), 1400); });
-      card.addEventListener('pointerleave', () => { clearInterval(timer); show(0); });
-    }
-    card.addEventListener('pointermove', e => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      card.style.setProperty('--my', `${e.clientY - r.top}px`);
-    });
-  });
+function toggleBookmark(button, idea) {
+  const key = bookmarkKey(idea);
+  const active = !bookmarks.has(key);
+  if (active) bookmarks.add(key);
+  else bookmarks.delete(key);
+  store.set('vault-bookmarks', JSON.stringify([...bookmarks]));
+  const label = (active ? t().unsave : t().bookmark) + ' · ' + pick(idea, 'title');
+  button.setAttribute('aria-pressed', String(active));
+  button.setAttribute('aria-label', label);
+  button.title = label;
+  if (savedOnly) applyFilter();
 }
 
 function renderAll() { renderStatic(); renderGrid(); }
+
 
 /* ---------------- 详情 ---------------- */
 
 const sheet = $('#sheet');
 function openSheet(idea, origin) {
+  grid.querySelectorAll('video').forEach(video => video.pause());
   const s = t();
   const title = pick(idea, 'title');
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
@@ -356,14 +332,14 @@ function openSheet(idea, origin) {
   const video = isVideo(idea.url);
   const mainHtml = video
     ? `<video src="${esc(idea.url)}" ${imgs.length ? `poster="${esc(imgs[0])}"` : ''} controls playsinline preload="metadata" aria-label="${esc(title)}"></video>`
-    : imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="empty">${esc(title.slice(0, 1))}</span></div>`;
+    : imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="cover-letter">${esc(title.slice(0, 1))}</span></div>`;
   sheet.innerHTML = `<div class="sheet-in">
     <div class="gallery">
       <div class="main${video ? ' video' : ''}">${mainHtml}</div>
       ${imgs.length > 1 && !video ? `<div class="thumbs">${imgs.map((src, j) => `<button type="button" aria-label="${j + 1}" aria-current="${j === 0}" data-src="${esc(src)}"><img src="${esc(src)}" alt=""></button>`).join('')}</div>` : ''}
     </div>
     <div class="info">
-      <button type="button" class="close" aria-label="${s.close}">×</button>
+      <button type="button" class="close" aria-label="${s.close}" autofocus>×</button>
       <h2 id="sheet-title">${esc(title)}</h2>
       ${pick(idea, 'lead') || pick(idea, 'line') ? `<p class="lead">${esc(pick(idea, 'lead') || pick(idea, 'line'))}</p>` : ''}
       ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
@@ -753,23 +729,73 @@ async function reload() { await loadIdeas(); renderAll(); }
 
 /* ---------------- 事件与启动 ---------------- */
 
-document.addEventListener('click', e => {
-  const l = e.target.closest('[data-lang]');
-  if (l && l.dataset.lang !== state.lang) { state.lang = l.dataset.lang; store.set('vault-lang', state.lang); renderAll(); }
-  const f = e.target.closest('[data-filter]');
-  if (f) setFilter(f.dataset.filter);
-  const act = e.target.closest('[data-act]')?.dataset.act;
+document.addEventListener('click', event => {
+  const filter = event.target.closest('[data-filter]');
+  if (filter) {
+    state.filter = filter.dataset.filter;
+    applyFilter();
+  }
+  const card = event.target.closest('.project-card');
+  if (card) {
+    const idea = state.ideas[Number(card.dataset.index)];
+    if (event.target.closest('[data-card-details]')) openSheet(idea, card);
+    const bookmark = event.target.closest('[data-bookmark]');
+    if (bookmark) toggleBookmark(bookmark, idea);
+  }
+  const act = event.target.closest('[data-act]')?.dataset.act;
   if (act === 'add') openEditor();
   if (act === 'login') openLogin();
   if (act === 'signout') signOut();
 });
 addEventListener('hashchange', renderAdminBar);
 
-new IntersectionObserver(([entry]) => $('.top').classList.toggle('stuck', !entry.isIntersecting)).observe($('#topSentinel'));
-new ResizeObserver(moveThumb).observe($('#chips'));
+function updateSearch() {
+  applyFilter();
+  if (search.value.trim()) scrollTo({ top: 0, behavior: 'instant' });
+}
+search.addEventListener('input', updateSearch);
+$('#search-form').addEventListener('submit', event => {
+  event.preventDefault();
+  updateSearch();
+  search.blur();
+  $('#works').scrollIntoView({ block: 'start' });
+});
+$('#search-clear').addEventListener('click', () => {
+  search.value = '';
+  updateSearch();
+  search.focus();
+});
+$('#reset-filters').addEventListener('click', resetFilters);
+$('.primary-nav a').addEventListener('click', resetFilters);
+$('#saved').addEventListener('click', () => {
+  savedOnly = !savedOnly;
+  search.value = '';
+  state.filter = 'all';
+  applyFilter();
+  $('#works').scrollIntoView({ block: 'start' });
+});
+$('#theme').addEventListener('click', () => {
+  theme = theme === 'light' ? 'dark' : 'light';
+  store.set('vault-theme', theme);
+  renderTheme();
+});
+$('#language').addEventListener('click', () => {
+  state.lang = state.lang === 'zh' ? 'en' : 'zh';
+  store.set('vault-lang', state.lang);
+  renderAll();
+});
+$('#shortcut').textContent = navigator.platform.toLowerCase().includes('mac') ? '⌘ K' : 'Ctrl K';
+document.addEventListener('keydown', event => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k' && !document.querySelector('dialog[open]')) {
+    event.preventDefault();
+    search.focus();
+    search.select();
+  }
+});
 
 renderStatic();
-$('#grid').innerHTML = [3, 3, 2, 2, 2].map(n => `<div class="skeleton" data-span="${n}"></div>`).join('');
+grid.innerHTML = '<div class="stage skeleton" aria-hidden="true"></div>'.repeat(3);
+
 // 数据库较慢时先用内置数据把卡片显示出来，数据库返回后再替换
 let loaded = false;
 const early = setTimeout(async () => {

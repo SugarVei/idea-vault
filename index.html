@@ -1,55 +1,76 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>创意仓库 · Idea Vault</title>
-<meta name="description" content="我的交互作品与开源收藏：日落柑橘港、锦池、Jolly、旅行手账、Model 3 汽车拆解、Sugar 求职系统宣传片、石间磁盘空间，以及 Factory Anatomy 工厂场景与 Anatomy 创作技能。">
-<meta name="theme-color" content="#0b0c10">
-<meta property="og:title" content="创意仓库 · Idea Vault">
-<meta property="og:description" content="My interactive projects and open-source finds — explore the work, discover tools and visit their creators.">
-<meta property="og:image" content="assets/harbor-1.jpg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='6' height='6' rx='1.5' fill='%23ff8a1f'/%3E%3Crect x='9' y='1' width='6' height='6' rx='1.5' fill='%233fb8a8'/%3E%3Crect x='1' y='9' width='6' height='6' rx='1.5' fill='%234a7bd0'/%3E%3Crect x='9' y='9' width='6' height='6' rx='1.5' fill='%23f07ba5'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preload" href="assets/fonts/Geist-Latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSansVF.min.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="style.css?v=20261110-video">
-<link rel="stylesheet" href="particle-background.css?v=20261109-glass">
-<script type="module" src="background-controls.js?v=20261109-glass"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-<script type="module" src="app.js?v=20261110-video"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sugar 的仓库 · SugarV</title>
+  <meta name="description" content="SugarV 的交互作品、设计实验与开源收藏。">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:title" content="Sugar 的仓库 · SugarV">
+  <meta property="og:description" content="Interactive projects, design experiments, and open-source finds by SugarV.">
+  <meta property="og:image" content="assets/harbor-1.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='6' fill='%23191a1b'/%3E%3Cpath d='M6.8 6.8h4v4h-4zm6.4 0h4v4h-4zm-6.4 6.4h4v4h-4zm6.4 0h4v4h-4z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/Geist-Latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=sugar-vault-1">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+  <script type="module" src="app.js?v=sugar-vault-1"></script>
 </head>
 <body>
-<div class="ambient" aria-hidden="true"><canvas id="particle-background"></canvas></div>
-
-<div class="wrap">
-  <span class="top-sentinel" id="topSentinel" aria-hidden="true"></span>
-  <header class="top">
-    <a class="brand" href="./" data-t="brand"></a>
-    <div class="top-right">
-      <div class="admin-bar" id="adminBar" hidden></div>
-      <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-lang="zh">中</button>
-        <button type="button" data-lang="en">EN</button>
-      </div>
+  <header class="topbar">
+    <div class="header-start">
+      <a class="brand" href="./">
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="23" height="23" rx="7" fill="currentColor"/>
+          <path d="M7 7.2h4.2v4.2H7zm6.8 0H18v4.2h-4.2zM7 14h4.2v4.2H7zm6.8 0H18v4.2h-4.2z" fill="var(--bg)"/>
+        </svg>
+        <span>SugarV</span>
+      </a>
+      <nav class="primary-nav" aria-label="Gallery">
+        <a href="#works" data-t="works" aria-current="page">作品</a>
+      </nav>
+    </div>
+    <form class="search" id="search-form" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" aria-hidden="true"><circle cx="10.75" cy="10.75" r="5.75"/><path d="m15 15 4.25 4.25" stroke-linecap="round"/></svg>
+      <input id="search" type="search" aria-label="搜索作品" placeholder="搜索作品" autocomplete="off" spellcheck="false">
+      <button type="button" class="icon-button search-clear" id="search-clear" aria-label="清空搜索" hidden>×</button>
+      <kbd id="shortcut" aria-hidden="true">Ctrl K</kbd>
+    </form>
+    <div class="header-actions">
+      <button type="button" class="icon-button" id="saved" aria-label="收藏作品" aria-pressed="false"></button>
+      <button type="button" class="icon-button" id="theme" aria-label="切换深色模式"></button>
+      <button type="button" class="language-button" id="language" aria-label="Switch to English">EN</button>
     </div>
   </header>
 
-  <section class="intro">
-    <h1 id="title"></h1>
-    <p class="lede" data-t="sub"></p>
-  </section>
-
   <main>
-    <div class="bar"><div class="chips glass" id="chips" role="group"></div></div>
-    <span class="sr-only" id="count" aria-live="polite"></span>
-    <div class="grid" id="grid" aria-busy="true"></div>
-  </main>
-</div>
+    <section class="intro" aria-labelledby="title">
+      <h1 id="title" data-t="title">Sugar 的仓库</h1>
+      <p data-t="sub">我的交互作品、设计实验与开源收藏。</p>
+      <a class="browse" href="#works">
+        <span data-t="browse">浏览作品</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15m-5-5 5 5 5-5"/></svg>
+      </a>
+    </section>
 
-<dialog class="sheet glass" id="sheet" aria-labelledby="sheet-title"></dialog>
-<dialog class="sheet glass form-sheet" id="login" aria-labelledby="login-title"></dialog>
-<dialog class="sheet glass form-sheet" id="editor" aria-labelledby="editor-title"></dialog>
-<div class="toast glass" id="toast" role="status" hidden></div>
+    <section class="wrap work-section" id="works" aria-label="作品">
+      <div class="admin-bar" id="adminBar" hidden></div>
+      <div class="gallery-toolbar">
+        <div class="chips" id="chips" role="group" aria-label="作品分类"></div>
+        <p class="count" id="count" role="status"></p>
+      </div>
+      <div class="grid" id="grid" aria-busy="true"></div>
+      <div class="empty-results" id="empty-results" hidden>
+        <p id="empty-message"></p>
+        <button class="pill" id="reset-filters" type="button" data-t="showAll">查看全部作品</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap site-footer">SugarV</footer>
+
+  <dialog class="sheet glass" id="sheet" aria-labelledby="sheet-title"></dialog>
+  <dialog class="sheet glass form-sheet" id="login" aria-labelledby="login-title"></dialog>
+  <dialog class="sheet glass form-sheet" id="editor" aria-labelledby="editor-title"></dialog>
+  <div class="toast glass" id="toast" role="status" hidden></div>
 </body>
 </html>

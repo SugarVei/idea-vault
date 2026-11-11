@@ -120,7 +120,7 @@ const tagsOf = idea => (state.lang === 'en' && idea.tags_en?.length ? idea.tags_
 async function loadIdeas() {
   if (sb) {
     const { data, error } = await sb.from('vault_ideas').select('*').order('sort').order('created_at');
-    if (!error) { state.ideas = data; state.source = 'db'; return; }
+    if (!error) { const featured = {"sort":5,"published":true,"category":"2d","status":"live","year":2026,"hue":"#628e85","url":"https://sugarvei.github.io/idea-vault/qinglian/","repo":"https://github.com/SugarVei/idea-vault/tree/main/qinglian","images":["assets/qinglian-cover.svg"],"title_zh":"轻练 · 四日训练","title_en":"Qinglian · Four-Day Training","kind_zh":"健身计划与记录","kind_en":"Workout Planner","line_zh":"按自己的节奏，安排训练、记录每一次进步。","line_en":"Plan your week and track your progress at your own pace.","lead_zh":"适合不同性别与训练基础的四日分化训练工具，支持拖拽安排一周、查看动作示范、调整训练组数、记录训练与备份数据。","lead_en":"A flexible four-day workout planner for different experience levels, with a draggable weekly schedule, exercise demonstrations, adjustable sets, training records and backups.","tags_zh":["训练计划","动作示范","记录与统计"],"tags_en":["Weekly plan","Exercise demos","Progress tracking"],"facts":[{"n":"4","zh":"个训练日","en":"training days"},{"n":"14","zh":"个动作示范","en":"exercise demos"},{"n":"1–4","zh":"组可调","en":"sets per exercise"}],"tech":"HTML · CSS · JavaScript","host":"GitHub Pages"}; state.ideas = data.some(item => item.url === featured.url) ? data : [featured, ...data]; state.source = 'db'; return; }
     console.warn('vault: load failed', error);
   }
   state.ideas = await loadSeed();

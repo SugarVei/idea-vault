@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#8066b7"><meta name="description" content="轻练：拖动安排四日训练，14个真人视频，记录每一次进步。"><title>轻练 · 训练与记录</title>
+<style>
+:root{--bg:#f7f7fa;--paper:#fff;--ink:#292635;--muted:#7a7486;--line:#e7e2ef;--purple:#426e6a;--deep:#315954;--soft:#e8f1ef;--pale:#f4f8f7;--green:#3c7964;--radius:18px;font-family:Inter,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;font-synthesis:none;color:var(--ink);background:var(--bg)}*{box-sizing:border-box}body{margin:0;font-size:15px;line-height:1.65}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}button:disabled{opacity:.45;cursor:default}button,a,input,select,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #bba5df;outline-offset:3px}button,a{transition:background .16s,color .16s,border-color .16s}a{color:inherit;text-decoration:none}h1,h2,h3,p{margin:0}h1{font-size:32px;line-height:1.4;letter-spacing:-1px}h2{font-size:23px;letter-spacing:-.5px}h3{font-size:17px}svg{display:block}.icon{width:20px;height:20px;display:inline-block;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}.muted{color:var(--muted)}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.wrap{max-width:1472px;margin:auto;padding:0 32px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:8px 16px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:14px;font-weight:550;white-space:nowrap}.button:hover{background:var(--pale);border-color:#cbbadb}.button.primary{color:white;background:var(--purple);border-color:var(--purple)}.button.primary:hover{background:var(--deep)}.button.ghost{border-color:transparent;background:transparent}.button.icon-only{width:40px;padding:8px}.button.soft{background:var(--soft);border-color:var(--soft);color:var(--deep)}.top{background:#ffffffbd;border-bottom:1px solid var(--line)}.top-row{height:76px;display:flex;align-items:center;gap:30px}.brand{font-size:29px;font-weight:800;letter-spacing:-1px}.nav{display:flex;gap:24px;margin-left:22px}.nav a{font-size:15px;color:var(--muted)}.nav a:hover{color:var(--deep)}.top-actions{margin-left:auto;display:flex;gap:8px}.page-head{display:flex;justify-content:space-between;align-items:center;padding:32px 0 20px;gap:20px}.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding-bottom:4px}.week-slot{display:flex;flex-direction:column;gap:7px;min-width:0;position:relative}.week-day-label{text-align:center;font-size:13px;color:var(--muted);font-weight:550;user-select:none;letter-spacing:.02em}.week-card{width:100%;min-height:79px;position:relative;display:flex;justify-content:center;align-items:center;padding:11px 8px 17px;border:1px solid #e5dfed;background:white;border-radius:13px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s}.week-card .card-title{font-size:19px;font-weight:650;white-space:nowrap;line-height:1.25}.week-card:after{content:"⠿";color:#a39aaf;font-size:14px;position:absolute;bottom:3px;left:50%;transform:translateX(-50%);line-height:1.1}.week-card[data-type="chest"]{background:#f0eaf8;color:#7452a0}.week-card[data-type="legs"]{background:#f5ecee;color:#9c6676}.week-card[data-type="back"]{background:#e9f1f0;color:#527971}.week-card[data-type="shoulder"]{background:#eaf0fa;color:#647fa8}.week-card[data-type="rest"]{background:#f0eff3;color:#9a95a1}.week-card.is-active{border-color:#8066b7;box-shadow:inset 0 0 0 1px #8066b7}.week-card:hover{border-color:#ad98c8;transform:translateY(-1px)}.week-card.is-dragging{opacity:.24;transform:none}.week-slot.drop-target .week-card{outline:2px dashed #8066b7;outline-offset:3px}.week-ghost{position:fixed;left:0;top:0;z-index:2000;pointer-events:none!important;cursor:grabbing!important;box-shadow:0 18px 42px #42345433!important;opacity:.97;transform:scale(1.035) rotate(-1deg);transition:none!important}.week-tip{text-align:right;color:#9b92a8;font-size:12px;min-height:17px;margin-top:8px;margin-bottom:19px}body.week-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}.workbench{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;scroll-margin-top:22px}.workbar{display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);gap:15px;min-height:67px}.tabs{display:flex;align-self:stretch;gap:5px}.tab{position:relative;padding:16px 19px;font-size:18px;font-weight:650;color:var(--muted)}.tab[aria-selected=true]{color:var(--deep)}.tab[aria-selected=true]:after{content:"";position:absolute;bottom:0;left:15px;right:15px;height:3px;border-radius:4px;background:var(--purple)}.work-tools{display:flex;gap:10px;align-items:center}.work-tools input,.work-tools select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff;font-size:14px;min-height:37px}.workspace{display:grid;grid-template-columns:210px minmax(320px,1fr) 325px;min-height:435px}.rail{padding:19px 12px;border-right:1px solid var(--line)}.ex-list{display:flex;flex-direction:column;gap:7px}.ex{display:flex;text-align:left;align-items:center;gap:10px;width:100%;padding:14px 11px;border-radius:10px;font-size:15px;line-height:1.65;min-height:65px}.ex:hover{background:var(--pale)}.ex.selected{background:var(--soft);color:var(--deep)}.ex .n{font-size:17px;color:#9a85b9;min-width:22px;font-weight:600}.ex .name{flex:1}.ex .done-icon{color:var(--green);width:18px;min-width:18px}.media-col{padding:19px 17px;min-width:0}.media-frame{background:#f2eef8;border-radius:13px;position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden;min-height:275px}.media-frame video{width:100%;height:100%;position:absolute;inset:0;object-fit:contain;background:#ece8f2;border-radius:13px}.media-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;padding:25px;text-align:center}.media-symbol{width:66px;height:66px;border:1px solid #ccbddf;border-radius:50%;color:#9c86b9;display:grid;place-items:center}.media-symbol .icon{width:28px;height:28px}.media-empty h3{font-size:18px;color:#756286;font-weight:550}.media-tools{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}.media-tools .spacer{flex:1}.media-tools .button{padding:7px 11px;min-height:38px}.media-tools select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:white;min-height:38px;font-size:14px}.media-status{font-size:14px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}.detail{padding:22px 21px;border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0}.detail h2{font-size:23px;line-height:1.5}.prescription{display:flex;gap:22px;margin:14px 0 20px}.prescription div{font-size:14px;color:var(--muted);white-space:nowrap}.prescription b{font-size:22px;color:var(--ink);font-weight:650;margin-right:3px}.cues{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}.cues li{font-size:14px;line-height:1.8;display:flex;align-items:flex-start;gap:9px}.cues .num{width:22px;height:22px;border:1px solid #c6b3de;border-radius:50%;font-size:14px;color:var(--purple);display:grid;place-items:center;flex:none;margin-top:2px;line-height:1}.details-rule{height:1px;background:var(--line);margin:20px 0 13px}.record-title{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:14px;color:var(--muted);margin-bottom:10px}.set-row{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;margin:8px 0}.set-check{height:30px;width:30px;border:1px solid #c6b5da;border-radius:8px;display:grid;place-items:center;color:var(--purple);font-size:14px}.set-check[aria-pressed=true]{background:var(--purple);color:white;border-color:var(--purple)}.set-check .icon{height:17px;width:17px}.set-row label{display:flex;align-items:center;gap:5px;min-width:0;font-size:14px;color:var(--muted)}.set-row input{width:100%;min-width:0;border:1px solid var(--line);background:#fbfafc;border-radius:8px;padding:6px 7px;height:36px;font-size:14px}.set-row .bw{font-size:14px;color:var(--muted)}.record-actions{display:flex;gap:7px;margin-top:13px}.record-actions .button{padding:8px 10px;min-width:0}.record-actions .primary{flex:1}.session-bar{margin:16px 0 0;padding:17px 21px;background:#fff;border:1px solid var(--line);border-radius:15px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}.progress{display:flex;align-items:center;gap:10px;white-space:nowrap;font-size:14px}.progress strong{font-weight:650;font-size:17px}.session-checks{display:flex;gap:20px;flex-wrap:wrap}.session-checks label{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px}.session-checks input{width:17px;height:17px;accent-color:var(--purple)}.feeling{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:14px}.feeling select{min-height:37px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:14px}.timer-strip{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:13px;padding:15px 21px;border-radius:15px;background:#eeebf5}.timer-modes{display:flex;gap:5px}.timer-modes button{font-size:14px;padding:7px 10px;border-radius:8px;color:var(--muted)}.timer-modes button.active{background:#fff;color:var(--deep)}.timer-clock{font-size:31px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;margin-left:auto;min-width:95px;text-align:right}.timer-actions{display:flex;gap:8px}.rest-time{font-size:14px;border:1px solid #d9cfe6;padding:6px 8px;background:transparent;border-radius:8px}.records{padding:37px 0 38px;scroll-margin-top:20px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:21px}.section-head select{padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);padding:20px 0 24px;border-top:1px solid var(--line)}.stat{padding:0 24px;border-left:1px solid var(--line)}.stat:first-child{padding-left:0;border-left:0}.stat label{font-size:14px;color:var(--muted);display:block}.stat strong{font-size:31px;font-weight:650;line-height:1.4;display:block;margin-top:4px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:23px 25px;min-width:0}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:17px}.panel-title h3{font-size:17px;font-weight:600}.chart-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(290px,1fr);gap:16px;margin-top:16px}.chart-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.segmented{display:flex;gap:3px;background:var(--pale);border-radius:8px;padding:3px}.segmented button{font-size:14px;padding:5px 10px;border-radius:6px;color:var(--muted)}.segmented button.active{background:#fff;color:var(--deep);box-shadow:0 1px 3px #4030500d}.chart-controls select{font-size:14px;padding:6px;border:1px solid var(--line);background:white;border-radius:7px}.heatmap-box{overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:3px}.heat-legend{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:12px;font-size:14px;color:var(--muted)}.heat-legend i{width:13px;height:13px;border-radius:4px;display:block}.activity-heatmap button{transition:outline .12s;min-width:12px;min-height:12px}.activity-heatmap button:hover{outline:2px solid #a98acb;outline-offset:1px}.activity-trend{width:100%;height:auto}.activity-breakdown{font-size:14px}.history-panel{margin-top:16px}.history-table{width:100%;border-collapse:collapse;font-size:14px}.history-table th{text-align:left;color:var(--muted);font-weight:400;padding:8px 10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}.history-table td{padding:12px 10px;border-bottom:1px solid #f0ecf5;white-space:nowrap}.history-table tr:last-child td{border-bottom:0}.history-table th:first-child,.history-table td:first-child{padding-left:0}.history-table button{color:var(--deep);font-size:14px;padding:0}.table-scroll{overflow-x:auto}.empty{color:#9c93a7;text-align:center;font-size:15px;padding:28px 10px}.tone{padding:3px 8px;background:var(--pale);border-radius:6px;color:var(--muted);display:inline-block;font-size:14px}.tone.good{background:#eef5f0;color:#4f7e67}.tone.pain{background:#f8eeee;color:#a16969}.progress-note{border-top:1px solid var(--line);margin-top:18px;padding-top:18px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.progress-note select{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 7px;font-size:14px;max-width:215px}.progress-note output{color:var(--deep);font-size:14px}.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#322c3e;color:#fff;padding:12px 19px;border-radius:11px;max-width:min(92vw,620px);font-size:14px;z-index:50;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.storage-alert{font-size:14px;background:#fff2dc;color:#805f2c;padding:10px 15px;border-radius:10px;margin-top:15px}dialog{color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:18px;padding:0;width:min(780px,94vw);max-height:88vh;box-shadow:0 20px 70px #34274422}dialog::backdrop{background:#2b233b55}.dialog-head{padding:21px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px;position:sticky;top:0;background:white;z-index:2}.dialog-body{padding:22px 24px;font-size:15px}.dialog-actions{padding:16px 24px 22px;display:flex;gap:10px;justify-content:flex-end}.schedule-edit{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.schedule-edit label{display:flex;align-items:center;gap:15px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px}.schedule-edit select{flex:1;padding:7px;border:1px solid var(--line);background:#fff;border-radius:7px;min-width:0;font-size:15px}.prompt-select{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:15px;margin-bottom:15px}.prompt-text{width:100%;height:330px;resize:vertical;font-size:15px;line-height:1.9;padding:15px;border:1px solid var(--line);border-radius:10px;background:#faf8fd}.backup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.backup-grid .button{white-space:normal;padding:16px}.backup-note{font-size:15px;color:var(--muted);line-height:1.8;margin:0 0 19px}.day-summary{display:flex;gap:22px;margin-bottom:18px;flex-wrap:wrap;font-size:15px}.day-summary strong{color:var(--deep)}.history-label{font-size:17px;margin:20px 0 9px}.future-tip{font-size:14px;color:var(--muted)}#printPlan{display:none}
+@media(max-width:1180px){.wrap{padding:0 22px}.workspace{grid-template-columns:185px minmax(300px,1fr) 295px}.detail{padding:20px 16px}.detail h2{font-size:21px}.prescription{gap:14px}.prescription b{font-size:20px}.ex{font-size:14px;padding:13px 9px}.media-col{padding:17px 13px}.media-tools{gap:6px}.media-tools .button{padding:7px 9px}.nav{margin-left:10px;gap:18px}.session-bar{gap:16px}.feeling{margin-left:0}.timer-strip{gap:10px}.chart-grid{grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr)}}
+@media(max-width:1000px){.workspace{grid-template-columns:185px minmax(0,1fr)}.detail{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 24px;border-left:0;border-top:1px solid var(--line);padding:21px}.detail h2,.detail .prescription,.detail .cues{grid-column:1}.details-rule{display:none}.detail .record-box{grid-column:2;grid-row:1/5;padding-top:5px}.prescription{margin:12px 0}.media-frame{min-height:285px}.media-tools .spacer{display:block}.session-bar{gap:20px}.chart-grid{grid-template-columns:1fr}.stats{padding-bottom:23px}.stat{padding-left:20px}.panel{padding:21px 23px}}
+@media(max-width:700px){.wrap{padding:0 15px}.top-row{height:65px;gap:14px}.brand{font-size:26px}.nav{display:none}.top-actions{gap:4px}.top-actions .button{padding:7px 9px;font-size:14px}.top-actions .button.icon-only{width:36px}.page-head{padding:25px 0 17px}h1{font-size:27px}h2{font-size:22px}.week{gap:5px;padding-bottom:4px}.week-slot{gap:6px}.week-day-label{font-size:12px}.week-card{min-height:58px;padding:6px 1px;border-radius:9px}.week-card .card-title{font-size:13px;letter-spacing:-.3px}.week-card:after{content:"·";font-size:16px;bottom:0}.week-tip{font-size:11px;margin-top:8px;margin-bottom:15px}.workbar{padding:0 10px;flex-wrap:wrap;gap:0}.tabs{width:100%;justify-content:space-around;min-height:56px}.tab{padding:13px 13px;font-size:17px}.work-tools{padding:10px 2px;border-top:1px solid #f1edf5;justify-content:space-between;width:100%}.work-tools input,.work-tools select{font-size:14px;min-height:35px;padding:6px 7px;min-width:0}.work-tools input{max-width:155px}.workspace{grid-template-columns:1fr}.rail{border-right:0;padding:11px 10px 0}.ex-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.ex{padding:10px 9px;font-size:14px;min-height:59px;border:1px solid var(--line);gap:7px}.ex .n{font-size:14px;min-width:17px}.ex .done-icon{width:15px;min-width:15px}.media-col{padding:12px 10px 14px}.media-frame{min-height:235px;aspect-ratio:16/11}.media-empty{gap:13px;padding:20px}.media-symbol{width:55px;height:55px}.media-empty h3{font-size:17px}.media-tools{gap:6px}.media-tools .button{padding:6px 8px;min-height:36px;font-size:14px}.media-tools select{font-size:14px;min-height:36px;max-width:72px}.media-tools .spacer{display:none}.media-status{font-size:14px}.detail{display:flex;padding:20px 18px}.detail h2{font-size:23px}.prescription{gap:28px;margin:13px 0 18px}.prescription b{font-size:22px}.cues{gap:10px}.cues li{font-size:15px}.details-rule{display:block;margin:20px 0 14px}.detail .record-box{padding-top:0}.record-title{font-size:14px}.set-row{grid-template-columns:32px minmax(0,1fr) minmax(0,1fr);gap:9px}.set-row input{height:39px;font-size:15px}.set-row label{font-size:14px}.set-check{width:32px;height:32px}.record-actions{margin-top:14px}.record-actions .button{font-size:15px;padding:8px 13px}.session-bar{padding:16px;gap:14px;align-items:flex-start}.progress{width:100%;font-size:14px}.session-checks{gap:13px}.session-checks label{font-size:14px}.feeling{width:100%;justify-content:space-between}.feeling select{min-width:120px}.timer-strip{padding:13px 15px;gap:12px}.timer-modes{width:100%;justify-content:space-between}.timer-modes button{font-size:14px;padding:7px 9px}.timer-clock{font-size:31px;margin-left:auto;min-width:85px}.timer-actions .button{padding:7px 11px}.rest-time{font-size:14px;max-width:88px}.records{padding-top:30px}.section-head{margin-bottom:17px}.stats{grid-template-columns:repeat(2,1fr);gap:20px 0;padding:20px 0}.stat{padding:0 17px}.stat:nth-child(3){padding-left:0;border-left:0}.stat strong{font-size:28px}.stat label{font-size:14px}.panel{padding:18px 16px;border-radius:13px}.chart-grid{gap:13px;margin-top:13px}.chart-controls{width:100%;justify-content:space-between;gap:7px}.segmented button{font-size:14px;padding:5px 8px}.history-table{font-size:14px}.history-table th,.history-table td{padding:10px 8px}.heat-legend{font-size:14px}.progress-note{align-items:flex-start;flex-direction:column;gap:10px}.progress-note select{max-width:100%;width:100%}.dialog-head{padding:18px}.dialog-body{padding:18px}.dialog-actions{padding:15px 18px 19px}.schedule-edit{grid-template-columns:1fr}.schedule-edit label{padding:10px 12px}.backup-grid{grid-template-columns:1fr}.prompt-text{font-size:15px;height:330px}.dialog-head h2{font-size:21px}.toast{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{@page{size:A4;margin:15mm}body{background:white}body>*{display:none!important}#printPlan{display:block!important}#printPlan h1{font-size:22pt;margin-bottom:10pt}#printPlan h2{font-size:15pt;margin-top:18pt}#printPlan table{width:100%;border-collapse:collapse;font-size:11pt}#printPlan td,#printPlan th{border-bottom:1px solid #ddd;text-align:left;padding:8pt}#printPlan p{font-size:11pt;margin:10pt 0}}
+.plan-subtitle{color:var(--muted);font-size:14px;margin-top:3px}.training-guide{background:#edf4f2;border:1px solid #dbe9e5;color:#365e58;border-radius:12px;padding:14px 18px;margin:0 0 20px;font-size:14px}.training-guide strong{color:#294c47}@media(max-width:700px){.training-guide{padding:12px;font-size:13px}}
+</style></head><body>
+<noscript>请使用浏览器打开此文件，并允许JavaScript。</noscript>
+<header class="top"><div class="wrap top-row"><a class="brand" href="#training">轻练</a><nav class="nav"><a href="#training">训练</a><a href="#records">记录</a></nav><div class="top-actions"><button class="button ghost" id="promptsBtn">视频提示词</button><button class="button" id="backupBtn">备份</button><button class="button icon-only" id="printBtn" aria-label="打印计划" title="打印计划"><span data-icon="print"></span></button></div></div></header>
+<main class="wrap"><section id="training"><div class="page-head"><div><h1>训练计划</h1><p class="plan-subtitle">适合不同性别与训练基础 · 根据个人能力调整</p></div><button class="button" id="scheduleBtn"><span data-icon="reset"></span>恢复默认</button></div><nav class="week" id="weekPlan" aria-label="每周训练安排"></nav><p class="week-tip" id="weekHint">拖动卡片交换日期 · 点按查看</p><div class="storage-alert" id="storageAlert" hidden>当前浏览器无法保存记录，请及时备份。</div><div class="training-guide"><strong>按自己的节奏练。</strong> 初学者可从每个动作 1–2 组开始，熟悉后逐步增加至 2–4 组。选择能稳定完成目标次数、结束时仍可再做约 2–3 次的负重；如有疼痛或不适，请停止动作。视频仅供参考，动作幅度和负重以自身情况为准。</div><section class="workbench"><div class="workbar"><div class="tabs" role="tablist" aria-label="训练部位"><button class="tab" role="tab" id="tab-chest" data-group="chest" aria-selected="true" aria-controls="workPanel">胸部</button><button class="tab" role="tab" id="tab-back" data-group="back" aria-selected="false" tabindex="-1" aria-controls="workPanel">背部</button><button class="tab" role="tab" id="tab-shoulder" data-group="shoulder" aria-selected="false" tabindex="-1" aria-controls="workPanel">肩部</button><button class="tab" role="tab" id="tab-legs" data-group="legs" aria-selected="false" tabindex="-1" aria-controls="workPanel">臀腿</button></div><div class="work-tools"><label class="sr-only" for="sessionDate">训练日期</label><input type="date" id="sessionDate" required><label class="sr-only" for="trainingStage">每动作组数</label><select id="trainingStage"><option value="intro">每动作1组</option><option value="build">每动作2组</option><option value="three">每动作3组</option><option value="four">每动作4组</option></select></div></div><div class="workspace" id="workPanel" role="tabpanel" aria-labelledby="tab-chest"><aside class="rail"><div class="ex-list" id="exerciseList"></div></aside><section class="media-col" aria-label="动作示范"><div class="media-frame"><video id="exerciseVideo" controls playsinline muted loop preload="metadata" hidden></video><div class="media-empty" id="videoEmpty"><div class="media-symbol"><span data-icon="play"></span></div><h3>动作示范</h3><button class="button soft" id="emptyImportBtn"><span data-icon="upload"></span>导入视频</button></div></div><div class="media-tools"><button class="button" id="exercisePromptBtn">复制提示词</button><button class="button" id="videoImportBtn">导入视频</button><label class="sr-only" for="videoSpeed">播放速度</label><select id="videoSpeed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option></select><span class="spacer"></span><button class="button icon-only" id="removeVideoBtn" aria-label="移除当前视频" title="移除视频" disabled><span data-icon="trash"></span></button></div><p class="media-status" id="mediaStatus" hidden></p><input type="file" accept="video/*,.mp4,.webm,.mov" id="videoFile" hidden></section><article class="detail"><h2 id="exerciseTitle"></h2><div class="prescription" id="prescription"></div><ol class="cues" id="cues"></ol><div class="details-rule"></div><div class="record-box"><div class="record-title"><span>本次记录</span><span id="loadUnit"></span></div><div id="setRows"></div><div class="record-actions"><button class="button primary" id="completeSetBtn">完成一组</button><button class="button icon-only" id="nextExerciseBtn" title="下一个动作" aria-label="下一个动作"><span data-icon="right"></span></button></div></div></article></div></section><section class="session-bar" aria-label="本次训练"><div class="progress"><strong>本次进度</strong><span id="sessionProgress">0 / 4组</span></div><div class="session-checks"><label><input type="checkbox" id="cardioDone">有氧30分钟</label><label><input type="checkbox" id="stretchDone">拉伸10分钟</label></div><label class="feeling" for="feelingSelect">训练感受<select id="feelingSelect"><option value="">选择感受</option><option value="easy">轻松</option><option value="good">刚好</option><option value="hard">吃力</option><option value="pain">不适</option></select></label></section><section class="timer-strip" aria-label="训练计时"><div class="timer-modes"><button data-timer="rest" class="active">休息</button><button data-timer="cardio">有氧30分</button><button data-timer="stretch">拉伸10分</button></div><label class="sr-only" for="restSelect">休息时间</label><select class="rest-time" id="restSelect"><option value="60">60秒</option><option value="75">75秒</option><option value="90" selected>90秒</option><option value="120">120秒</option></select><output class="timer-clock" id="timerDisplay">01:30</output><div class="timer-actions"><button class="button primary" id="timerStart">开始</button><button class="button icon-only" id="timerReset" aria-label="重置计时"><span data-icon="reset"></span></button></div></section></section>
+<section class="records" id="records"><div class="section-head"><h2>训练记录</h2><label><span class="sr-only">记录年份</span><select id="yearSelect"></select></label></div><div class="stats"><div class="stat"><label>训练天数</label><strong id="statDays">0</strong></div><div class="stat"><label>完成组数</label><strong id="statSets">0</strong></div><div class="stat"><label>动作次数</label><strong id="statReps">0</strong></div><div class="stat"><label>有氧分钟</label><strong id="statCardio">0</strong></div></div><div class="panel"><div class="panel-title"><h3>训练分布</h3><span id="yearSessions" class="muted">0次训练</span></div><div class="heatmap-box" id="heatmap"></div><div class="heat-legend" aria-label="按完成组数着色；仅有氧或拉伸记最低色阶"><span>少</span><i style="background:#f0eef3"></i><i style="background:#e7dcf5"></i><i style="background:#cbb5e5"></i><i style="background:#a487cc"></i><i style="background:#7856a7"></i><span>多</span></div></div><div class="chart-grid"><div class="panel"><div class="panel-title"><h3>训练趋势</h3><div class="chart-controls"><div class="segmented" aria-label="趋势时间尺度"><button data-trend-mode="daily" class="active">每天</button><button data-trend-mode="weekly">每周</button><button data-trend-mode="cumulative">累计</button></div><label><span class="sr-only">趋势指标</span><select id="trendMetric"><option value="sets">组数</option><option value="reps">次数</option><option value="sessions">训练场次</option></select></label></div></div><div id="trendChart"></div></div><div class="panel"><div class="panel-title"><h3>部位分布</h3></div><div id="bodyChart"></div><div class="progress-note"><label class="sr-only" for="progressExercise">查看动作变化</label><select id="progressExercise"></select><output id="exerciseProgress">尚无记录</output></div></div></div><div class="panel history-panel"><div class="panel-title"><h3>最近记录</h3><button class="button ghost" id="allHistoryBtn">全部记录 <span data-icon="right"></span></button></div><div class="table-scroll" id="recentRecords"></div></div></section>
+</main>
+
+<dialog id="promptDialog" aria-labelledby="promptTitle"><div class="dialog-head"><h2 id="promptTitle">真人视频提示词</h2><button class="button icon-only" data-close="promptDialog" aria-label="关闭提示词"><span data-icon="close"></span></button></div><div class="dialog-body"><label class="sr-only" for="promptExercise">选择视频动作</label><select id="promptExercise" class="prompt-select"></select><label class="sr-only" for="promptText">可复制的视频提示词</label><textarea id="promptText" class="prompt-text" readonly></textarea></div><div class="dialog-actions"><button class="button" id="downloadPromptsBtn">下载全部</button><button class="button primary" id="copyPromptBtn">复制提示词</button></div></dialog>
+<dialog id="backupDialog" aria-labelledby="backupTitle"><div class="dialog-head"><h2 id="backupTitle">数据与视频</h2><button class="button icon-only" data-close="backupDialog" aria-label="关闭备份"><span data-icon="close"></span></button></div><div class="dialog-body"><p class="backup-note">记录自动保存在本机。换设备时，可备份并导入记录。</p><div class="backup-grid"><button class="button" id="exportJsonBtn">备份记录</button><button class="button" id="importJsonBtn">导入记录</button><button class="button" id="exportCsvBtn">导出表格</button><button class="button" id="exportHtmlBtn">导出含视频网页</button></div><input type="file" accept=".json,.csv,application/json,text/csv" id="backupFile" hidden></div></dialog>
+<dialog id="historyDialog" aria-labelledby="historyTitle"><div class="dialog-head"><h2 id="historyTitle">训练记录</h2><button class="button icon-only" data-close="historyDialog" aria-label="关闭记录"><span data-icon="close"></span></button></div><div class="dialog-body" id="historyBody"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div><section id="printPlan"></section>
+<script id="embeddedMedia">window.EMBEDDED_MEDIA = {"chest_press":{"name":"01_chest_press.mp4","url":"videos/01_chest_press.mp4"},"incline_dumbbell_press":{"name":"02_incline_dumbbell_press.mp4","url":"videos/02_incline_dumbbell_press.mp4"},"pec_fly":{"name":"03_pec_fly.mp4","url":"videos/03_pec_fly.mp4"},"wall_pushup":{"name":"04_wall_pushup.mp4","url":"videos/04_wall_pushup.mp4"},"lat_pulldown":{"name":"05_lat_pulldown.mp4","url":"videos/05_lat_pulldown.mp4"},"cable_row":{"name":"06_cable_row.mp4","url":"videos/06_cable_row.mp4"},"straight_pulldown":{"name":"07_straight_pulldown.mp4","url":"videos/07_straight_pulldown.mp4"},"shoulder_press":{"name":"08_shoulder_press.mp4","url":"videos/08_shoulder_press.mp4"},"lateral_raise":{"name":"09_lateral_raise.mp4","url":"videos/09_lateral_raise.mp4"},"reverse_fly":{"name":"10_reverse_fly.mp4","url":"videos/10_reverse_fly.mp4"},"goblet_squat":{"name":"11_goblet_squat.mp4","url":"videos/11_goblet_squat.mp4"},"glute_bridge":{"name":"12_glute_bridge.mp4","url":"videos/12_glute_bridge.mp4"},"leg_curl":{"name":"13_leg_curl.mp4","url":"videos/13_leg_curl.mp4"},"hip_abduction":{"name":"14_hip_abduction.mp4","url":"videos/14_hip_abduction.mp4"}};</script>
+<script id="appBundle">
+window.EXERCISES = [
+{id:'chest_press',group:'chest',name:'坐姿推胸器',reps:[10,12],rest:90,loadType:'machine',cues:['背贴靠垫，双脚踩稳','呼气向前推，不锁肘','吸气缓慢收回']},
+{id:'incline_dumbbell_press',group:'chest',name:'上斜哑铃卧推',reps:[8,12],rest:90,loadType:'pair_dumbbell',cues:['凳背约30°，双脚踩稳','呼气上推，手腕保持自然','吸气下放，肩部保持舒适']},
+{id:'pec_fly',group:'chest',name:'蝴蝶机夹胸',reps:[12,15],rest:75,loadType:'machine',cues:['背靠稳，手肘微弯','呼气合拢，肘角度不变','吸气打开，不向后硬拉']},
+{id:'wall_pushup',group:'chest',name:'墙面俯卧撑',reps:[8,12],rest:75,loadType:'bodyweight',cues:['双手撑墙，身体保持平直','吸气屈肘，胸部靠近墙面','呼气推回，手脚不移动']},
+{id:'lat_pulldown',group:'back',name:'中立握高位下拉',reps:[10,12],rest:90,loadType:'machine',cues:['坐稳，压腿垫贴住大腿','呼气拉向上胸，肘向下','吸气送回，不甩动身体']},
+{id:'cable_row',group:'back',name:'坐姿绳索划船',reps:[10,12],rest:90,loadType:'machine',cues:['双脚踩稳，背部自然挺直','呼气拉向上腹，肘靠近身体','吸气伸臂，躯干不摇摆']},
+{id:'straight_pulldown',group:'back',name:'绳索直臂下压',reps:[12,15],rest:75,loadType:'machine',cues:['膝微屈，肘轻弯并固定','呼气画弧，下压至大腿前','吸气送回，腰部不借力']},
+{id:'shoulder_press',group:'shoulder',name:'坐姿哑铃推举',reps:[8,12],rest:90,loadType:'pair_dumbbell',cues:['背靠稳，掌心相对','呼气向上推，不拱腰','吸气慢放至舒适肩高']},
+{id:'lateral_raise',group:'shoulder',name:'坐姿哑铃侧平举',reps:[12,15],rest:75,loadType:'pair_dumbbell',cues:['坐稳，手肘保持微弯','呼气向侧前方抬至肩下','吸气慢放，不耸肩甩动']},
+{id:'reverse_fly',group:'shoulder',name:'反向蝴蝶机',reps:[12,15],rest:75,loadType:'machine',cues:['面对靠垫，胸部轻贴','呼气向外打开，手肘微弯','吸气合回，不向后甩身']},
+{id:'goblet_squat',group:'legs',name:'负重深蹲（高脚杯）',reps:[8,10],rest:120,loadType:'single_dumbbell',cues:['双手持轻哑铃于胸前','吸气屈髋屈膝，脚掌踩稳','呼气站起，膝盖朝脚尖方向']},
+{id:'glute_bridge',group:'legs',name:'自重臀桥',reps:[10,15],rest:75,loadType:'bodyweight',cues:['仰卧屈膝，双脚踩稳','呼气抬髋至肩髋膝成线','吸气落下，不用腰顶高']},
+{id:'leg_curl',group:'legs',name:'坐姿腿弯举',reps:[10,12],rest:75,loadType:'machine',cues:['膝对转轴，大腿固定','呼气屈膝，脚跟向下后方','吸气伸回，不抬臀']},
+{id:'hip_abduction',group:'legs',name:'坐姿髋外展',reps:[12,15],rest:60,loadType:'machine',cues:['背靠稳，软垫在大腿外侧','呼气向外打开，不弹动','吸气合回，幅度保持舒适']}
+];
+window.LEGACY_EXERCISES = [{id:'box_squat',group:'legs',name:'高箱坐站（历史）',loadType:'bodyweight',reps:[8,10],rest:120}];
+
+window.MUSE_PROMPTS = {
+  common: "制作一段用于健身训练网页的真人动作教学视频。主角是一位虚构成年健身教练，面貌自然、身体比例真实；穿无品牌浅紫色短袖运动上衣、深灰色运动长裤和运动鞋，头发束起。环境为安静整洁的现代健身房，浅灰白背景，柔和均匀的自然光，保留真实皮肤与布料质感。采用真人实拍观感，正常速度、固定机位、一个连续镜头，横屏16:9；若平台支持，目标1080p、30fps。人物与完整动作范围居中，头、双手、双脚及必要器械均不出画，四周留少量空间。目标时长12秒：约1秒展示起始位，接着自然完成2次完整重复，最后约1秒稳定在起始位；若平台时长较短或两次动作无法自然完成，改为1次完整重复，不加速、不省略回程。动作流畅但受控，有自然的肌肉发力、呼吸和布料细微运动，避免所有关节以同一速度机械摆动。手始终真实握住器械，脚部和支撑面稳定接触，负重随正确的器械结构运动。无字幕、无贴纸、无logo、无水印、无解说、无背景音乐，不做健身广告式表演。结束姿势与开始相近，适合重复播放；不要为了无缝循环倒放、跳帧或瞬间复位。",
+  negative: "避免：卡通、3D假人、塑料皮肤、机械僵硬、自动往返摆动、动作加速、慢动作滤镜、镜头旋转或切换、身体比例漂移、多余肢体、手指粘连、关节反折、手脚滑动或悬空、手穿过握把、器械或哑铃变形、钢索穿过身体、负重忽然消失、错误动作、借力甩动、过度拱腰、耸肩挤颈、夸张喘息、痛苦表情、摆拍、字幕、logo、水印。",
+  items: {
+    chest_press: {
+      filename: "01_chest_press.mp4",
+      prompt: "动作：坐姿推胸器。固定镜头位于人物右前侧约45度，高度接近坐姿胸口，画面完整展示座椅、靠背、双臂、手柄和踩稳地面的双脚。人物已经坐好，手柄约在胸部中段，臀背贴稳靠垫，腰部保持自然弧度；双手闭合握住手柄，手腕与前臂对齐，肘自然弯曲、略低于肩，起点不把上臂拉到身体后方。停留约1秒后，呼气并平稳向前推，约2秒将手柄推至肘接近伸直的位置；肘保留柔和余量，肩部不向前冲，头与躯干不随负重晃动。随后吸气，约3秒控制手柄沿原机器轨迹回到胸前，回程由人物主动控制，配重不砸落。以相同舒适幅度重复，最后稳定回到起始位。握把、连接臂和配重的运动应符合机器结构，双手全程不松开或穿过把手。使用明显可轻松控制的负重，表情平静，胸与手臂自然发力，避免僵直停顿、突然锁肘、耸肩和挺腹借力。镜头不推近，不遮挡肘部及脚部。"
+    },
+    incline_dumbbell_press: {
+      filename: "02_incline_dumbbell_press.mp4",
+      prompt: "动作：轻哑铃上斜卧推。使用约30度低斜度、结构稳固的上斜训练凳。固定镜头从人物右前侧约45度观察，略高于凳面，完整拍到头、躯干、双臂、两只哑铃、训练凳与踩地的双脚。人物已躺稳，头、上背、臀部有支撑，腰部保留自然弧度；两只轻哑铃位于上胸两侧，手腕保持自然，前臂大致竖直，肘与躯干约成45度而非横向完全张开。起始稳定约1秒，呼气，在约2秒内将双哑铃平稳推向上胸上方；两侧同步但不僵硬，顶端手臂接近伸直，哑铃之间保留间距，不相撞、不越过头后方。随后吸气，用约3秒沿原路径缓慢下放，回到肩部舒适的上胸两侧位置，不强压到过深。重复完成后回到同样起点并稳定收尾，不演示扔下哑铃或突然起身。全程脚踩稳、臀部不抬起，胸廓不过度挺起，避免肩膀向耳朵靠近、手腕后折或利用弹震。展示轻负荷下自然、安静、可控的真实训练。"
+    },
+    pec_fly: {
+      filename: "03_pec_fly.mp4",
+      prompt: "动作：蝴蝶机夹胸，使用手握式夹胸器。固定镜头位于人物前方略偏右约25度，镜头与坐姿肩部接近同高，完整展示双臂开合的范围、靠背、手柄和双脚，避免正面视角让两只手完全重叠。人物背部贴靠垫，双脚踩稳，手柄高度使肘略低于肩；双臂自然打开至舒适范围，肘微弯，手腕平直，起始不把上臂拉到躯干后方。稳定约1秒后呼气，用约2秒让上臂围绕肩关节向胸前合拢，像环抱大树，双肘的弯曲程度基本保持不变。手柄在胸前靠近时自然换向，不猛撞，也不把动作变成屈肘推胸。接着吸气，用约3秒平稳打开到原来的舒适起点，背部与臀部持续贴稳，不被配重拉着突然展开。重复后在打开的起始位收尾。机器的左右连杆与握把持续连接，钢索和配重运动合理；肩膀不耸起，身体不前倾借力。动作应有真实的肌肉张力与细微呼吸变化，两边轨迹协调，避免机械式开关门节奏和过度拉伸肩部。"
+    },
+    wall_pushup: {
+      filename: "04_wall_pushup.mp4",
+      prompt: "动作：墙面俯卧撑。固定镜头位于人物侧面略偏前约20度，完整展示头到鞋底、墙面、双手和双脚；机位让观众同时看清身体斜线与肘部弯曲。人物面对牢固平整墙面，双手放在约胸高、略宽于肩的位置，手掌贴墙，手指朝上；双脚站在能轻松控制的位置，脚底稳稳着地，头、躯干和腿大致保持一条直线，腹部轻收紧。起始手臂接近伸直，停留约1秒。随后吸气，用约3秒缓慢弯肘，让整个身体作为一条稳定斜线靠近墙面，胸部到舒适距离即可，不要求鼻尖触墙；肘朝斜后方，不能向两侧张到90度。接着呼气，约2秒用双手推墙，身体整体回到原位，不单独抬头或甩动腰部。重复后稳定在手臂接近伸直的起点。双手接触点与双脚位置全程不变，墙面不晃动、手掌不滑动。动作自然轻松，肘不猛锁、脖子不前探，不塌腰、不撅臀，不额外加地面俯卧撑或转身动作。"
+    },
+    lat_pulldown: {
+      filename: "05_lat_pulldown.mp4",
+      prompt: "动作：中立握高位下拉。固定镜头在人物前侧约35度，稍高于坐姿胸部，完整拍到头顶滑轮、掌心相对握把、双肘、压腿垫和双脚。人物坐稳，压腿垫固定大腿，脚底踩地；使用可控制的轻配重，腹部轻收紧，躯干保持小幅且稳定的后倾。起始双臂在头顶前方伸展，肩胛随手臂自然上转，不被重量突然拉高。停留约1秒后呼气，用约2秒让双肘向身体两侧下方移动，把握把拉向上胸前；握把始终从头部前方经过，不能穿过脸、头或颈部，不拉到后颈，也不硬拉到腹部。到肘已自然靠近身体的位置便平稳换向。随后吸气，用约3秒慢慢伸臂送回，允许肩胛自然上转，躯干后倾角度保持稳定，不前后摇摆。重复后稳定回到头顶前方的起始位置。钢索全程与握把相连且张力方向合理，手掌不滑脱，臀部不离座。展示背部和手臂共同用力的真实动作，避免耸肩猛拉、晃腰借力、快速释放配重或机械式肘关节转动。"
+    },
+    cable_row: {
+      filename: "06_cable_row.mp4",
+      prompt: "动作：坐姿绳索划船。固定镜头在人物侧前方约45度，机位接近坐姿腰胸高度，完整展示低位滑轮、绳索、窄握把、躯干、双膝及踩在脚踏上的双脚。人物使用掌心相对的把手，坐姿稳定，膝保持轻微弯曲，背部自然挺直，胸口自然抬起，腹部轻收紧。起始双臂前伸，肩胛可自然前移，但腰部不弓成圆背，绳索保持受控。稳定约1秒后呼气，用约2秒把肘沿肋骨两侧向后带，使把手平稳拉到上腹附近；前臂随肘移动，肘到躯干附近即停止，不把肩和手硬拉到很后面，不将把手拉向脖子。接着吸气，用约3秒缓慢伸臂，手柄沿原路线向前送回，允许肩胛自然移动，腰背和坐姿角度不随之摇晃。重复后回到前伸起点。全程双脚踩住踏板，臀部留在座位，手和把手保持真实握持。人物有正常呼吸与平滑的换向，配重不撞击，钢索不松垮或穿过身体；避免将动作拍成前倾后仰的划船机有氧运动。"
+    },
+    straight_pulldown: {
+      filename: "07_straight_pulldown.mp4",
+      prompt: "动作：绳索直臂下压。固定镜头位于人物侧前方约45度，完整拍到高位滑轮、握杆、手臂全程轨迹和双脚。人物面向高位滑轮，双脚约髋宽踩稳、膝微屈，髋略向后，躯干轻微前倾，背部保持自然。双手约肩宽握住直杆，肘保留轻微弯曲；起始手臂位于身体前上方、肩部舒适的高度，握杆与头部保持距离。稳定约1秒后呼气，用约2秒让上臂围绕肩关节向下画弧，把握杆带到大腿前方，手臂不越过躯干向后拉。肘的弯曲角度基本不变，主要运动发生在肩关节，不能变成反复屈肘伸肘的三头肌下压。随后吸气，用约3秒沿同一弧线缓慢送回到前上方，腰背、髋部和膝部位置保持稳定，不随着握杆一上一下起伏。重复后在前上方起点稳定结束。钢索绷紧方向始终指向高位滑轮，双手不会穿杆，器械结构不变形。负重轻且动作流畅，背部自然发力，避免耸肩、挺腰、靠躯干突然下压借力、肘关节僵直反折或突然抬臂过头。"
+    },
+    shoulder_press: {
+      filename: "08_shoulder_press.mp4",
+      prompt: "动作：坐姿中立握轻哑铃推举。使用有靠背的稳定训练凳。固定镜头在人物前侧约30度，镜头略低于坐姿肩高，完整保留头顶推举空间、两只哑铃、双肘、靠背和双脚。人物臀背靠稳，脚底踩地，腰部维持自然弧度，腹部轻收紧。两只轻哑铃置于肩附近，掌心相对，肘略在躯干前方，前臂大致竖直，手腕与前臂对齐。起始稳定约1秒后呼气，用约2秒把哑铃向头顶上方平稳推起；手臂接近伸直就停，两只哑铃保留间距，不相撞、不穿过头部。肩胛随着抬臂自然上转，不要求全程死死夹紧，也不主动耸肩挤住脖子。随后吸气，用约3秒受控下放到舒适的肩附近高度，躯干保持稳定，哑铃轨迹左右协调。重复后回到起始肩位，稳住后结束，不演示抛哑铃。表现真实轻负荷运动，呼吸平静，关节换向柔和；禁止挺腹拱腰、离开靠背借力、手腕后折、双臂完全横张或快速锁死肘关节。"
+    },
+    lateral_raise: {
+      filename: "09_lateral_raise.mp4",
+      prompt: "动作：坐姿哑铃侧平举，使用一对很轻的哑铃。固定镜头位于人物正前方略偏右约15度，镜头在坐姿胸口高度，完整保留两侧抬臂空间，头、脚和哑铃不出画。人物坐在稳定训练凳上，双脚踩稳，躯干自然挺直，腹部轻收紧，肩膀放松。起始双臂自然垂在身体两侧，肘微弯，手腕保持自然，哑铃与大腿留少量间隙。稳定约1秒后呼气，用约2秒将双臂向两侧略偏前的位置抬起，肘与手腕协调上升，肘角度基本不变；到肩下方或接近肩高的舒适高度即平稳换向，不抬过头。掌心保持自然，拇指可轻微朝上，不能做小指抬高的“倒水”动作。随后吸气，用约3秒缓慢落回身体两侧，哑铃不砸到大腿。重复后在起点稳定结束。全程坐姿与脚部接触不变，肩部随抬臂有自然协调，不僵硬冻结；不甩腰、不踢腿、不耸肩挤颈。表现轻负重、自然肌肉张力和真实布料运动，哑铃形状重量外观始终一致。"
+    },
+    reverse_fly: {
+      filename: "10_reverse_fly.mp4",
+      prompt: "动作：反向蝴蝶机后肩飞鸟。固定镜头位于人物后侧约35度，略高于坐姿肩部，让观众看清后肩、双臂开合轨迹、胸前靠垫、握把和双脚。机器设为后肩模式，人物面对靠垫坐下，胸部轻贴靠垫，双脚踩稳，头颈保持自然。座高让手柄约在肩高，双手握牢，肘微弯。起始双臂在身体前方伸出，两个把手位于胸前方向，不要拍成背靠垫的夹胸动作。稳定约1秒后呼气，用约2秒将双臂向两侧水平打开，上臂围绕肩关节做水平外展，肘的弯曲程度基本保持不变。打开至上臂与躯干大致齐平的舒适位置即停止，不将手臂过度拉到身体后方。随后吸气，用约3秒缓慢合回前方，仍保持胸部接触靠垫，躯干不前后摆动。重复后回到前伸起点并稳定收尾。机械连杆随把手合理移动，手不穿过握把，配重不突然落下。表现后肩与上背的自然发力，避免耸肩、仰头、胸部离垫后仰，以及把动作变成屈肘划船。"
+    },
+    goblet_squat: {
+      filename: "11_goblet_squat.mp4",
+      prompt: "动作：轻负重哑铃高脚杯深蹲。固定镜头位于人物侧前方约45度，机位约在站姿髋部高度，头到鞋底完整入镜，并清楚显示膝盖、脚尖及胸前哑铃。人物双手托住一只竖直轻哑铃的上端，贴近胸口；双脚约肩宽，脚尖按自然舒适角度稍向外，整个脚掌接触地面。起始身体自然站直，肘位于身体前侧，腹部轻收紧，肩颈放松。稳定约1秒后吸气，用约3秒同时屈髋屈膝，髋部向后下方移动，膝盖大致沿脚尖方向向前与外侧移动。下蹲至能保持稳定、足跟不抬起的舒适深度即可，不强行蹲得很深，也不把膝盖限制在脚尖后方。随后呼气，用约2秒通过全脚掌稳定发力站起，膝髋协调伸展，回到自然站姿，不挺腰后仰、不猛锁膝。重复后保持哑铃贴胸稳定收尾。全程哑铃不漂移，手掌不穿过配重，脚不滑动，膝不突然内扣。动作真实、有自然的躯干前倾但背部不过度弓起，不使用重杠铃、箱子或跳跃。"
+    },
+    glute_bridge: {
+      filename: "12_glute_bridge.mp4",
+      prompt: "动作：自重臀桥。固定镜头采用接近完全侧面的视角，镜头略高于垫面，横向完整展示头、肩、髋、双膝和双脚；两条腿可轻微错开视线，但实际仍平行、与髋同宽。人物仰卧在稳定瑜伽垫上，膝盖弯曲，全脚掌踩地，双臂自然放于身体两侧，头颈和肩部舒适贴垫。起始髋部靠近垫面，腹部轻收紧，脚的位置使抬髋后小腿大致竖直。稳定约1秒后呼气，用约2秒通过臀部发力平稳抬髋，使肩、髋、膝大致成一条斜线；顶端自然短暂停留，保持腹部参与，不继续顶高形成腰部反弓。接着吸气，用约3秒缓慢落下髋部，轻柔回到起点，不砸向地面。重复后稳定仰卧收尾。整个过程头肩与双脚保持在同一位置，不能用脖子撑地，手臂不做额外推举，膝盖不明显向内倒。表情放松、呼吸自然，臀部起落平滑且有真实重量感。不要拍成抬肩的桥式后弯、卷腹、单腿臀桥或腰部大幅甩动。"
+    },
+    leg_curl: {
+      filename: "13_leg_curl.mp4",
+      prompt: "动作：坐姿腿弯举。固定镜头位于人物侧前方约55度，略低于坐姿胸口，完整展示靠背、大腿压垫、膝关节转轴、小腿滚垫与双脚运动范围。人物已调好机器：臀背靠稳，大腿压垫固定在大腿上，不压髌骨；膝关节大致对准机器转轴，滚垫位于小腿下端、跟腱上方。起始小腿向前伸出，膝保持轻微弯曲而不锁死，双手扶稳两侧把手。稳定约1秒后呼气，用约2秒屈膝，让脚跟带着小腿滚垫向下、向座位下方回勾；大腿和膝的位置保持稳定，运动围绕膝关节发生。这是大腿后侧训练，不能生成向上踢直小腿的腿屈伸动作。达到舒适弯曲位置后，吸气并用约3秒缓慢伸回前方起点，配重不砸落。重复后在起点稳定收尾。滚垫与小腿始终有真实接触，机器转轴和连杆结构固定，脚不穿过器械。人物不抬臀、不拱腰、不甩腿，躯干保持自然稳定，呈现轻配重下流畅受控的屈伸和正常呼吸。"
+    },
+    hip_abduction: {
+      filename: "14_hip_abduction.mp4",
+      prompt: "动作：坐姿髋外展。固定镜头位于人物正前方略偏右约15度，稍高于坐姿膝部，完整拍到靠背、髋部、双膝、外侧软垫、脚踏以及双脚，不使用局部身体特写。人物坐在髋外展机上，背部靠稳，双手扶住侧把；机器使用外展模式，软垫位于大腿或膝部外侧，双脚踩在随机器移动的脚踏上。起始双腿处于自然靠近的舒适位置，膝盖弯曲，腰背中立，腹部轻收紧。稳定约1秒后呼气，用约2秒由髋部控制双腿向外打开，两侧大腿围绕各自髋关节转动，软垫与脚踏随腿移动，小腿和脚的位置关系保持合理，腿部长度不能发生伸缩。到舒适范围便平稳换向，不强行张到最大角度。随后吸气，用约3秒缓慢合回起点，不让配重碰撞或膝盖猛烈相撞。重复后在合回起点稳定收尾。整个过程臀部不离座，躯干不前后摇晃，不能靠快速弹开或上身俯冲发力。负重轻、呼吸平静，机器结构稳定，手脚与支撑真实接触，避免把动作生成向内夹腿的内收训练。"
+    }
+  }
+};
+
+/* Offline training statistics. Only completed, user-recorded work is counted. */
+(function () {
+  'use strict';
+  const DAY = 86400000;
+  const GROUPS = { chest: '胸', back: '背', shoulder: '肩', legs: '臀腿' };
+  const GROUP_ORDER = ['chest', 'back', 'shoulder', 'legs'];
+  const FEELINGS = { easy: '轻松', good: '适中', hard: '吃力', pain: '不适' };
+  const LOAD_TYPES = new Set(['machine', 'pair_dumbbell', 'single_dumbbell', 'bodyweight']);
+  const COLORS = ['#f0eef3', '#e7dcf5', '#cbb5e5', '#a487cc', '#7856a7'];
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const round = n => Math.round((n + Number.EPSILON) * 1000) / 1000;
+  const num = n => typeof n === 'number' && Number.isFinite(n);
+  const positiveReps = value => {
+    if (value === '' || value == null || typeof value === 'boolean') return 0;
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 && Number.isInteger(n) ? n : 0;
+  };
+  const loggedWeight = value => {
+    if (value === '' || value == null || typeof value === 'boolean') return null;
+    const n = Number(value);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  };
+  function dateMs(date) {
+    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return NaN;
+    const [y, m, d] = date.split('-').map(Number);
+    const stamp = Date.UTC(y, m - 1, d);
+    const check = new Date(stamp);
+    return check.getUTCFullYear() === y && check.getUTCMonth() === m - 1 && check.getUTCDate() === d ? stamp : NaN;
+  }
+  const validDate = date => Number.isFinite(dateMs(date));
+  const isoDate = stamp => new Date(stamp).toISOString().slice(0, 10);
+  const addDays = (date, delta) => validDate(date) ? isoDate(dateMs(date) + Math.trunc(delta) * DAY) : null;
+  function localDate() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function monday(date) {
+    const t = dateMs(date), day = (new Date(t).getUTCDay() + 6) % 7;
+    return isoDate(t - day * DAY);
+  }
+  const emptyMetrics = () => ({ sessions: 0, sets: 0, reps: 0, volume: 0, loadedSets: 0, cardioMinutes: 0, stretchMinutes: 0 });
+  const emptyFeelings = () => ({ easy: 0, good: 0, hard: 0, pain: 0 });
+  function addMetrics(target, source) {
+    for (const key of Object.keys(emptyMetrics())) target[key] = round((target[key] || 0) + (source[key] || 0));
+  }
+  function exerciseInfo(id, map, group) {
+    if (id === 'box_squat') return { id, name: '高箱坐站（历史）', group: 'legs', loadType: 'bodyweight' };
+    const source = map[id] || {};
+    return {
+      id,
+      name: typeof source.name === 'string' ? source.name : '历史动作',
+      group: GROUPS[source.group] ? source.group : group,
+      loadType: LOAD_TYPES.has(source.loadType) ? source.loadType : 'unknown'
+    };
+  }
+  /**
+   * aggregate(sessions, exerciseMap, {asOfDate?})
+   * Completed sets count as sets even if an old record lacks reps; missing reps contribute 0.
+   * Missing load never becomes body mass. Unknown exercise loads are excluded from volume.
+   * Each active stored session counts once. Two sessions on one date count as one active day.
+   * Optional asOfDate excludes records dated after that date; otherwise valid records are retained.
+   */
+  function aggregate(sessions, exerciseMap, options) {
+    options = options || {};
+    const rawMap = Array.isArray(exerciseMap) ? Object.fromEntries(exerciseMap.filter(Boolean).map(e => [e.id, e])) : (exerciseMap || {});
+    const rows = Array.isArray(sessions) ? sessions.map((s, i) => [String(i), s]) : Object.entries(sessions || {});
+    const asOfDate = validDate(options.asOfDate) ? options.asOfDate : null;
+    const result = {
+      totals: Object.assign({ days: 0 }, emptyMetrics()),
+      byDate: {}, byGroup: {}, byExercise: {}, recent: [], dates: [],
+      feelings: emptyFeelings(), firstDate: null, lastDate: null,
+      volumeBasis: '仅已完成且填写负重的正式组；双哑铃按单只读数×2，器械按面板读数。',
+      asOfDate
+    };
+    for (const group of GROUP_ORDER) result.byGroup[group] = Object.assign({ group, name: GROUPS[group], days: 0, dates: [], feelings: emptyFeelings() }, emptyMetrics());
+    const active = [];
+    for (const [storageId, session] of rows) {
+      if (!session || typeof session !== 'object' || !validDate(session.date) || !GROUPS[session.group]) continue;
+      if (asOfDate && session.date > asOfDate) continue;
+      const record = Object.assign({ id: storageId, date: session.date, group: session.group, groupName: GROUPS[session.group], feeling: FEELINGS[session.feeling] ? session.feeling : '', items: [] }, emptyMetrics());
+      const itemRows = session.items && typeof session.items === 'object' ? Object.entries(session.items) : [];
+      for (const [id, item] of itemRows) {
+        if (!item || !Array.isArray(item.sets)) continue;
+        const info = exerciseInfo(id, rawMap, session.group);
+        const itemStats = Object.assign({}, info, { sets: 0, reps: 0, volume: 0, loadedSets: 0, maxWeight: null, records: [] });
+        for (const set of item.sets) {
+          if (!set || set.done !== true) continue;
+          const reps = positiveReps(set.reps);
+          const weight = info.loadType === 'bodyweight' ? null : loggedWeight(set.weight);
+          const loadKnown = info.loadType !== 'unknown' && info.loadType !== 'bodyweight' && weight !== null;
+          const multiplier = info.loadType === 'pair_dumbbell' ? 2 : 1;
+          const volume = loadKnown ? round(reps * weight * multiplier) : 0;
+          itemStats.sets += 1;
+          itemStats.reps += reps;
+          itemStats.volume = round(itemStats.volume + volume);
+          if (loadKnown) {
+            itemStats.loadedSets += 1;
+            itemStats.maxWeight = itemStats.maxWeight === null ? weight : Math.max(itemStats.maxWeight, weight);
+          }
+          itemStats.records.push({ reps, weight: loadKnown ? weight : null, multiplier: loadKnown ? multiplier : null, volume, loadType: info.loadType });
+        }
+        if (!itemStats.sets) continue;
+        record.items.push(itemStats);
+        record.sets += itemStats.sets;
+        record.reps += itemStats.reps;
+        record.volume = round(record.volume + itemStats.volume);
+        record.loadedSets += itemStats.loadedSets;
+      }
+      if (session.cardio === true) record.cardioMinutes = 30;
+      if (session.stretch === true) record.stretchMinutes = 10;
+      if (!(record.sets || record.cardioMinutes || record.stretchMinutes)) continue;
+      record.sessions = 1;
+      active.push(record);
+    }
+    active.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+    for (const record of active) {
+      let day = result.byDate[record.date];
+      if (!day) day = result.byDate[record.date] = Object.assign({ date: record.date, groups: [], records: [], feelings: emptyFeelings() }, emptyMetrics());
+      addMetrics(day, record);
+      if (!day.groups.includes(record.group)) day.groups.push(record.group);
+      day.records.push(record);
+      if (record.feeling) {
+        day.feelings[record.feeling] += 1;
+        result.feelings[record.feeling] += 1;
+      }
+      const group = result.byGroup[record.group];
+      addMetrics(group, record);
+      if (!group.dates.includes(record.date)) group.dates.push(record.date);
+      group.days = group.dates.length;
+      if (record.feeling) group.feelings[record.feeling] += 1;
+      addMetrics(result.totals, record);
+      for (const item of record.items) {
+        let ex = result.byExercise[item.id];
+        if (!ex) ex = result.byExercise[item.id] = { id: item.id, name: item.name, group: item.group, loadType: item.loadType, sets: 0, reps: 0, volume: 0, loadedSets: 0, sessions: 0, days: 0, dates: [], history: [], firstWeight: null, latestWeight: null, bestWeight: null, firstDate: record.date, lastDate: record.date };
+        ex.sets += item.sets; ex.reps += item.reps; ex.volume = round(ex.volume + item.volume); ex.loadedSets += item.loadedSets; ex.sessions += 1;
+        if (!ex.dates.includes(record.date)) ex.dates.push(record.date);
+        ex.days = ex.dates.length; ex.lastDate = record.date;
+        if (item.maxWeight !== null) {
+          if (ex.firstWeight === null) ex.firstWeight = item.maxWeight;
+          ex.latestWeight = item.maxWeight;
+          ex.bestWeight = ex.bestWeight === null ? item.maxWeight : Math.max(ex.bestWeight, item.maxWeight);
+        }
+        ex.history.push({ date: record.date, sessionId: record.id, sets: item.sets, reps: item.reps, volume: item.volume, maxWeight: item.maxWeight, loadType: item.loadType, loadedSets: item.loadedSets, feeling: record.feeling });
+      }
+    }
+    result.dates = Object.keys(result.byDate).sort();
+    result.totals.days = result.dates.length;
+    result.firstDate = result.dates[0] || null;
+    result.lastDate = result.dates[result.dates.length - 1] || null;
+    result.recent = active.slice().reverse();
+    return result;
+  }
+  function heatLevel(day) {
+    if (!day || !(day.sessions || day.sets || day.cardioMinutes || day.stretchMinutes)) return 0;
+    if (day.sets >= 12) return 4;
+    if (day.sets >= 8) return 3;
+    if (day.sets >= 4) return 2;
+    return 1;
+  }
+  function heatmapData(summary, options) {
+    options = options || {};
+    const today = validDate(options.today) ? options.today : localDate();
+    const end = validDate(options.endDate) ? options.endDate : today;
+    const year = Number.isInteger(options.year) && options.year >= 1900 && options.year <= 9999 ? options.year : null;
+    const startDate = year ? String(year).padStart(4, '0') + '-01-01' : addDays(end, -364);
+    const endDate = year ? String(year).padStart(4, '0') + '-12-31' : end;
+    const gridStart = monday(startDate);
+    const gridEnd = addDays(monday(endDate), 6);
+    const count = Math.round((dateMs(gridEnd) - dateMs(gridStart)) / DAY) + 1;
+    const days = [], months = [];
+    let lastMonth = null;
+    for (let i = 0; i < count; i++) {
+      const date = addDays(gridStart, i), inRange = date >= startDate && date <= endDate;
+      const future = date > today;
+      const record = summary && summary.byDate ? summary.byDate[date] : null;
+      const month = Number(date.slice(5, 7));
+      if (inRange && month !== lastMonth) {
+        months.push({ month, label: month + '月', column: Math.floor(i / 7), date });
+        lastMonth = month;
+      }
+      days.push({ date, column: Math.floor(i / 7), row: i % 7, inRange, future, disabled: !inRange || future, level: inRange && !future ? heatLevel(record) : 0, record: record || null });
+    }
+    return { startDate, endDate, gridStart, gridEnd, today, days, months, columns: count / 7 };
+  }
+  function dayLabel(day) {
+    const r = day.record || {};
+    const parts = [day.date, (r.sets || 0) + '组', (r.reps || 0) + '次动作', (r.sessions || 0) + '次训练'];
+    if (r.cardioMinutes) parts.push('有氧' + r.cardioMinutes + '分钟');
+    if (r.stretchMinutes) parts.push('拉伸' + r.stretchMinutes + '分钟');
+    return parts.join(' · ');
+  }
+  function heatmapMarkup(summary, options) {
+    options = options || {};
+    const data = heatmapData(summary, options);
+    const cell = num(options.cellSize) ? Math.max(12, Math.min(22, options.cellSize)) : 13;
+    const gap = num(options.gap) ? Math.max(2, Math.min(6, options.gap)) : 3;
+    const step = cell + gap, weekLabels = options.showWeekdays !== false, labelWidth = weekLabels ? 24 : 0;
+    const width = data.columns * step - gap;
+    const selected = validDate(options.selectedDate) ? options.selectedDate : null;
+    const months = data.months.map(m => '<span class="activity-month" style="position:absolute;left:' + (m.column * step) + 'px;font-size:14px;white-space:nowrap">' + m.label + '</span>').join('');
+    const labels = weekLabels ? '<div class="activity-weekdays" aria-hidden="true" style="width:24px;position:absolute;left:0;top:26px;font-size:14px;line-height:' + cell + 'px"><span style="position:absolute;top:0">一</span><span style="position:absolute;top:' + (2 * step) + 'px">三</span><span style="position:absolute;top:' + (4 * step) + 'px">五</span></div>' : '';
+    const cells = data.days.map(day => {
+      if (!day.inRange) return '<span aria-hidden="true" class="activity-cell padding" style="width:' + cell + 'px;height:' + cell + 'px"></span>';
+      const isSelected = selected === day.date;
+      const attrs = ' data-activity-date="' + day.date + '" data-level="' + day.level + '" aria-label="' + esc(day.future ? day.date + ' · 未来日期' : dayLabel(day)) + '" title="' + esc(day.future ? day.date + ' · 未来日期' : dayLabel(day)) + '"';
+      const style = 'width:' + cell + 'px;height:' + cell + 'px;min-width:' + cell + 'px;min-height:' + cell + 'px;padding:0;border:0;border-radius:4px;background:' + COLORS[day.level] + ';' + (day.future ? 'opacity:.28;' : '') + (isSelected ? 'outline:2px solid #49355f;outline-offset:1px;' : '');
+      return '<button type="button" class="activity-cell' + (isSelected ? ' selected' : '') + '"' + attrs + (day.future ? ' disabled' : '') + ' style="' + style + '"></button>';
+    }).join('');
+    const legend = options.legend === false ? '' : '<div class="activity-legend" aria-label="完成组数色阶" style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:12px;font-size:14px"><span>少</span>' + COLORS.map((c, i) => '<span title="' + ['无记录', '1–3组，或仅有氧/拉伸', '4–7组', '8–11组', '12组及以上'][i] + '" style="width:13px;height:13px;border-radius:4px;background:' + c + '"></span>').join('') + '<span>多</span></div>';
+    return '<div class="activity-heatmap-scroll" style="overflow-x:auto;max-width:100%;padding:3px 3px 5px"><div class="activity-heatmap" role="group" aria-label="' + data.startDate + '至' + data.endDate + '训练记录" style="position:relative;width:' + (width + labelWidth) + 'px;min-width:' + (width + labelWidth) + 'px;padding-left:' + labelWidth + 'px">' + labels + '<div class="activity-months" aria-hidden="true" style="position:relative;height:26px">' + months + '</div><div class="activity-cells" style="display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,' + cell + 'px);grid-template-columns:repeat(' + data.columns + ',' + cell + 'px);gap:' + gap + 'px">' + cells + '</div></div></div>' + legend;
+  }
+  function trendData(summary, options) {
+    options = options || {};
+    const mode = ['daily', 'weekly', 'cumulative'].includes(options.mode) ? options.mode : 'daily';
+    const metric = ['sets', 'reps', 'sessions'].includes(options.metric) ? options.metric : 'sets';
+    const endDate = validDate(options.endDate) ? options.endDate : localDate();
+    const byDate = summary && summary.byDate ? summary.byDate : {};
+    const dates = Object.keys(byDate).filter(validDate).sort();
+    const points = [];
+    if (mode === 'weekly') {
+      const start = addDays(monday(endDate), -77);
+      for (let i = 0; i < 12; i++) {
+        const startDate = addDays(start, i * 7), until = addDays(startDate, 6), stop = until > endDate ? endDate : until;
+        let value = 0;
+        for (let n = 0; n < 7; n++) {
+          const d = addDays(startDate, n);
+          if (d <= stop && byDate[d]) value += byDate[d][metric] || 0;
+        }
+        points.push({ date: startDate, endDate: stop, value, label: Number(startDate.slice(5, 7)) + '.' + Number(startDate.slice(8, 10)) });
+      }
+    } else {
+      const start = addDays(endDate, -27);
+      let cumulative = 0;
+      if (mode === 'cumulative') for (const d of dates) if (d < start) cumulative += byDate[d][metric] || 0;
+      for (let i = 0; i < 28; i++) {
+        const date = addDays(start, i), dailyValue = byDate[date] ? byDate[date][metric] || 0 : 0;
+        cumulative += dailyValue;
+        points.push({ date, endDate: date, value: mode === 'cumulative' ? cumulative : dailyValue, label: Number(date.slice(5, 7)) + '.' + Number(date.slice(8, 10)) });
+      }
+    }
+    return { mode, metric, metricLabel: { sets: '完成组数', reps: '动作次数', sessions: '训练次数' }[metric], unit: { sets: '组', reps: '次', sessions: '次' }[metric], startDate: points[0].date, endDate, points, total: mode === 'cumulative' ? points[points.length - 1].value : points.reduce((s, p) => s + p.value, 0), latest: points[points.length - 1].value };
+  }
+  function tickScale(maxValue) {
+    if (!(maxValue > 0)) return { max: 1, ticks: [0, 1] };
+    const raw = maxValue / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), normalized = raw / mag;
+    let step = (normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10) * mag;
+    step = Math.max(1, step);
+    const max = Math.ceil(maxValue / step) * step, ticks = [];
+    for (let n = 0; n <= max + step / 2; n += step) ticks.push(round(n));
+    return { max, ticks };
+  }
+  function trendMarkup(summary, options) {
+    options = options || {};
+    const data = trendData(summary, options);
+    const width = num(options.width) ? Math.max(300, Math.round(options.width)) : 820;
+    const height = num(options.height) ? Math.max(180, Math.round(options.height)) : 250;
+    const margin = { left: 46, right: 16, top: 19, bottom: 35 };
+    const w = width - margin.left - margin.right, h = height - margin.top - margin.bottom;
+    const maxData = Math.max(...data.points.map(p => p.value)), scale = tickScale(maxData);
+    const baseline = margin.top + h, step = w / data.points.length;
+    const x = i => margin.left + (i + .5) * step;
+    const y = value => margin.top + h - (value / scale.max * h);
+    const grids = scale.ticks.map(value => '<g><line x1="' + margin.left + '" y1="' + y(value) + '" x2="' + (width - margin.right) + '" y2="' + y(value) + '" stroke="#ebe7f0" stroke-width="1"/><text x="' + (margin.left - 9) + '" y="' + (y(value) + 5) + '" text-anchor="end" font-size="14" fill="#777080">' + value + '</text></g>').join('');
+    const labelCount = width < 440 ? 4 : width < 650 ? 5 : 7;
+    const indices = Array.from(new Set(Array.from({ length: labelCount }, (_, i) => Math.round(i * (data.points.length - 1) / (labelCount - 1)))));
+    const labels = indices.map(i => '<text x="' + x(i) + '" y="' + (height - 9) + '" text-anchor="middle" font-size="14" fill="#777080">' + data.points[i].label + '</text>').join('');
+    let marks = '';
+    if (data.mode === 'cumulative') {
+      const path = data.points.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(2) + ',' + y(p.value).toFixed(2)).join(' ');
+      marks = '<path d="' + path + '" fill="none" stroke="#8066b7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' + data.points.map((p, i) => '<circle cx="' + x(i) + '" cy="' + y(p.value) + '" r="3" fill="#8066b7"><title>' + p.date + ' · 累计' + p.value + data.unit + '</title></circle>').join('');
+    } else {
+      const barWidth = Math.max(2, Math.min(data.mode === 'weekly' ? 34 : 20, step - Math.max(2, step * .25)));
+      marks = data.points.map((p, i) => '<rect x="' + (x(i) - barWidth / 2) + '" y="' + y(p.value) + '" width="' + barWidth + '" height="' + Math.max(0, baseline - y(p.value)) + '" rx="' + Math.min(4, barWidth / 2) + '" fill="#a68acb"><title>' + p.date + (p.endDate !== p.date ? '至' + p.endDate : '') + ' · ' + p.value + data.unit + '</title></rect>').join('');
+    }
+    const empty = maxData === 0 ? '<text x="' + (margin.left + w / 2) + '" y="' + (margin.top + h / 2) + '" text-anchor="middle" fill="#938a9b" font-size="16">暂无记录</text>' : '';
+    return '<svg class="activity-trend" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + esc(({ daily: '每日', weekly: '每周', cumulative: '累计' }[data.mode]) + data.metricLabel + '，' + data.startDate + '至' + data.endDate) + '" style="display:block;width:100%;height:auto;overflow:visible;font-family:inherit"><title>' + esc(data.metricLabel) + '</title><desc>' + esc(data.points.map(p => p.date + '：' + p.value + data.unit).join('；')) + '</desc>' + grids + marks + labels + empty + '</svg>';
+  }
+  function breakdownMarkup(summary) {
+    const total = summary && summary.totals ? summary.totals.sets || 0 : 0;
+    return '<div class="activity-breakdown" role="list" aria-label="各部位完成组数" style="display:flex;flex-direction:column;gap:16px">' + GROUP_ORDER.map(id => {
+      const g = summary && summary.byGroup && summary.byGroup[id] || {};
+      const sets = g.sets || 0, percent = total ? round(sets / total * 100) : 0;
+      return '<div role="listitem" class="activity-breakdown-row"><div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:7px"><span>' + GROUPS[id] + '</span><span>' + sets + '组</span></div><div style="height:8px;border-radius:6px;background:#efebf4;overflow:hidden"><div style="height:100%;width:' + percent + '%;border-radius:6px;background:#9f83c6"></div></div></div>';
+    }).join('') + '</div>';
+  }
+  function dateDetail(summary, date) {
+    if (!validDate(date)) return null;
+    return summary && summary.byDate && summary.byDate[date] || Object.assign({ date, groups: [], records: [], feelings: emptyFeelings() }, emptyMetrics());
+  }
+  window.TrainingAnalytics = { aggregate, heatmapData, heatmapMarkup, trendData, trendMarkup, breakdownMarkup, dateDetail, heatLevel, addDays, validDate, localDate, groups: Object.assign({}, GROUPS), feelings: Object.assign({}, FEELINGS) };
+})();
+
+/* Local video storage only. No network requests or Object URLs. */
+(function () {
+  'use strict';
+  const DB_NAME = 'qinglian_training_videos_v2';
+  const STORE_NAME = 'videos';
+  const FILE_LIMIT = 100 * 1024 * 1024;
+  const EXPORT_LIMIT = 200 * 1024 * 1024;
+  const ID_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
+  const memory = new Map();
+  const embeddedCache = new Map();
+  let database = null;
+  let opening = null;
+  let storageReason = '';
+  let serial = Promise.resolve();
+
+  function idChecked(id) {
+    if (typeof id !== 'string' || !ID_PATTERN.test(id)) throw new Error('动作编号无效。');
+    return id;
+  }
+  function cleanName(name) {
+    return String(name || 'exercise.mp4').split(/[\\/]/).pop().replace(/[\u0000-\u001f\u007f]/g, '').slice(0, 160) || 'exercise.mp4';
+  }
+  function errorText(error) {
+    if (error && error.name === 'QuotaExceededError') return '本机存储空间不足；视频仅保留到本次页面关闭。';
+    return '浏览器未允许保存视频；视频仅保留到本次页面关闭。';
+  }
+  function status() {
+    return { persistent: !!database, mode: database ? 'indexeddb' : 'session', reason: storageReason };
+  }
+  function init() {
+    if (opening) return opening;
+    opening = new Promise(resolve => {
+      let backend;
+      try { backend = window.indexedDB; } catch (error) {
+        storageReason = '浏览器未允许保存视频；本次仍可播放。';
+        resolve(status());
+        return;
+      }
+      if (!backend) {
+        storageReason = '浏览器未允许保存视频；本次仍可播放。';
+        resolve(status());
+        return;
+      }
+      let request;
+      let settled = false;
+      let timer;
+      const finish = (connection, reason) => {
+        if (settled) { if (connection) connection.close(); return; }
+        settled = true;
+        clearTimeout(timer);
+        database = connection;
+        storageReason = reason || '';
+        if (database) {
+          database.onversionchange = () => {
+            database.close();
+            database = null;
+            storageReason = '视频存储已关闭；新导入的视频仅保留在本次页面。';
+          };
+        }
+        resolve(status());
+      };
+      timer = setTimeout(() => finish(null, '本机视频存储暂不可用；本次仍可播放。'), 5000);
+      try {
+        request = backend.open(DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          try {
+            const db = request.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          } catch (error) {
+            if (request.transaction) request.transaction.abort();
+            finish(null, '浏览器未允许保存视频；本次仍可播放。');
+          }
+        };
+        request.onsuccess = () => finish(request.result, '');
+        request.onerror = () => finish(null, '浏览器未允许保存视频；本次仍可播放。');
+        request.onblocked = () => finish(null, '本机视频存储被其他页面占用；本次仍可播放。');
+      } catch (error) {
+        finish(null, '浏览器未允许保存视频；本次仍可播放。');
+      }
+    });
+    return opening;
+  }
+  // Transactions are successful only after their complete event, never at put.onsuccess.
+  function transact(mode, makeRequest) {
+    return new Promise((resolve, reject) => {
+      if (!database) { reject(new Error('视频存储不可用。')); return; }
+      let transaction;
+      let value;
+      let request;
+      try {
+        transaction = database.transaction(STORE_NAME, mode);
+        request = makeRequest(transaction.objectStore(STORE_NAME));
+      } catch (error) { reject(error); return; }
+      request.onsuccess = () => { value = request.result; };
+      request.onerror = () => reject(request.error || new Error('视频读取失败。'));
+      transaction.oncomplete = () => resolve(value);
+      transaction.onerror = () => reject(transaction.error || request.error || new Error('视频存储失败。'));
+      transaction.onabort = () => reject(transaction.error || request.error || new Error('视频存储已取消。'));
+    });
+  }
+  function enqueue(task) {
+    const result = serial.then(task, task);
+    serial = result.catch(() => {});
+    return result;
+  }
+  function embeddedEntries() {
+    const source = window.EMBEDDED_MEDIA;
+    return source && typeof source === 'object' && !Array.isArray(source) ? source : {};
+  }
+  function inspectEmbedded(id) {
+    const all = embeddedEntries();
+    if (!Object.prototype.hasOwnProperty.call(all, id)) return null;
+    const raw = all[id];
+    if (raw && typeof raw.url === 'string') return {id, name: cleanName(raw.name || id + '.mp4'), url:raw.url, mime:'video/mp4', persistent:true, source:'static'};
+    if (!raw || typeof raw.data !== 'string') throw new Error('内嵌视频数据不完整：' + id);
+    const match = /^data:(video\/[a-z0-9.+-]+);base64,([a-z0-9+/=\r\n]*)$/i.exec(raw.data);
+    if (!match) throw new Error('内嵌视频格式无效：' + id);
+    const encoded = match[2].replace(/[\r\n]/g, '');
+    if (!encoded || encoded.length % 4 !== 0 || !/^[a-z0-9+/]*={0,2}$/i.test(encoded)) throw new Error('内嵌视频编码无效：' + id);
+    const size = encoded.length * 3 / 4 - (encoded.endsWith('==') ? 2 : encoded.endsWith('=') ? 1 : 0);
+    if (size > FILE_LIMIT) throw new Error('单个视频超过100 MiB，请压缩后重新导入。');
+    return { id, name: cleanName(raw.name || id + '.mp4'), mime: match[1].toLowerCase(), size, encoded, original: raw.data, persistent: true, source: 'embedded' };
+  }
+  async function materializeEmbedded(info) {
+    if (info.source === 'static') {
+      const response = await fetch(info.url);
+      if (!response.ok) throw new Error('视频加载失败，请检查网络连接。');
+      const blob = await response.blob();
+      return {id:info.id, blob, name:info.name, mime:info.mime, size:blob.size, persistent:true, source:'static'};
+    }
+    if (embeddedCache.has(info.id)) return embeddedCache.get(info.id);
+    let binary;
+    try { binary = atob(info.encoded); } catch (error) { throw new Error('内嵌视频无法解码：' + info.id); }
+    const chunks = [];
+    const stride = 65536;
+    for (let start = 0; start < binary.length; start += stride) {
+      const part = binary.slice(start, start + stride);
+      const bytes = new Uint8Array(part.length);
+      for (let i = 0; i < part.length; i++) bytes[i] = part.charCodeAt(i);
+      chunks.push(bytes);
+    }
+    const record = { id: info.id, blob: new Blob(chunks, { type: info.mime }), name: info.name, mime: info.mime, size: info.size, persistent: true, source: 'embedded' };
+    embeddedCache.set(info.id, record);
+    return record;
+  }
+  function publicRecord(record) {
+    if (!record || record.deleted) return null;
+    return { id: record.id, blob: record.blob, name: record.name, mime: record.mime, size: record.size || record.blob.size, persistent: !!record.persistent, source: record.source, reason: record.reason || '' };
+  }
+  async function readRecord(id) {
+    await init();
+    const cached = memory.get(id);
+    // A session-only change is newer than any older persisted copy.
+    if (cached && cached.persistent === false) return cached;
+    if (database) {
+      try {
+        const stored = await transact('readonly', store => store.get(id));
+        if (stored) {
+          const record = Object.assign({}, stored, { persistent: true, source: 'indexeddb' });
+          memory.set(id, record);
+          return record;
+        }
+      } catch (error) {
+        if (cached) return cached;
+        throw new Error('本机视频暂时无法读取，请稍后重试。');
+      }
+    }
+    if (cached) return cached;
+    const info = inspectEmbedded(id);
+    return info ? materializeEmbedded(info) : null;
+  }
+  async function collectRecords() {
+    await init();
+    const records = new Map();
+    if (database) {
+      try {
+        const stored = await transact('readonly', store => store.getAll());
+        for (const value of stored || []) {
+          if (value && ID_PATTERN.test(value.id)) records.set(value.id, Object.assign({}, value, { persistent: true, source: 'indexeddb' }));
+        }
+      } catch (error) {
+        throw new Error('本机视频列表暂时无法读取，请稍后重试。');
+      }
+    }
+    for (const [id, value] of memory) {
+      if (value.persistent === false || !records.has(id)) records.set(id, value);
+    }
+    for (const id of Object.keys(embeddedEntries())) {
+      if (!ID_PATTERN.test(id) || records.has(id)) continue;
+      const info = inspectEmbedded(id);
+      if (info) records.set(id, info.source === 'static' ? await materializeEmbedded(info) : info);
+    }
+    return records;
+  }
+  function fileInfo(file) {
+    if (!file || typeof file.size !== 'number' || typeof file.slice !== 'function' || typeof file.arrayBuffer !== 'function') throw new Error('请选择一个视频文件。');
+    if (file.size <= 0) throw new Error('视频文件为空。');
+    if (file.size > FILE_LIMIT) throw new Error('单个视频超过100 MiB，请压缩后重新导入。');
+    const rawName = file.name ? cleanName(file.name) : '';
+    const supplied = String(file.type || '').toLowerCase();
+    const extension = (rawName.match(/\.([a-z0-9]+)$/i) || [])[1];
+    const fallback = { mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' };
+    const mime = /^video\/[a-z0-9.+-]+$/i.test(supplied) ? supplied : fallback[(extension || '').toLowerCase()];
+    if (!mime) throw new Error('请选择 MP4、WebM、MOV 或其他视频文件。');
+    const name = rawName || (mime === 'video/webm' ? 'exercise.webm' : mime === 'video/quicktime' ? 'exercise.mov' : 'exercise.mp4');
+    return { name, mime, blob: file.type === mime ? file : new Blob([file], { type: mime }) };
+  }
+  function save(id, file) {
+    let info;
+    try { idChecked(id); info = fileInfo(file); } catch (error) { return Promise.reject(error); }
+    return enqueue(async () => {
+      await init();
+      const record = { id, name: info.name, mime: info.mime, blob: info.blob, size: info.blob.size, deleted: false, updatedAt: Date.now() };
+      let persistent = false;
+      let reason = storageReason;
+      if (database) {
+        try { await transact('readwrite', store => store.put(record)); persistent = true; reason = ''; }
+        catch (error) { reason = errorText(error); }
+      }
+      const cached = Object.assign({}, record, { persistent, source: persistent ? 'indexeddb' : 'session', reason: persistent ? '' : reason || '视频仅保留到本次页面关闭。' });
+      memory.set(id, cached);
+      embeddedCache.delete(id);
+      return publicRecord(cached);
+    });
+  }
+  function load(id) {
+    try { idChecked(id); } catch (error) { return Promise.reject(error); }
+    return enqueue(async () => publicRecord(await readRecord(id)));
+  }
+  function remove(id) {
+    try { idChecked(id); } catch (error) { return Promise.reject(error); }
+    return enqueue(async () => {
+      await init();
+      const record = { id, deleted: true, updatedAt: Date.now() };
+      let persistent = false;
+      let reason = storageReason;
+      if (database) {
+        try { await transact('readwrite', store => store.put(record)); persistent = true; reason = ''; }
+        catch (error) { reason = errorText(error); }
+      }
+      // Keep a tombstone so an embedded original cannot reappear after removal.
+      memory.set(id, Object.assign({}, record, { persistent, source: persistent ? 'indexeddb' : 'session' }));
+      embeddedCache.delete(id);
+      return { id, removed: true, persistent, reason: persistent ? '' : '移除仅在本次页面有效；重新打开后可能需要再次移除。' };
+    });
+  }
+  function list() {
+    return enqueue(async () => {
+      const records = await collectRecords();
+      return Array.from(records.values()).filter(record => !record.deleted).map(record => ({ id: record.id, name: record.name, mime: record.mime, size: record.size || (record.blob && record.blob.size) || 0, persistent: !!record.persistent, source: record.source })).sort((a, b) => a.id.localeCompare(b.id));
+    });
+  }
+  function asDataURL(blob, mime) {
+    if (typeof FileReader === 'function') {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error('视频转换失败，请重试。'));
+        reader.onabort = () => reject(new Error('视频导出已取消。'));
+        reader.readAsDataURL(blob);
+      });
+    }
+    return blob.arrayBuffer().then(buffer => {
+      const bytes = new Uint8Array(buffer);
+      const parts = [];
+      for (let start = 0; start < bytes.length; start += 32768) parts.push(String.fromCharCode.apply(null, bytes.subarray(start, start + 32768)));
+      return 'data:' + mime + ';base64,' + btoa(parts.join(''));
+    });
+  }
+  function toEmbedded() {
+    return enqueue(async () => {
+      const records = Array.from((await collectRecords()).values()).filter(record => !record.deleted);
+      const total = records.reduce((sum, record) => sum + (record.size || (record.blob && record.blob.size) || 0), 0);
+      if (total > EXPORT_LIMIT) throw new Error('视频总大小超过200 MiB，请压缩视频后再导出网页。');
+      const result = Object.create(null);
+      for (const record of records) {
+        const data = record.source === 'embedded' && record.original ? record.original : await asDataURL(record.blob, record.mime);
+        result[record.id] = { data, name: record.name };
+      }
+      return result;
+    });
+  }
+  window.TrainingMedia = Object.freeze({ init, save, load, remove, list, toEmbedded, status, limits: Object.freeze({ perFile: FILE_LIMIT, totalExport: EXPORT_LIMIT }) });
+})();
+
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function baseHtmlSnapshot() { return '<!doctype html>\n' + document.documentElement.outerHTML; }
+const EX = window.EXERCISES;
+const ALL_EX = EX.concat(window.LEGACY_EXERCISES || []);
+const byId = Object.fromEntries(ALL_EX.map(e => [e.id, e]));
+const GROUPS = {chest:'胸部', back:'背部', shoulder:'肩部', legs:'臀腿'};
+const DAYS = ['周一','周二','周三','周四','周五','周六','周日'];
+const FEELINGS = {easy:'轻松',good:'刚好',hard:'吃力',pain:'不适'};
+const DEFAULT_SCHEDULE = ['chest','legs','rest','back','rest','shoulder','rest'];
+const STORAGE_KEY = 'qinglian_four_day_v2';
+const Analytics = window.TrainingAnalytics;
+const today = Analytics.localDate();
+const ICONS = {
+ play:'<path d="m8 5 11 7-11 7z" fill="currentColor" stroke="none"/>',
+ print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/><path d="M17 11h.01"/>',
+ right:'<path d="m9 5 7 7-7 7"/>',close:'<path d="m6 6 12 12M6 18 18 6"/>',
+ check:'<path d="m5 12 4 4L19 6"/>',reset:'<path d="M4 10a8 8 0 1 1 1 7M4 4v6h6"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h3m3 0h3"/>',
+ upload:'<path d="M12 16V3m-4 4 4-4 4 4M4 15v6h16v-6"/>',
+ trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>'
+};
+const icon = name => '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || ICONS.check) + '</svg>';
+document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+function stageOf(value) { return ['intro','build','three','four'].includes(value) ? value : 'intro'; }
+function stageCount(stage) { return ({intro:1,build:2,three:3,four:4})[stageOf(stage)]; }
+function cleanSchedule(value) { return Array.isArray(value) && value.length === 7 && value.every(g => g === 'rest' || GROUPS[g]) ? value.slice() : DEFAULT_SCHEDULE.slice(); }
+function cleanData(raw) {
+ if (!raw || ![1,2].includes(raw.version) || !raw.sessions || typeof raw.sessions !== 'object' || Array.isArray(raw.sessions)) throw new Error('记录文件格式不正确。');
+ const out = {version:2,stage:stageOf(raw.stage),schedule:cleanSchedule(raw.schedule),sessions:{}};
+ for (const value of Object.values(raw.sessions)) {
+  if (!value || !Analytics.validDate(value.date) || !GROUPS[value.group]) continue;
+  const s = {date:value.date,group:value.group,stage:stageOf(value.stage || raw.stage),items:{},cardio:value.cardio === true,stretch:value.stretch === true,feeling:FEELINGS[value.feeling] ? value.feeling : ''};
+  for (const [id,item] of Object.entries(value.items || {})) {
+   const info = byId[id];
+   if (!info || info.group !== s.group || !item || !Array.isArray(item.sets)) continue;
+   s.items[id] = {sets:item.sets.slice(0,4).map(row => {
+    const reps = row && Number(row.reps), weight = row && row.weight;
+    const validReps = row && typeof row.reps !== 'boolean' && Number.isInteger(reps) && reps > 0 && reps <= 100;
+    return {reps:validReps ? reps : info.reps[0], weight:info.loadType === 'bodyweight' || typeof weight === 'boolean' || weight === '' || weight == null || !Number.isFinite(Number(weight)) || Number(weight) < 0 || Number(weight) > 500 ? '' : Number(weight),done:!!validReps && row.done === true};
+   })};
+  }
+  out.sessions[s.date + '_' + s.group] = s;
+ }
+ return out;
+}
+let db = {version:2,stage:'intro',schedule:DEFAULT_SCHEDULE.slice(),sessions:{}};
+let mayPersist = true;
+let toastId = 0;
+function toast(message) { $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastId); toastId = setTimeout(() => $('toast').classList.remove('show'), 4200); }
+try {
+ const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('qinglian_four_day_v1');
+ if (raw) db = cleanData(JSON.parse(raw));
+} catch (error) { mayPersist = false; $('storageAlert').hidden = false; }
+function save() {
+ if (!mayPersist) return false;
+ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); $('storageAlert').hidden = true; return true; }
+ catch (error) { $('storageAlert').hidden = false; return false; }
+}
+let date = today;
+const currentWeekday = (new Date(today + 'T12:00:00').getDay() + 6) % 7;
+let group = GROUPS[db.schedule[currentWeekday]] ? db.schedule[currentWeekday] : 'chest';
+let currentId = EX.find(e => e.group === group).id;
+let trendMode = 'daily', recordYear = Number(today.slice(0,4));
+let fullSummary, yearSummary;
+const restPrefs = {};
+const timer = {mode:'rest',duration:byId[currentId].rest,remaining:byId[currentId].rest,running:false,deadline:0};
+function session() {
+ const key = date + '_' + group;
+ if (!db.sessions[key]) db.sessions[key] = {date,group,stage:db.stage,items:{},cardio:false,stretch:false,feeling:''};
+ return db.sessions[key];
+}
+function entry(id) { const s = session(); if (!s.items[id]) s.items[id] = {sets:[]}; return s.items[id]; }
+function targetSets() { return stageCount(session().stage); }
+function visibleSets(id) {
+ const rows = entry(id).sets;
+ // A completed second set remains visible even after switching to one prescribed set.
+ return Math.max(targetSets(), rows.reduce((n, row, i) => row && row.done ? i + 1 : n, 1));
+}
+function groupExercises() { return EX.filter(e => e.group === group); }
+function rowAt(id,index) {
+ const e = byId[id], rows = entry(id).sets;
+ if (!rows[index]) rows[index] = {reps:e.reps[0],weight:'',done:false};
+ return rows[index];
+}
+function weightUnit(e) { return e.loadType === 'pair_dumbbell' ? 'kg / 只' : e.loadType === 'bodyweight' ? '自重' : 'kg'; }
+function captureInputs() {
+ const repsInputs = $('setRows').querySelectorAll('[data-reps]');
+ const weights = $('setRows').querySelectorAll('[data-weight]');
+ for (const input of [...repsInputs,...weights]) {
+  const n = Number(input.value);
+  const invalid = input.hasAttribute('data-reps') ? input.value === '' || !Number.isInteger(n) || n < 1 || n > 100 : input.value !== '' && (!Number.isFinite(n) || n < 0 || n > 500);
+  if (invalid) { toast(input.hasAttribute('data-reps') ? '次数请填写1–100的整数。' : '负重请填写0–500之间的数值。'); input.focus(); return false; }
+ }
+ repsInputs.forEach(input => { rowAt(currentId,Number(input.dataset.reps)).reps = Number(input.value); });
+ weights.forEach(input => { rowAt(currentId,Number(input.dataset.weight)).weight = input.value === '' ? '' : Number(input.value); });
+ return true;
+}
+function persistInputs() { if (!captureInputs()) return false; save(); return true; }
+function renderSchedule() {
+ // Day labels are fixed DOM slots. Only the card content moves on swap.
+ $('weekPlan').innerHTML = db.schedule.map((g,i) => {
+  const label = GROUPS[g] || '休息';
+  const active = g !== 'rest' && g === group;
+  return '<div class="week-slot" data-slot="' + i + '"><span class="week-day-label">' + DAYS[i] + '</span>' +
+   '<button type="button" class="week-card' + (active ? ' is-active' : '') + '" data-type="' + g + '" data-weekday="' + i +
+   '" aria-label="' + DAYS[i] + '，' + label + '。拖动卡片可交换排期" aria-describedby="weekHint" title="拖动交换，点击查看"' +
+   (active ? ' aria-current="true"' : '') + '><span class="card-title">' + label + '</span></button></div>';
+ }).join('');
+}
+function renderExerciseList() {
+ $('exerciseList').innerHTML = groupExercises().map((e,i) => {
+  const done = entry(e.id).sets.filter(r => r && r.done).length >= targetSets();
+  return '<button type="button" data-ex="' + e.id + '" class="ex' + (e.id === currentId ? ' selected' : '') + '" aria-pressed="' + (e.id === currentId) + '"><span class="n">' + String(i + 1).padStart(2,'0') + '</span><span class="name">' + esc(e.name) + '</span><span class="done-icon">' + (done ? icon('check') : '') + '</span></button>';
+ }).join('');
+}
+function renderSetRows() {
+ const e = byId[currentId], count = visibleSets(currentId);
+ $('loadUnit').textContent = weightUnit(e);
+ $('setRows').innerHTML = Array.from({length:count}, (_,i) => {
+  const r = rowAt(currentId,i);
+  return '<div class="set-row"><button class="set-check" type="button" data-check="' + i + '" aria-label="第' + (i+1) + '组' + (r.done ? '已完成，点击撤销' : '标记完成') + '" aria-pressed="' + r.done + '">' + (r.done ? icon('check') : String(i+1)) + '</button><label><span class="sr-only">第' + (i+1) + '组实际次数</span><input type="number" data-reps="' + i + '" min="1" max="100" step="1" required inputmode="numeric" value="' + r.reps + '"><span>次</span></label>' + (e.loadType === 'bodyweight' ? '<span class="bw">自重</span>' : '<label><span class="sr-only">第' + (i+1) + '组负重，' + weightUnit(e) + '</span><input type="number" data-weight="' + i + '" min="0" max="500" step="any" inputmode="decimal" placeholder="负重" value="' + r.weight + '"><span>kg</span></label>') + '</div>';
+ }).join('');
+ const allDone = entry(currentId).sets.slice(0,count).every(r => r && r.done);
+ $('completeSetBtn').disabled = allDone;
+ $('completeSetBtn').textContent = allDone ? '已完成' : '完成一组';
+}
+function renderProgress() {
+ let done = 0, total = 0;
+ groupExercises().forEach(e => { total += visibleSets(e.id); done += entry(e.id).sets.filter(r => r && r.done).length; });
+ $('sessionProgress').textContent = done + ' / ' + total + '组';
+ $('cardioDone').checked = session().cardio;
+ $('stretchDone').checked = session().stretch;
+ $('feelingSelect').value = session().feeling || '';
+}
+function renderTraining(changeMedia) {
+ const e = byId[currentId];
+ document.querySelectorAll('[data-group]').forEach(tab => { const selected = tab.dataset.group === group; tab.setAttribute('aria-selected',String(selected)); tab.tabIndex = selected ? 0 : -1; });
+ $('workPanel').setAttribute('aria-labelledby','tab-' + group);
+ $('sessionDate').value = date;
+ $('trainingStage').value = session().stage;
+ $('exerciseTitle').textContent = e.name;
+ $('prescription').innerHTML = '<div><b>' + targetSets() + '</b>组</div><div><b>' + e.reps[0] + '–' + e.reps[1] + '</b>次</div><div><b>' + e.rest + '</b>秒休息</div>';
+ $('cues').innerHTML = e.cues.map((cue,i) => '<li><span class="num">' + (i+1) + '</span><span>' + esc(cue) + '</span></li>').join('');
+ renderSchedule(); renderExerciseList(); renderSetRows(); renderProgress();
+ if (timer.mode === 'rest' && !timer.running) { timer.duration = restPrefs[currentId] || e.rest; timer.remaining = timer.duration; }
+ renderTimer();
+ if (changeMedia) loadVideo();
+}
+function chooseGroup(next) {
+ if (!GROUPS[next] || !persistInputs()) return;
+ group = next; currentId = EX.find(e => e.group === group).id;
+ renderTraining(true); renderAnalytics();
+}
+function chooseExercise(id) {
+ if (!EX.some(e => e.id === id && e.group === group) || !persistInputs()) return;
+ currentId = id; renderTraining(true); renderAnalytics();
+}
+function markSet(index) {
+ if (!persistInputs()) return;
+ const row = rowAt(currentId,index);
+ row.done = !row.done;
+ save(); renderSetRows(); renderExerciseList(); renderProgress(); renderAnalytics();
+ if (row.done && timer.mode === 'rest') {
+  timer.duration = restPrefs[currentId] || byId[currentId].rest; timer.remaining = timer.duration; timer.running = true; timer.deadline = Date.now() + timer.remaining * 1000; renderTimer();
+ }
+}
+function renderTimer() {
+ const remain = Math.max(0,Math.ceil(timer.remaining));
+ $('timerDisplay').textContent = String(Math.floor(remain/60)).padStart(2,'0') + ':' + String(remain%60).padStart(2,'0');
+ $('timerStart').textContent = timer.running ? '暂停' : '开始';
+ $('restSelect').hidden = timer.mode !== 'rest';
+ $('restSelect').disabled = timer.running;
+ if (timer.mode === 'rest') $('restSelect').value = String(timer.duration);
+ document.querySelectorAll('[data-timer]').forEach(b => { b.classList.toggle('active',b.dataset.timer === timer.mode); b.setAttribute('aria-pressed',String(b.dataset.timer === timer.mode)); });
+}
+function timerTick() {
+ if (!timer.running) return;
+ timer.remaining = Math.max(0,(timer.deadline - Date.now())/1000);
+ if (!timer.remaining) { timer.running = false; toast(timer.mode === 'rest' ? '休息结束。' : '计时结束，请按实际完成情况打勾。'); }
+ renderTimer();
+}
+function switchTimer(mode) {
+ timer.mode = mode; timer.running = false;
+ timer.duration = mode === 'cardio' ? 1800 : mode === 'stretch' ? 600 : restPrefs[currentId] || byId[currentId].rest;
+ timer.remaining = timer.duration; renderTimer();
+}
+function table(records,withOpen) {
+ if (!records.length) return '<p class="empty">暂无记录</p>';
+ return '<table class="history-table"><thead><tr><th>日期</th><th>部位</th><th>完成</th><th>有氧 / 拉伸</th><th>感受</th></tr></thead><tbody>' + records.map(r => '<tr><td>' + (withOpen ? '<button data-history-date="' + r.date + '">' + r.date + '</button>' : r.date) + '</td><td>' + esc(r.groupName) + '</td><td>' + r.sets + '组 · ' + r.reps + '次</td><td>' + r.cardioMinutes + ' / ' + r.stretchMinutes + '分</td><td>' + (r.feeling ? '<span class="tone ' + (r.feeling === 'pain' ? 'pain' : r.feeling === 'good' ? 'good' : '') + '">' + FEELINGS[r.feeling] + '</span>' : '—') + '</td></tr>').join('') + '</tbody></table>';
+}
+function renderProgressTrend() {
+ const id = $('progressExercise').value || EX[0].id;
+ const e = yearSummary.byExercise[id], info = byId[id];
+ if (!e || !e.history.length) { $('exerciseProgress').textContent = '尚无记录'; return; }
+ const latest = e.history[e.history.length-1], previous = e.history[e.history.length-2];
+ const unit = info.loadType === 'pair_dumbbell' ? 'kg/只' : 'kg';
+ if (!previous) {
+  $('exerciseProgress').textContent = '首次：' + latest.sets + '组 · ' + latest.reps + '次' + (latest.maxWeight !== null ? ' · ' + latest.maxWeight + unit : '');
+ } else if (latest.maxWeight !== null && previous.maxWeight !== null) {
+  $('exerciseProgress').textContent = '最高负重：' + previous.maxWeight + ' → ' + latest.maxWeight + unit;
+ } else { $('exerciseProgress').textContent = '完成次数：' + previous.reps + ' → ' + latest.reps + '次'; }
+}
+function renderTrend() {
+ if (!yearSummary) return;
+ const endDate = recordYear === Number(today.slice(0,4)) ? today : recordYear + '-12-31';
+ const width = Math.max(300,Math.round($('trendChart').getBoundingClientRect().width || $('trendChart').clientWidth || 650));
+ $('trendChart').innerHTML = Analytics.trendMarkup(trendMode === 'cumulative' ? fullSummary : yearSummary,{mode:trendMode,metric:$('trendMetric').value || 'sets',endDate,width,height:240});
+ document.querySelectorAll('[data-trend-mode]').forEach(b => { b.classList.toggle('active',b.dataset.trendMode === trendMode); b.setAttribute('aria-pressed',String(b.dataset.trendMode === trendMode)); });
+}
+function renderAnalytics() {
+ fullSummary = Analytics.aggregate(db.sessions,ALL_EX,{asOfDate:today});
+ const years = Array.from(new Set([Number(today.slice(0,4)),recordYear,...fullSummary.dates.map(d => Number(d.slice(0,4)))])).sort((a,b)=>b-a);
+ $('yearSelect').innerHTML = years.map(y => '<option value="' + y + '">' + y + '年</option>').join(''); $('yearSelect').value = String(recordYear);
+ const recordsForYear = Object.fromEntries(Object.entries(db.sessions).filter(([,s]) => s.date.startsWith(recordYear + '-')));
+ yearSummary = Analytics.aggregate(recordsForYear,ALL_EX,{asOfDate:today});
+ const t = yearSummary.totals;
+ $('statDays').textContent = String(t.days); $('statSets').textContent = String(t.sets); $('statReps').textContent = String(t.reps); $('statCardio').textContent = String(t.cardioMinutes);
+ $('yearSessions').textContent = t.sessions + '次训练';
+ $('heatmap').innerHTML = Analytics.heatmapMarkup(yearSummary,{year:recordYear,today,cellSize:14,gap:4,showWeekdays:true,legend:false});
+ $('bodyChart').innerHTML = Analytics.breakdownMarkup(yearSummary);
+ $('recentRecords').innerHTML = table(yearSummary.recent.slice(0,6),true);
+ const oldSelected = $('progressExercise').value;
+ const options = ALL_EX.filter(e => EX.includes(e) || yearSummary.byExercise[e.id]);
+ $('progressExercise').innerHTML = options.map(e => '<option value="' + e.id + '">' + esc(e.name) + '</option>').join('');
+ $('progressExercise').value = options.some(e => e.id === oldSelected) ? oldSelected : currentId;
+ renderTrend(); renderProgressTrend();
+}
+function openDialog(id) { const el = $(id); if (el.showModal) { if (!el.open) el.showModal(); } else el.setAttribute('open',''); }
+function closeDialog(id) { const el = $(id); if (el.close) el.close(); else el.removeAttribute('open'); }
+function openDay(selectedDate) {
+ const day = Analytics.dateDetail(fullSummary,selectedDate);
+ if (!day) return;
+ $('historyTitle').textContent = selectedDate;
+ $('historyBody').innerHTML = day.records.length ? '<div class="day-summary"><span><strong>' + day.sets + '</strong>组</span><span><strong>' + day.reps + '</strong>次</span><span>有氧 <strong>' + day.cardioMinutes + '</strong>分</span><span>拉伸 <strong>' + day.stretchMinutes + '</strong>分</span></div>' + day.records.map(r => '<h3 class="history-label">' + r.groupName + (r.feeling ? ' · ' + FEELINGS[r.feeling] : '') + '</h3><div class="table-scroll"><table class="history-table"><thead><tr><th>动作</th><th>完成</th><th>负重</th></tr></thead><tbody>' + r.items.map(item => '<tr><td>' + esc(item.name) + '</td><td>' + item.records.map(s => s.reps + '次').join(' + ') + '</td><td>' + (item.loadType === 'bodyweight' ? '自重' : item.records.map(s => s.weight === null ? '未填' : s.weight + (item.loadType === 'pair_dumbbell' ? 'kg/只' : 'kg')).join(' / ')) + '</td></tr>').join('') + (r.items.length ? '' : '<tr><td colspan="3">有氧 ' + r.cardioMinutes + '分 · 拉伸 ' + r.stretchMinutes + '分</td></tr>') + '</tbody></table></div>').join('') + '<div style="margin-top:22px"><button class="button" data-edit-date="' + selectedDate + '">编辑这一天</button></div>' : '<p class="empty">暂无记录</p>';
+ openDialog('historyDialog');
+}
+function showAllHistory() { $('historyTitle').textContent = recordYear + '年记录'; $('historyBody').innerHTML = '<div class="table-scroll">' + table(yearSummary.recent,true) + '</div>'; openDialog('historyDialog'); }
+function fullPrompt(id) { const p = window.MUSE_PROMPTS; return p.common + '\n\n' + p.items[id].prompt + '\n\n' + p.negative; }
+function setPrompt(id) { $('promptExercise').value = id; $('promptText').value = fullPrompt(id); }
+async function copyText(text) {
+ try {
+  if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); toast('提示词已复制。'); return; }
+ } catch (error) {}
+ const helper = document.createElement('textarea'); helper.value = text; helper.style.position = 'fixed'; helper.style.opacity = '0';
+ // Keep the copy field inside an active dialog so it remains focusable.
+ const parent = $('promptDialog').open ? $('promptDialog') : document.body;
+ parent.appendChild(helper); helper.select();
+ let copied = false; try { copied = document.execCommand('copy'); } catch (error) {}
+ helper.remove();
+ if (copied) toast('提示词已复制。'); else { setPrompt(currentId); openDialog('promptDialog'); $('promptText').focus(); $('promptText').select(); toast('请复制已选中的提示词。'); }
+}
+function downloadBlob(blob,name) { const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url),10000); }
+function downloadText(text,name,type) { downloadBlob(new Blob([text],{type:type || 'text/plain;charset=utf-8'}),name); }
+function promptsMarkdown() {
+ const p = window.MUSE_PROMPTS;
+ return '# Muse 真人健身动作视频提示词\n\n每次使用：统一风格＋一个动作＋负面提示词。\n\n如果平台支持人物参考图，请为全部视频使用同一张虚构成年教练参考图。生成后检查动作和器械，再导入网页对应动作。\n\n## 统一风格\n\n' + p.common + '\n\n## 负面提示词\n\n' + p.negative + '\n\n' + EX.map(e => '## ' + e.name + '\n\n文件名：`' + p.items[e.id].filename + '`\n\n' + p.items[e.id].prompt).join('\n\n') + '\n';
+}
+let mediaSequence = 0, currentObjectUrl = null, pendingVideoId = null, mediaBusy = false, loadedMediaStatus = '';
+function setMediaBusy(busy) {
+ mediaBusy = busy;
+ ['emptyImportBtn','videoImportBtn','videoFile'].forEach(id => { $(id).disabled = busy; });
+ $('removeVideoBtn').disabled = busy || !currentObjectUrl;
+ $('exportHtmlBtn').disabled = busy;
+}
+function mediaMessage(message) { $('mediaStatus').textContent = message || ''; $('mediaStatus').hidden = !message; }
+function clearVideo() {
+ const video = $('exerciseVideo'); video.pause(); video.removeAttribute('src'); video.load(); video.hidden = true;
+ if (currentObjectUrl) { URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; }
+ $('videoEmpty').hidden = false; $('removeVideoBtn').disabled = true; loadedMediaStatus = ''; mediaMessage('');
+}
+async function loadVideo() {
+ const sequence = ++mediaSequence, id = currentId;
+ clearVideo();
+ try {
+  const record = await window.TrainingMedia.load(id);
+  if (sequence !== mediaSequence || !record) return;
+  currentObjectUrl = URL.createObjectURL(record.blob);
+  const video = $('exerciseVideo'); video.src = currentObjectUrl; video.hidden = false; video.playbackRate = Number($('videoSpeed').value) || 1;
+  $('videoEmpty').hidden = true; $('removeVideoBtn').disabled = mediaBusy;
+  loadedMediaStatus = !record.persistent && record.source === 'session' ? '视频暂存本次页面，可导出含视频网页。' : '';
+  mediaMessage(loadedMediaStatus);
+ } catch (error) { if (sequence === mediaSequence) mediaMessage(error.message || '视频读取失败，请重新导入。'); }
+}
+function selectVideo() { if (mediaBusy) return; pendingVideoId = currentId; $('videoFile').click(); }
+async function importVideo() {
+ const file = $('videoFile').files && $('videoFile').files[0];
+ const id = pendingVideoId || currentId; $('videoFile').value = ''; if (!file) return;
+ if (mediaBusy) { toast('请等当前视频操作完成，再导入。'); return; }
+ setMediaBusy(true);
+ try {
+  const record = await window.TrainingMedia.save(id,file);
+  if (id === currentId) await loadVideo();
+  toast(record.persistent ? byId[id].name + '：视频已保存。' : '视频已导入；请导出含视频网页以保留。');
+ } catch (error) { toast(error.message || '视频导入失败。'); }
+ finally { setMediaBusy(false); }
+}
+async function removeVideo() {
+ if (mediaBusy) return;
+ const id = currentId;
+ setMediaBusy(true);
+ try { const result = await window.TrainingMedia.remove(id); if (id === currentId) await loadVideo(); toast(result.persistent ? '视频已移除。' : '已从本次页面移除；导出网页可保留此更改。'); }
+ catch (error) { toast(error.message || '视频移除失败。'); }
+ finally { setMediaBusy(false); }
+}
+async function exportHtml() {
+ if (mediaBusy) return;
+ const button = $('exportHtmlBtn'); setMediaBusy(true); button.textContent = '正在打包…';
+ try {
+  const videos = await window.TrainingMedia.toEmbedded();
+  const payload = JSON.stringify(videos).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+  const replacement = '<script id="embeddedMedia">window.EMBEDDED_MEDIA = ' + payload + ';<' + '/script>';
+  const pattern = /<script\s+id=["']embeddedMedia["'][^>]*>[\s\S]*?<\/script>/i;
+  const baseHtml = baseHtmlSnapshot();
+  if (!pattern.test(baseHtml)) throw new Error('网页打包失败，请重新打开原始文件。');
+  const html = baseHtml.replace(pattern,() => replacement);
+  downloadText(html,'qinglian_with_videos.html','text/html;charset=utf-8');
+  toast('含视频网页已导出。训练记录请单独备份。');
+ } catch (error) { toast(error.message || '网页导出失败。'); }
+ finally { setMediaBusy(false); button.textContent = '导出含视频网页'; }
+}
+function csvCell(value) { let t = String(value == null ? '' : value); if (/^[=+@]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g,'""') + '"'; }
+function exportCsv() {
+ if (!persistInputs()) return;
+ const rows = [['日期','部位','动作','组序号','实际次数','负重kg','负重口径','本组已完成','有氧30分钟已完成','拉伸10分钟已完成','训练感受']];
+ Object.values(db.sessions).sort((a,b) => a.date.localeCompare(b.date)).forEach(s => {
+  let found = false;
+  Object.entries(s.items).forEach(([id,item]) => {
+   const e = byId[id]; if (!e) return;
+   item.sets.forEach((r,i) => {
+    if (!r || !r.done) return; found = true;
+    rows.push([s.date,GROUPS[s.group],e.name,i+1,r.reps,e.loadType === 'bodyweight' ? '' : r.weight,e.loadType === 'bodyweight' ? '自重' : e.loadType === 'pair_dumbbell' ? '单只哑铃' : e.loadType === 'single_dumbbell' ? '单个哑铃' : '器械面板','是',s.cardio ? '是' : '否',s.stretch ? '是' : '否',FEELINGS[s.feeling] || '']);
+   });
+  });
+  if (!found && (s.cardio || s.stretch)) rows.push([s.date,GROUPS[s.group],'未记录力量组','','','','','',s.cardio ? '是' : '否',s.stretch ? '是' : '否',FEELINGS[s.feeling] || '']);
+ });
+ downloadText('\uFEFF' + rows.map(row => row.map(csvCell).join(',')).join('\r\n'),'qinglian_records_' + today + '.csv','text/csv;charset=utf-8');
+ toast('记录表格已导出。');
+}
+function parseCsv(text) {
+ const rows = [], row = []; let field = '', quote = false;
+ text = text.replace(/^\uFEFF/,'');
+ for (let i=0;i<text.length;i++) {
+  const c = text[i];
+  if (c === '"') { if (quote && text[i+1] === '"') { field += '"'; i++; } else quote = !quote; }
+  else if (c === ',' && !quote) { row.push(field); field = ''; }
+  else if ((c === '\n' || c === '\r') && !quote) { if (c === '\r' && text[i+1] === '\n') i++; row.push(field); if (row.some(v => v !== '')) rows.push(row.slice()); row.length = 0; field = ''; }
+  else field += c;
+ }
+ if (quote) throw new Error('CSV引号未闭合。');
+ row.push(field); if (row.some(v => v !== '')) rows.push(row);
+ return rows;
+}
+function dataFromCsv(text) {
+ const rows = parseCsv(text), headers = rows.shift() || [];
+ const columns = Object.fromEntries(headers.map((v,i) => [v,i]));
+ if (!['日期','部位','动作','组序号','实际次数','本组已完成'].every(k => k in columns)) throw new Error('请选择轻练导出的CSV文件。');
+ const out = {version:2,stage:db.stage,schedule:db.schedule.slice(),sessions:{}};
+ const reverseGroups = Object.fromEntries(Object.entries(GROUPS).map(([id,name]) => [name,id]));
+ const reverseFeelings = Object.fromEntries(Object.entries(FEELINGS).map(([id,name]) => [name,id]));
+ const names = Object.fromEntries(ALL_EX.map(e => [e.name,e.id])); names['高箱坐站'] = 'box_squat';
+ for (const row of rows) {
+  const get = key => row[columns[key]] || '';
+  const d = get('日期'), g = reverseGroups[get('部位')]; if (!Analytics.validDate(d) || !g) continue;
+  const key = d + '_' + g;
+  if (!out.sessions[key]) out.sessions[key] = {date:d,group:g,stage:'intro',items:{},cardio:false,stretch:false,feeling:''};
+  const s = out.sessions[key]; s.cardio ||= get('有氧30分钟已完成') === '是'; s.stretch ||= get('拉伸10分钟已完成') === '是'; s.feeling = reverseFeelings[get('训练感受')] || s.feeling;
+  const id = names[get('动作')], index = Number(get('组序号')) - 1;
+  if (!id || byId[id].group !== g || ![0,1,2,3].includes(index)) continue;
+  if (!s.items[id]) s.items[id] = {sets:[]};
+  while (s.items[id].sets.length <= index) s.items[id].sets.push({reps:byId[id].reps[0],weight:'',done:false});
+  s.items[id].sets[index] = {reps:Number(get('实际次数')),weight:get('负重kg'),done:get('本组已完成') === '是'};
+  if (index + 1 > stageCount(s.stage)) s.stage = ['intro','build','three','four'][index];
+ }
+ return cleanData(out);
+}
+function mergeData(incoming) {
+ db.schedule = incoming.schedule.slice(); db.stage = incoming.stage;
+ for (const [key,source] of Object.entries(incoming.sessions)) {
+  const dest = db.sessions[key];
+  if (!dest) { db.sessions[key] = source; continue; }
+  for (const [id,item] of Object.entries(source.items)) {
+   if (!dest.items[id]) { dest.items[id] = item; continue; }
+   item.sets.forEach((row,i) => {
+    const old = dest.items[id].sets[i];
+    // Imported completed rows replace the same dated row rather than creating a duplicate.
+    if (!old || row.done || !old.done) dest.items[id].sets[i] = row;
+   });
+  }
+  dest.cardio ||= source.cardio; dest.stretch ||= source.stretch;
+  if (source.feeling) dest.feeling = source.feeling;
+  if (stageCount(source.stage) > stageCount(dest.stage)) dest.stage = source.stage;
+ }
+}
+async function importBackup() {
+ const file = $('backupFile').files && $('backupFile').files[0]; $('backupFile').value = '';
+ if (!file || !persistInputs()) return;
+ try {
+  if (file.size > 10 * 1024 * 1024) throw new Error('记录文件请小于10MB。');
+  const text = await file.text();
+  const isCsv = /\.csv$/i.test(file.name) || file.type === 'text/csv';
+  const incoming = isCsv ? dataFromCsv(text) : cleanData(JSON.parse(text));
+  mergeData(incoming); save(); renderTraining(false); renderAnalytics(); closeDialog('backupDialog'); toast('记录已合并，同一天同一组不会重复。');
+ } catch (error) { toast(error instanceof SyntaxError ? '记录文件格式不正确。' : error.message || '记录导入失败。'); }
+}
+function printPlan() {
+ if (!persistInputs()) return;
+ $('printPlan').innerHTML = '<h1>轻练 · 训练计划</h1><p>' + db.schedule.map((g,i) => DAYS[i] + ' ' + (GROUPS[g] || '休息')).join('　') + '</p>' + Object.entries(GROUPS).map(([g,name]) => '<h2>' + name + '</h2><table><thead><tr><th>动作</th><th>组数</th><th>次数</th><th>休息</th></tr></thead><tbody>' + EX.filter(e => e.group === g).map(e => '<tr class="print-ex"><td>' + e.name + '</td><td>1–4组</td><td>' + e.reps[0] + '–' + e.reps[1] + '次</td><td>' + e.rest + '秒</td></tr>').join('') + '</tbody></table>').join('') + '<p>每次力量训练后：有氧30分钟＋拉伸10分钟。</p>';
+ window.print();
+}
+// Training and schedule
+$('sessionDate').max = today;
+$('sessionDate').value = date;
+// Pointer-based drag-and-swap: mouse, touch and stylus all work; weekday labels never move.
+let weekGesture = null;
+let lastDragEnded = 0;
+function swapWeekCards(from,to) {
+ if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to < 0 || from > 6 || to > 6 || from === to) return false;
+ if (!persistInputs()) return false;
+ [db.schedule[from],db.schedule[to]] = [db.schedule[to],db.schedule[from]];
+ save(); renderSchedule(); toast(DAYS[from] + '与' + DAYS[to] + '已交换。');
+ return true;
+}
+function dragTarget(x,y) {
+ const node = document.elementFromPoint(x,y);
+ const slot = node && node.closest('.week-slot');
+ return slot && $('weekPlan').contains(slot) ? Number(slot.dataset.slot) : -1;
+}
+function endWeekGesture() {
+ if (!weekGesture) return;
+ const {card,ghost,target,pointerId} = weekGesture;
+ if (target != null && target >= 0) { const slot=$('weekPlan').querySelector('[data-slot="' + target + '"]'); if (slot) slot.classList.remove('drop-target'); }
+ if (ghost) ghost.remove();
+ card.classList.remove('is-dragging');
+ document.body.classList.remove('week-dragging');
+ try { if (card.hasPointerCapture(pointerId)) card.releasePointerCapture(pointerId); } catch (error) {}
+ weekGesture=null;
+}
+$('weekPlan').addEventListener('pointerdown',event => {
+ const card=event.target.closest('[data-weekday]');
+ if (!card || (event.pointerType==='mouse' && event.button!==0) || weekGesture) return;
+ weekGesture={pointerId:event.pointerId,card,from:Number(card.dataset.weekday),x:event.clientX,y:event.clientY,moved:false,ghost:null,target:-1};
+ try {card.setPointerCapture(event.pointerId);} catch(error) {}
+});
+$('weekPlan').addEventListener('pointermove',event => {
+ const g=weekGesture;
+ if (!g || event.pointerId!==g.pointerId) return;
+ if (!g.moved && Math.hypot(event.clientX-g.x,event.clientY-g.y)<7) return;
+ if (!g.moved) {
+  g.moved=true;
+  const rect=g.card.getBoundingClientRect();
+  g.ghost=g.card.cloneNode(true); g.ghost.classList.add('week-ghost');
+  g.ghost.removeAttribute('id'); g.ghost.removeAttribute('data-weekday');
+  g.ghost.setAttribute('aria-hidden','true');g.ghost.tabIndex=-1;
+  g.ghost.style.width=rect.width+'px';g.ghost.style.height=rect.height+'px';
+  document.body.appendChild(g.ghost);g.card.classList.add('is-dragging');document.body.classList.add('week-dragging');
+ }
+ event.preventDefault();
+ g.ghost.style.left=(event.clientX-g.ghost.offsetWidth/2)+'px';g.ghost.style.top=(event.clientY-g.ghost.offsetHeight/2)+'px';
+ const target=dragTarget(event.clientX,event.clientY);
+ if (target!==g.target) {
+  if (g.target>=0) {const last=$('weekPlan').querySelector('[data-slot="'+g.target+'"]');if(last)last.classList.remove('drop-target');}
+  g.target=target;
+  if (target>=0 && target!==g.from){const next=$('weekPlan').querySelector('[data-slot="'+target+'"]');if(next)next.classList.add('drop-target');}
+ }
+});
+$('weekPlan').addEventListener('pointerup',event => {
+ const g=weekGesture;
+ if (!g || event.pointerId!==g.pointerId) return;
+ const moved=g.moved,from=g.from,to=dragTarget(event.clientX,event.clientY);
+ endWeekGesture();
+ if (moved) {lastDragEnded=Date.now();event.preventDefault();if(to>=0 && to!==from) swapWeekCards(from,to);}
+});
+$('weekPlan').addEventListener('pointercancel',endWeekGesture);
+window.addEventListener('blur',endWeekGesture);
+$('weekPlan').addEventListener('click',event => {
+ if (Date.now()-lastDragEnded<350) {event.preventDefault();return;}
+ const b=event.target.closest('[data-weekday]');if(!b)return;
+ const g=db.schedule[Number(b.dataset.weekday)];if(g==='rest')toast('这一天安排休息。');else chooseGroup(g);
+});
+$('weekPlan').addEventListener('keydown',event => {
+ const b=event.target.closest('[data-weekday]');if(!b || !event.altKey)return;
+ const step=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:0;
+ if(!step)return;
+ event.preventDefault();
+ const from=Number(b.dataset.weekday),to=from+step;
+ if(to>=0 && to<7 && swapWeekCards(from,to)) $('weekPlan').querySelector('[data-weekday="'+to+'"]').focus();
+});
+document.querySelectorAll('[data-group]').forEach((tab,index,array) => {
+ tab.addEventListener('click',() => chooseGroup(tab.dataset.group));
+ tab.addEventListener('keydown',event => { const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0; if (!step) return; event.preventDefault(); const next = array[(index+step+array.length)%array.length]; chooseGroup(next.dataset.group); $('tab-' + group).focus(); });
+});
+$('exerciseList').addEventListener('click',event => { const button = event.target.closest('[data-ex]'); if (button) chooseExercise(button.dataset.ex); });
+$('nextExerciseBtn').addEventListener('click',() => { const list = groupExercises(); chooseExercise(list[(list.findIndex(e => e.id === currentId)+1)%list.length].id); });
+$('sessionDate').addEventListener('change',() => {
+ const next = $('sessionDate').value;
+ if (!Analytics.validDate(next) || next > today || !persistInputs()) { $('sessionDate').value = date; if (next > today) toast('实际训练不能记录在未来日期。'); return; }
+ date = next; renderTraining(false); renderAnalytics();
+});
+$('trainingStage').addEventListener('change',() => {
+ if (!persistInputs()) { $('trainingStage').value = session().stage; return; }
+ session().stage = stageOf($('trainingStage').value); db.stage = session().stage; save(); renderTraining(false); renderAnalytics();
+});
+$('setRows').addEventListener('change',() => { if (persistInputs()) renderAnalytics(); });
+$('setRows').addEventListener('click',event => { const b = event.target.closest('[data-check]'); if (b) markSet(Number(b.dataset.check)); });
+$('completeSetBtn').addEventListener('click',() => { const count = visibleSets(currentId); for (let i=0;i<count;i++) if (!rowAt(currentId,i).done) { markSet(i); break; } });
+for (const [id,key] of [['cardioDone','cardio'],['stretchDone','stretch']]) $(id).addEventListener('change',() => {
+ if (!persistInputs()) { $(id).checked = session()[key]; return; }
+ session()[key] = $(id).checked; save(); renderAnalytics();
+});
+$('feelingSelect').addEventListener('change',() => {
+ if (!persistInputs()) { $('feelingSelect').value = session().feeling || ''; return; }
+ session().feeling = FEELINGS[$('feelingSelect').value] ? $('feelingSelect').value : ''; save(); renderAnalytics();
+ if (session().feeling === 'pain') toast('有疼痛或明显不适时，先停止当前动作。');
+});
+$('scheduleBtn').addEventListener('click',() => {
+ if (db.schedule.every((g,i)=>g===DEFAULT_SCHEDULE[i])) {toast('当前已是默认排期。');return;}
+ if (!window.confirm('恢复默认排期？已完成的训练记录不会改变。') || !persistInputs()) return;
+ db.schedule=DEFAULT_SCHEDULE.slice(); save(); renderSchedule(); toast('排期已恢复默认。');
+});
+// Deadline-based timers preserve elapsed time when a background tab is throttled.
+document.querySelectorAll('[data-timer]').forEach(b => b.addEventListener('click',() => switchTimer(b.dataset.timer)));
+$('restSelect').addEventListener('change',() => { const seconds = Number($('restSelect').value); if (![60,75,90,120].includes(seconds)) return; restPrefs[currentId] = seconds; if (!timer.running && timer.mode === 'rest') { timer.duration = seconds; timer.remaining = seconds; renderTimer(); } });
+$('timerStart').addEventListener('click',() => {
+ if (timer.running) { timer.remaining = Math.max(0,(timer.deadline-Date.now())/1000); timer.running = false; }
+ else { if (timer.remaining <= 0) timer.remaining = timer.duration; timer.running = true; timer.deadline = Date.now() + timer.remaining*1000; }
+ renderTimer();
+});
+$('timerReset').addEventListener('click',() => { timer.running = false; timer.remaining = timer.duration; renderTimer(); });
+setInterval(timerTick,250);
+document.addEventListener('visibilitychange',timerTick);
+// Records
+$('yearSelect').addEventListener('change',() => { recordYear = Number($('yearSelect').value); renderAnalytics(); });
+$('trendMetric').addEventListener('change',renderTrend);
+document.querySelectorAll('[data-trend-mode]').forEach(b => b.addEventListener('click',() => { trendMode = b.dataset.trendMode; renderTrend(); }));
+$('progressExercise').addEventListener('change',renderProgressTrend);
+$('heatmap').addEventListener('click',event => { const b = event.target.closest('[data-activity-date]'); if (b && !b.disabled) openDay(b.dataset.activityDate); });
+$('recentRecords').addEventListener('click',event => { const b = event.target.closest('[data-history-date]'); if (b) openDay(b.dataset.historyDate); });
+$('allHistoryBtn').addEventListener('click',showAllHistory);
+$('historyBody').addEventListener('click',event => {
+ const day = event.target.closest('[data-history-date]'); if (day) openDay(day.dataset.historyDate);
+ const edit = event.target.closest('[data-edit-date]');
+ if (edit && persistInputs()) { date = edit.dataset.editDate; const records = Analytics.dateDetail(fullSummary,date).records; if (records.length) { group = records[0].group; currentId = EX.find(e => e.group === group).id; } closeDialog('historyDialog'); renderTraining(true); $('training').scrollIntoView({behavior:'smooth'}); }
+});
+if (window.ResizeObserver) { let lastWidth = 0; new ResizeObserver(entries => { const width = Math.round(entries[0].contentRect.width); if (width !== lastWidth) { lastWidth = width; renderTrend(); } }).observe($('trendChart')); }
+// Prompt and media controls
+$('promptExercise').innerHTML = EX.map(e => '<option value="' + e.id + '">' + esc(e.name) + '</option>').join('');
+$('promptsBtn').addEventListener('click',() => { setPrompt(currentId); openDialog('promptDialog'); });
+$('exercisePromptBtn').addEventListener('click',() => copyText(fullPrompt(currentId)));
+$('promptExercise').addEventListener('change',() => setPrompt($('promptExercise').value));
+$('copyPromptBtn').addEventListener('click',() => copyText($('promptText').value));
+$('downloadPromptsBtn').addEventListener('click',() => downloadText(promptsMarkdown(),'muse_workout_prompts.md','text/markdown;charset=utf-8'));
+$('emptyImportBtn').addEventListener('click',selectVideo); $('videoImportBtn').addEventListener('click',selectVideo);
+$('videoFile').addEventListener('change',importVideo); $('removeVideoBtn').addEventListener('click',removeVideo);
+$('videoSpeed').addEventListener('change',() => { $('exerciseVideo').playbackRate = Number($('videoSpeed').value) || 1; });
+$('exerciseVideo').addEventListener('error',() => { const video = $('exerciseVideo'); if (video.error && currentObjectUrl && video.getAttribute('src') === currentObjectUrl) mediaMessage('此视频无法播放，请改用兼容的MP4文件。'); });
+$('exerciseVideo').addEventListener('loadedmetadata',() => { const video = $('exerciseVideo'); if (currentObjectUrl && video.getAttribute('src') === currentObjectUrl && !video.error) mediaMessage(loadedMediaStatus); });
+// Backup and dialogs
+$('backupBtn').addEventListener('click',() => openDialog('backupDialog'));
+$('exportJsonBtn').addEventListener('click',() => { if (!persistInputs()) return; downloadText(JSON.stringify(db,null,2),'qinglian_records_' + today + '.json','application/json'); toast('记录与排期已备份。'); });
+$('importJsonBtn').addEventListener('click',() => $('backupFile').click());
+$('backupFile').addEventListener('change',importBackup);
+$('exportCsvBtn').addEventListener('click',exportCsv);
+$('exportHtmlBtn').addEventListener('click',exportHtml);
+$('printBtn').addEventListener('click',printPlan);
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click',() => closeDialog(b.dataset.close)));
+document.querySelectorAll('dialog').forEach(d => d.addEventListener('click',event => { if (event.target === d) { const r = d.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) closeDialog(d.id); } }));
+window.addEventListener('beforeunload',() => { if (captureInputs()) save(); });
+window.addEventListener('pagehide',() => { $('exerciseVideo').pause(); });
+renderTraining(true); renderAnalytics(); save();
+})();
+
+</script></body></html>

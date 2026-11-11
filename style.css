@@ -88,7 +88,7 @@ svg { display: block; flex: none; }
 .language-button { font-size: 12px; font-weight: 620; padding-inline: 7px; }
 .search .search-clear { min-width: 24px; height: 24px; font-size: 20px; line-height: 1; }
 
-.wrap { width: min(1200px, calc(100% - 72px)); margin-inline: auto; }
+.wrap { width: calc(100% - 40px); margin-inline: auto; }
 .intro { margin: 0 auto; max-width: 640px; text-align: center; padding: 96px 18px 73px; }
 .intro h1 { font-size: clamp(42px, 5.1vw, 60px); line-height: 1.12; font-weight: 630; letter-spacing: -.055em; text-wrap: balance; }
 :lang(zh-CN) .intro h1 { font-size: clamp(38px, 4.8vw, 55px); font-weight: 650; letter-spacing: -.045em; }
@@ -111,7 +111,7 @@ svg { display: block; flex: none; }
 .chip:hover { background: var(--hover); color: var(--ink); }
 .chip[aria-pressed="true"] { color: var(--bg); background: var(--ink); }
 .count { margin-right: 1px; color: var(--ink-3); font-size: 12px; white-space: nowrap; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 23px 15px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 23px 12px; }
 .project-card { min-width: 0; }
 .stage {
   position: relative; isolation: isolate; display: grid; place-items: center; aspect-ratio: 1.48;
@@ -262,7 +262,6 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
 
 @media (max-width: 1000px) {
   .topbar { padding-inline: 22px; gap: 14px; }
-  .wrap { width: calc(100% - 50px); }
   .intro { padding-top: 81px; padding-bottom: 64px; }
   .grid { gap: 21px 12px; }
   .stage { border-radius: 24px; }

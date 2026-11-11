@@ -46,7 +46,7 @@ const UI = {
     jsonFilled: '已从 JSON 填入表单，检查后保存'
   },
   en: {
-    title: 'Sugar’s Vault',
+    title: "Sugar's Vault",
     sub: 'My interactive projects, design experiments, and open-source finds.',
     works: 'Work', browse: 'Browse work', categories: 'Project category',
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',

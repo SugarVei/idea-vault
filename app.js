@@ -1,6 +1,7 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
+import { Panorama } from './panorama.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -9,6 +10,11 @@ const UI = {
     title: 'Sugar 的仓库',
     sub: '我的交互作品、设计实验与开源收藏。',
     works: '作品', browse: '浏览作品', categories: '作品分类',
+    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示',
+    panoramaRegion: '全景作品画廊', panoramaShow: '查看作品', panoramaDetails: '查看详情',
+    panoramaPrevious: '上一件作品', panoramaNext: '下一件作品',
+    panoramaPause: '暂停自动旋转', panoramaResume: '开始自动旋转',
+    panoramaHint: '拖动浏览 · 点击作品查看详情',
     search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
     noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
     savedWork: '收藏作品', bookmark: '收藏', unsave: '取消收藏',
@@ -55,6 +61,11 @@ const UI = {
     title: "Sugar's Vault",
     sub: 'My interactive projects, design experiments, and open-source finds.',
     works: 'Work', browse: 'Browse work', categories: 'Project category',
+    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view',
+    panoramaRegion: 'Panoramic project gallery', panoramaShow: 'View project', panoramaDetails: 'View details',
+    panoramaPrevious: 'Previous project', panoramaNext: 'Next project',
+    panoramaPause: 'Pause rotation', panoramaResume: 'Start rotation',
+    panoramaHint: 'Drag to browse · Select a project for details',
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
     noResults: 'No matching projects', noSaved: 'No saved projects yet',
     savedWork: 'Saved projects', bookmark: 'Save', unsave: 'Remove from saved',
@@ -206,6 +217,80 @@ let pins = readPins();
 let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 let savedOnly = false;
 let indexedIdeas = [];
+const VIEW_MODE_STORAGE_KEY = 'vault-view-mode';
+let viewMode = store.get(VIEW_MODE_STORAGE_KEY) === 'panorama' ? 'panorama' : 'grid';
+const panoramaHost = $('#panorama');
+const panorama = new Panorama(panoramaHost, {
+  onOpen(index, trigger) {
+    const idea = state.ideas[index];
+    if (idea) openSheet(idea, trigger);
+  },
+  onBookmark(index) {
+    const button = grid.querySelector('[data-index="' + index + '"] [data-bookmark]');
+    if (button) toggleBookmark(button, state.ideas[index]);
+  },
+  onPin(index) {
+    const button = grid.querySelector('[data-index="' + index + '"] [data-pin]');
+    if (button) togglePin(button, state.ideas[index], false);
+  }
+});
+
+function renderViewSwitch() {
+  const s = t();
+  $('#view-switch').setAttribute('aria-label', s.viewMode);
+  for (const button of document.querySelectorAll('[data-view-mode]')) {
+    const label = button.dataset.viewMode === 'grid' ? s.gridView : s.panoramaView;
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.setAttribute('aria-pressed', String(button.dataset.viewMode === viewMode));
+  }
+}
+
+function panoramaCoverHtml(idea) {
+  const title = pick(idea, 'title');
+  const cover = (idea.images || []).map(imgSrc).find(Boolean);
+  const image = cover
+    ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false">'
+    : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
+  if (!requiresCardPassword(idea)) return image;
+  return '<div class="password-cover panorama-password-cover" aria-hidden="true">' + image +
+    '<div class="password-cover-glass"></div><div class="password-cover-label">' + icon('lock') +
+    '<span>' + esc(t().enterPassword) + '</span></div></div>';
+}
+
+function syncPanorama() {
+  const s = t();
+  // DOM order includes the visitor's pins; hidden cards already reflect every filter.
+  const items = [...grid.querySelectorAll('.project-card:not([hidden])')].map(card => {
+    const index = Number(card.dataset.index);
+    const idea = state.ideas[index];
+    const key = bookmarkKey(idea);
+    return {
+      key, index, title: pick(idea, 'title'),
+      subtitle: requiresCardPassword(idea) ? s.passwordRequired : pick(idea, 'kind') || pick(idea, 'line'),
+      coverHtml: panoramaCoverHtml(idea), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
+    };
+  });
+  grid.hidden = viewMode === 'panorama';
+  panoramaHost.hidden = viewMode !== 'panorama' || items.length === 0;
+  panorama.setItems(items, {
+    region: s.panoramaRegion, show: s.panoramaShow, details: s.panoramaDetails,
+    previous: s.panoramaPrevious, next: s.panoramaNext,
+    pause: s.panoramaPause, resume: s.panoramaResume, hint: s.panoramaHint,
+    bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
+  });
+  panorama.setActive(viewMode === 'panorama' && items.length > 0);
+}
+
+function setViewMode(mode, persist = true) {
+  if (mode !== 'grid' && mode !== 'panorama') return;
+  viewMode = mode;
+  if (persist) store.set(VIEW_MODE_STORAGE_KEY, mode);
+  if (mode === 'panorama') grid.querySelectorAll('video').forEach(video => video.pause());
+  renderViewSwitch();
+  syncPanorama();
+  livePreviews.schedule();
+}
 
 function renderTheme() {
   document.documentElement.dataset.theme = theme;
@@ -240,6 +325,7 @@ function renderStatic() {
     '<button type="button" class="chip" data-filter="' + key + '" aria-pressed="' + (key === state.filter) + '">' + s.filters[key] + '</button>'
   ).join('');
   renderTheme();
+  renderViewSwitch();
   renderAdminBar();
 }
 
@@ -309,7 +395,7 @@ function renderGrid() {
   grid.innerHTML = state.ideas.map(cardHtml).join('') +
     (state.isAdmin ? '<button type="button" class="stage import-card" data-act="add"><span aria-hidden="true">+</span>' + esc(t().add) + '</button>' : '');
   grid.removeAttribute('aria-busy');
-  applyPinOrder();
+  applyPinOrder(false);
   for (const card of grid.querySelectorAll('.project-card')) {
     if (card.dataset.passwordRequired === 'true') continue;
     const demo = card.querySelector('.card-demo');
@@ -354,6 +440,7 @@ function applyFilter() {
   $('#count').textContent = ready ? t().count(count) : '';
   $('#empty-results').hidden = !ready || count > 0 || (importing && !importing.hidden);
   $('#empty-message').textContent = savedOnly && !bookmarks.size ? t().noSaved : t().noResults;
+  syncPanorama();
   livePreviews.schedule();
 }
 
@@ -375,9 +462,10 @@ function toggleBookmark(button, idea) {
   button.setAttribute('aria-label', label);
   button.title = label;
   if (savedOnly) applyFilter();
+  else syncPanorama();
 }
 
-function applyPinOrder() {
+function applyPinOrder(sync = true) {
   const ranks = new Map(pins.map((key, rank) => [key, rank]));
   const rankOf = card => ranks.get(bookmarkKey(state.ideas[Number(card.dataset.index)])) ?? Infinity;
   const cards = [...grid.querySelectorAll('.project-card')].sort((a, b) =>
@@ -392,6 +480,7 @@ function applyPinOrder() {
     else grid.insertBefore(card, next);
   }
   if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
+  if (sync) syncPanorama();
   livePreviews.schedule();
 }
 
@@ -407,7 +496,7 @@ function updatePinButtons() {
   }
 }
 
-function togglePin(button, idea) {
+function togglePin(button, idea, restoreFocus = true) {
   const key = bookmarkKey(idea);
   const active = !pins.includes(key);
   pins = pins.filter(saved => saved !== key);
@@ -417,8 +506,10 @@ function togglePin(button, idea) {
   applyPinOrder();
   // Keep the activated control in view after its card moves, including when
   // using Enter / Space to pin or unpin a card deep in the gallery.
-  button.focus({ preventScroll: true });
-  button.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  if (restoreFocus) {
+    button.focus({ preventScroll: true });
+    button.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }
   toast((active ? t().pinned : t().unpinned) + ' · ' + pick(idea, 'title') +
     (persisted ? '' : ' · ' + t().pinSessionOnly));
 }
@@ -994,6 +1085,8 @@ async function reload() { await loadIdeas(); renderAll(); }
 /* ---------------- 事件与启动 ---------------- */
 
 document.addEventListener('click', event => {
+  const viewButton = event.target.closest('[data-view-mode]');
+  if (viewButton) setViewMode(viewButton.dataset.viewMode);
   const filter = event.target.closest('[data-filter]');
   if (filter) {
     state.filter = filter.dataset.filter;
@@ -1015,6 +1108,9 @@ document.addEventListener('click', event => {
 });
 addEventListener('hashchange', renderAdminBar);
 addEventListener('storage', event => {
+  if (event.key === VIEW_MODE_STORAGE_KEY || event.key === null) {
+    setViewMode(store.get(VIEW_MODE_STORAGE_KEY) === 'panorama' ? 'panorama' : 'grid', false);
+  }
   if (event.key !== PIN_STORAGE_KEY && event.key !== null) return;
   pins = readPins();
   updatePinButtons();

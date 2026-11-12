@@ -2,7 +2,7 @@
 
 磨砂玻璃卡片风格的个人创意仓库，收着我做过的可交互网页作品，以及标注原作者的开源作品和创作工具收藏。中英双语，深色主题。
 
-线上地址：https://sugarvei.github.io/idea-vault/
+线上地址：https://works.sugarv.mom/
 
 ## 结构
 
@@ -30,7 +30,7 @@ node serve.mjs
 
 ## 导入新创意
 
-1. 打开 `https://sugarvei.github.io/idea-vault/#admin`，右上角会出现「管理员登录」。
+1. 打开 `https://works.sugarv.mom/#admin`，右上角会出现「管理员登录」。
 2. 第一次用：填邮箱和密码，点「首次注册」，去邮箱点确认链接（确认后跳到的页面打不开也没关系），再回来登录。
 3. 登录后如果显示「未授权」，把弹窗里的账号 ID 加进 `vault_admins` 表（让 Claude 来做，或在 Supabase SQL Editor 执行
    `insert into public.vault_admins (user_id) values ('<账号 ID>');`），刷新页面。

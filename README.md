@@ -31,7 +31,7 @@ node serve.mjs
 ## 导入新创意
 
 1. 打开 `https://works.sugarv.mom/#admin`，右上角会出现「管理员登录」。
-2. 第一次用：填邮箱和密码，点「首次注册」，去邮箱点确认链接（确认后跳到的页面打不开也没关系），再回来登录。
+2. 第一次用：填邮箱和密码，点「首次注册」，去邮箱点确认链接，回到本站登录。
 3. 登录后如果显示「未授权」，把弹窗里的账号 ID 加进 `vault_admins` 表（让 Claude 来做，或在 Supabase SQL Editor 执行
    `insert into public.vault_admins (user_id) values ('<账号 ID>');`），刷新页面。
 4. 成为管理员后，点右上角「＋ 导入」或最后那张「导入新创意」卡片：上传图片（自动压缩成 WebP，并从封面取主色）、填中英文案，保存即发布。
@@ -46,7 +46,13 @@ node serve.mjs
 
 ## 部署
 
-GitHub Pages，从 `main` 分支根目录发布。推送到 `main` 后约 1 分钟生效。
+GitHub Pages，从 `main` 分支根目录发布。推送后等待 `pages build and deployment` 工作流成功。
+
+自定义域名为 `works.sugarv.mom`，发布时保留根目录的 `CNAME` 文件。Spaceship 的 DNS 记录为 `CNAME works → sugarvei.github.io`，TTL 为 30 分钟。HTTPS 证书由 GitHub Pages 自动管理。
+
+Supabase Auth 的 Redirect URLs 已添加 `https://works.sugarv.mom/`，供注册确认邮件返回本站。该 Supabase 项目与其他应用共用，调整回调地址时保留其他应用的配置。
+
+新域名需要重新登录管理员账号。作品数据仍来自原 Supabase 项目；浏览器本地收藏和轻练记录按域名分别存储，不会自动从旧网址迁移。
 
 ## 开源收藏与图片来源
 

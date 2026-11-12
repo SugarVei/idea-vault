@@ -264,7 +264,7 @@ function cardHtml(idea, index) {
   const s = t();
   const title = pick(idea, 'title');
   const locked = requiresCardPassword(idea);
-  const cover = locked ? '' : (idea.images || []).map(imgSrc).find(Boolean);
+  const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const film = !locked && isVideo(idea.url);
   const preview = locked ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.
@@ -287,7 +287,7 @@ function cardHtml(idea, index) {
       ? '<button class="preview-toggle" type="button" aria-label="' + esc(s.coverToggle) + '" title="' + esc(s.coverToggle) + '" aria-pressed="false" hidden>' + icon('image') + '</button>'
       : '';
   const media = locked
-    ? '<div class="project-frame password-cover" data-kind="cover" aria-hidden="true">' + icon('lock') + '<span>' + esc(s.enterPassword) + '</span></div>'
+    ? '<div class="project-frame password-cover" data-kind="cover" aria-hidden="true">' + (cover ? poster : '') + '<div class="password-cover-glass"></div><div class="password-cover-label">' + icon('lock') + '<span>' + esc(s.enterPassword) + '</span></div></div>'
     : demo
     ? '<div class="card-demo" data-demo="' + demo + '"></div>'
     : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';

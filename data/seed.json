@@ -1173,5 +1173,206 @@
     "facts": [],
     "tech": null,
     "host": "GitHub Pages"
+  },
+  {
+    "published": true,
+    "category": "factory",
+    "status": "live",
+    "year": 2026,
+    "sort": 260,
+    "title_zh": "NVIDIA CAD 转 SimReady",
+    "title_en": "NVIDIA CAD to SimReady",
+    "kind_zh": "NVIDIA 官方开源技能",
+    "kind_en": "Official NVIDIA Agent Skill",
+    "line_zh": "把 CAD 与源模型接入 OpenUSD 仿真资产制作流程。",
+    "line_en": "Bring CAD and source models into an OpenUSD simulation-asset workflow.",
+    "lead_zh": "NVIDIA 发布的 CAD to SimReady 代理技能，协同模型转换、材质与物理属性配置、合规检查、验证和打包。收录官方技能源码与安装说明，适合准备工厂设备、仓储对象和机器人仿真资产。此条目为官方开源资源收藏。",
+    "lead_en": "NVIDIA's CAD to SimReady agent skill coordinates conversion, material and physics assignment, conformance, validation, and packaging. This collection links to the official skill and setup instructions for preparing industrial, warehouse, and robotics assets.",
+    "url": "https://github.com/NVIDIA/skills/tree/main/skills/omniverse-cad-to-simready",
+    "repo": "https://github.com/NVIDIA/skills",
+    "images": [
+      "https://repository-images.githubusercontent.com/1167034425/97dbb8a7-2480-4b2a-99ce-d94de1a34f38"
+    ],
+    "tags_zh": [
+      "工厂模型设计",
+      "NVIDIA",
+      "Agent Skill",
+      "CAD",
+      "OpenUSD"
+    ],
+    "tags_en": [
+      "Factory Model Design",
+      "NVIDIA",
+      "Agent Skill",
+      "CAD",
+      "OpenUSD"
+    ],
+    "tech": "Agent Skills · OpenUSD · Python",
+    "host": "GitHub",
+    "hue": "#76b900",
+    "facts": []
+  },
+  {
+    "published": true,
+    "category": "factory",
+    "status": "live",
+    "year": 2026,
+    "sort": 270,
+    "title_zh": "Airsup · 工厂仿真",
+    "title_en": "Airsup · Factory Skill",
+    "kind_zh": "Airsup 开源工厂技能",
+    "kind_en": "Open-source Factory Skill by Airsup",
+    "line_zh": "从一句产线描述，生成可以调整设备与节拍的 3D 工厂仿真。",
+    "line_en": "Turn a production-line description into an adjustable 3D factory simulation.",
+    "lead_zh": "由 Airsup 开发的 Factory Skill，将工艺路线、节拍、批量、缓冲区、班次、故障和报废纳入离散事件仿真，计算产量、在制品、设备利用率与瓶颈。官方页面提供可交互示例与技能安装入口，项目采用 MIT 许可。",
+    "lead_en": "Factory Skill by Airsup builds discrete-event simulations with routing, cycle times, batches, buffers, shifts, breakdowns, and scrap. Explore throughput, WIP, utilization, and bottlenecks through the official demos and install the MIT-licensed skill.",
+    "url": "https://www.airsup.ai/lab/factory-skill",
+    "repo": "https://github.com/AirsupHQ/factory-skill",
+    "images": [
+      "https://www.airsup.ai/plm/rocket-engine/factory-skill/og.jpg"
+    ],
+    "tags_zh": [
+      "工厂模型设计",
+      "Airsup",
+      "离散事件仿真",
+      "产线设计",
+      "MIT"
+    ],
+    "tags_en": [
+      "Factory Model Design",
+      "Airsup",
+      "Discrete-event Simulation",
+      "Production Lines",
+      "MIT"
+    ],
+    "tech": "Agent Skills · JavaScript · Discrete-event Simulation",
+    "host": "Airsup · GitHub",
+    "hue": "#e2713a",
+    "facts": []
+  },
+  {
+    "published": true,
+    "category": "factory",
+    "status": "live",
+    "year": 2026,
+    "sort": 280,
+    "title_zh": "Airsup · 机械模型",
+    "title_en": "Airsup · Machine Skill",
+    "kind_zh": "Airsup 开源机械技能",
+    "kind_en": "Open-source Machine Skill by Airsup",
+    "line_zh": "把机械描述变成可剖切、拆解和观察运动的交互式 3D 网页。",
+    "line_en": "Build interactive 3D machine pages with cutaways, exploded views, and motion.",
+    "lead_zh": "由 Airsup 开发的 Machine Skill，结合机械结构研究、程序化几何、材质和简化物理模型，生成交互式 HTML 展示。支持剖切、爆炸图、透视、慢动作与演示视频录制。物理模型用于说明原理，并非制造精度 CAD、CFD 或有限元分析。",
+    "lead_en": "Machine Skill by Airsup combines machine research, procedural geometry, materials, and simplified physics in interactive HTML pages. Features include cutaways, exploded views, X-ray, slow motion, and demo recording. Its explanatory models are not manufacturing CAD, CFD, or FEA.",
+    "url": "https://www.airsup.ai/lab/skill",
+    "repo": "https://github.com/AirsupHQ/machine-skill",
+    "images": [
+      "https://www.airsup.ai/plm/rocket-engine/og-skill.jpg"
+    ],
+    "tags_zh": [
+      "工厂模型设计",
+      "Airsup",
+      "机械结构",
+      "Three.js",
+      "MIT"
+    ],
+    "tags_en": [
+      "Factory Model Design",
+      "Airsup",
+      "Mechanisms",
+      "Three.js",
+      "MIT"
+    ],
+    "tech": "Agent Skills · Three.js · WebGL",
+    "host": "Airsup · GitHub",
+    "hue": "#6f817a",
+    "facts": []
+  },
+  {
+    "published": true,
+    "category": "factory",
+    "status": "live",
+    "year": 2026,
+    "sort": 290,
+    "title_zh": "NVIDIA SimReady · 官方模型库",
+    "title_en": "NVIDIA SimReady · Official Assets",
+    "kind_zh": "NVIDIA 开放仿真数据集",
+    "kind_en": "Open Simulation Dataset by NVIDIA",
+    "line_zh": "查找和下载带材质、纹理及仿真信息的 OpenUSD 资产。",
+    "line_en": "Find OpenUSD assets with materials, textures, and simulation metadata.",
+    "lead_zh": "NVIDIA 在 Hugging Face 发布的 SimReady Assets 数据集，覆盖工业、仓储、机器人场景及日常物件。可按资产文件夹获取模型、材质、纹理与元数据；数据集标注 CC BY 4.0 许可。此入口直达官方数据集，使用和分享时保留来源及许可信息。",
+    "lead_en": "NVIDIA's SimReady Assets dataset on Hugging Face covers industrial, warehouse, robotics, and everyday objects. Download complete asset folders with models, materials, textures, and metadata. The dataset is labeled CC BY 4.0; retain attribution and license information.",
+    "url": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "repo": "https://huggingface.co/datasets/nvidia/simready-assets/tree/main",
+    "images": [
+      "https://cdn-thumbnails.huggingface.co/social-thumbnails/datasets/nvidia/simready-assets.png"
+    ],
+    "tags_zh": [
+      "工厂模型设计",
+      "NVIDIA",
+      "OpenUSD",
+      "数据集",
+      "CC BY 4.0"
+    ],
+    "tags_en": [
+      "Factory Model Design",
+      "NVIDIA",
+      "OpenUSD",
+      "Dataset",
+      "CC BY 4.0"
+    ],
+    "tech": "OpenUSD · Materials · Physics Metadata",
+    "host": "Hugging Face",
+    "hue": "#76b900",
+    "facts": []
+  },
+  {
+    "published": true,
+    "category": "factory",
+    "status": "live",
+    "year": 2026,
+    "sort": 300,
+    "title_zh": "SimReady · 工厂仓储模型精选",
+    "title_en": "SimReady · Factory & Warehouse Selection",
+    "kind_zh": "NVIDIA 资产精选预览",
+    "kind_en": "Curated NVIDIA Asset Preview",
+    "line_zh": "在线浏览 22 个工厂与仓储模型，并前往官方来源获取完整资产。",
+    "line_en": "Browse 22 factory and warehouse models with links to their complete official assets.",
+    "lead_zh": "从 NVIDIA SimReady Assets 中整理的 22 个模型，涵盖输送机、货架、托盘、周转箱、搬运设备、工作台与工业设备。网页提供官方缩略图、双语搜索、分类筛选与固定版本的下载来源。模型与预览图版权归 NVIDIA，按 CC BY 4.0 许可使用；本页为资源整理与浏览入口。",
+    "lead_en": "A curated selection of 22 NVIDIA SimReady Assets covering conveyors, racks, pallets, containers, handling equipment, workbenches, and industrial equipment. Browse official thumbnails, bilingual search, category filters, and revision-pinned source links. NVIDIA assets and previews are used under CC BY 4.0.",
+    "url": "https://works.sugarv.mom/factory-models/",
+    "repo": "https://github.com/SugarVei/idea-vault/tree/main/factory-models",
+    "images": [
+      "assets/factory-models-cover.png"
+    ],
+    "tags_zh": [
+      "工厂模型设计",
+      "模型预览",
+      "仓储",
+      "NVIDIA",
+      "CC BY 4.0"
+    ],
+    "tags_en": [
+      "Factory Model Design",
+      "Asset Preview",
+      "Warehouse",
+      "NVIDIA",
+      "CC BY 4.0"
+    ],
+    "tech": "HTML · JavaScript · NVIDIA OpenUSD Assets",
+    "host": "GitHub Pages",
+    "hue": "#47735a",
+    "facts": [
+      {
+        "n": "22",
+        "zh": "个精选模型",
+        "en": "selected assets"
+      },
+      {
+        "n": "7",
+        "zh": "类工厂仓储设备",
+        "en": "asset categories"
+      }
+    ]
   }
 ]

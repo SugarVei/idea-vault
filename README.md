@@ -15,7 +15,7 @@
 | `particle-background.css` | 首页与两个设计画廊共用的背景层，适配各页面配色 |
 | `background-controls.js` | 启动粒子背景，离开页面时释放 |
 | `config.js` | Supabase 地址和 publishable key（可公开，数据库有行级权限保护） |
-| `data/seed.json` | 内置的十三个条目（十一件个人作品、两项开源收藏）；数据库连不上时用它显示 |
+| `data/seed.json` | 内置作品与资源；数据库连不上时用它显示 |
 | `assets/` | 内置作品的配图 |
 | `supabase/migrations/` | 数据库表、权限和图片存储桶的定义 |
 | `serve.mjs` | 本地预览服务器 |
@@ -83,3 +83,15 @@ Supabase Auth 的 Redirect URLs 已添加 `https://works.sugarv.mom/`，供注�
 ## 石间 · 磁盘空间
 
 新增石间工具条目，包含石头 / 3D 热力柱 / 手机端的真实网页截图；在线体验为 https://sugarvei.github.io/shijian-stone-space/ ，源码及 Windows 便携包安装说明见 https://github.com/SugarVei/shijian-stone-space 。网页使用固定分类数据，桌面版扫描真实目录；安装包在仓库 Releases。
+
+## 工厂模型设计
+
+分类键为 `factory`，中英文标签为「工厂模型设计 / Factory Model Design」，可通过 https://works.sugarv.mom/?category=factory 直接打开。资源使用官方固定封面，详情链接到原作者页面；数据库与内置数据均包含以下五项：
+
+- [NVIDIA CAD to SimReady](https://github.com/NVIDIA/skills/tree/main/skills/omniverse-cad-to-simready)：官方代理技能与安装说明。
+- [Airsup Factory Skill](https://www.airsup.ai/lab/factory-skill)：生产线离散事件仿真技能。
+- [Airsup Machine Skill](https://www.airsup.ai/lab/skill)：交互式机械模型技能。
+- [NVIDIA SimReady Assets](https://huggingface.co/datasets/nvidia/simready-assets)：官方 OpenUSD 资产数据集。
+- [22 个工厂仓储模型精选](https://works.sugarv.mom/factory-models/)：本仓库的轻量预览页，支持双语搜索和分类筛选，下载入口指向官方固定版本资产页。
+
+前四项卡片封面使用各官方页面／仓库公开的分享预览图。`factory-models/images/` 与 `assets/factory-models-cover.png` 为 NVIDIA SimReady Assets 随包提供的官方缩略图，保留原图；许可为 CC BY 4.0，完整来源与署名见 `factory-models/credits.html` 和 `factory-models/CC-BY-4.0.txt`。本站只发布预览图与资源链接，完整 USD、材质及纹理不进入此仓库。

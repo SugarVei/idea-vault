@@ -18,14 +18,14 @@ const UI = {
     pin: '置顶', pinned: '已置顶', unpin: '取消置顶', unpinned: '已取消置顶',
     pinSessionOnly: '本次浏览有效，未能保存设置',
     dark: '切换深色模式', light: '切换浅色模式',
-    preview: '实时预览', film: '视频', draft: '草稿',
+    preview: '实时预览', film: '视频', draft: '草稿', resource: '资源',
     passwordRequired: '需要密码', enterPassword: '输入密码', unlock: '解锁', checkingPassword: '验证中…',
     memoryPasswordHint: '输入密码后查看 Sugar\' memory。',
     passwordEmpty: '请输入密码', passwordIncorrect: '密码不正确，请重试', passwordUnavailable: '暂时无法验证，请刷新后重试',
     coverToggle: '切换实时预览和封面',
-    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', other: '其它' },
+    filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', factory: '工厂模型设计', other: '其它' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
-    count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放', tutorial: '教程',
+    count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看资源', source: '源码', watch: '观看', openVideo: '新窗口播放', tutorial: '教程',
     type: '类型', tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
     add: '导入新创意',
     offline: '暂时连不上数据库，显示的是内置数据',
@@ -66,14 +66,14 @@ const UI = {
     pin: 'Pin', pinned: 'Pinned', unpin: 'Unpin', unpinned: 'Unpinned',
     pinSessionOnly: 'For this visit only; preferences could not be saved',
     dark: 'Switch to dark mode', light: 'Switch to light mode',
-    preview: 'Live preview', film: 'Video', draft: 'Draft',
+    preview: 'Live preview', film: 'Video', draft: 'Draft', resource: 'Resource',
     passwordRequired: 'Password required', enterPassword: 'Enter password', unlock: 'Unlock', checkingPassword: 'Checking…',
     memoryPasswordHint: 'Enter the password to view Sugar\' memory.',
     passwordEmpty: 'Enter the password', passwordIncorrect: 'Incorrect password. Try again.', passwordUnavailable: 'Password check unavailable. Reload and try again.',
     coverToggle: 'Switch between live preview and cover',
-    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', other: 'Other' },
+    filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', factory: 'Factory Model Design', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
-    count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab', tutorial: 'Tutorial',
+    count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View resource', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab', tutorial: 'Tutorial',
     type: 'Type', tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
     add: 'Import a new idea',
     offline: 'Database unreachable — showing built-in data',
@@ -131,7 +131,7 @@ function requiresCardPassword(idea) {
 
 const state = {
   lang: store.get('vault-lang') === 'en' ? 'en' : 'zh',
-  filter: 'all',
+  filter: new URLSearchParams(location.search).get('category') === 'factory' ? 'factory' : 'all',
   ideas: [],
   source: 'db',
   user: null,
@@ -310,7 +310,7 @@ function renderStatic() {
   $('#saved').innerHTML = icon('bookmark');
   $('#saved').setAttribute('aria-label', s.savedWork);
   $('#saved').title = s.savedWork;
-  const cats = ['all', '3d', '2d', 'video'];
+  const cats = ['all', '3d', '2d', 'video', 'factory'];
   if (state.ideas.some(idea => idea.category === 'other')) cats.push('other');
   if (!cats.includes(state.filter)) state.filter = 'all';
   $('#chips').innerHTML = cats.map(key =>
@@ -344,7 +344,8 @@ function cardHtml(idea, index) {
   const locked = requiresCardPassword(idea);
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const film = !locked && isVideo(idea.url);
-  const preview = locked ? '' : previewUrl(idea.url, film);
+  // Resource pages use their official covers; their hosts may disallow embedding.
+  const preview = locked || idea.category === 'factory' ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.
   const resumeWorkspace = preview && ['sugarv.mom', 'www.sugarv.mom', 'sugar-job-system.vercel.app'].includes(new URL(preview).hostname);
   const url = resumeWorkspace ? '' : preview;
@@ -369,7 +370,7 @@ function cardHtml(idea, index) {
     : demo
     ? '<div class="card-demo" data-demo="' + demo + '"></div>'
     : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';
-  const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
+  const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
   return '<article class="project-card" data-index="' + index + '"' + (locked ? ' data-password-required="true"' : '') + '>' +
     '<div class="stage">' +
       '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
@@ -656,7 +657,7 @@ function showSheet(idea, origin) {
       ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
       ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       <div class="actions">
-        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${video ? s.openVideo : idea.category === 'other' ? s.openResource : s.open} ↗</a>` : ''}
+        ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${video ? s.openVideo : ['other', 'factory'].includes(idea.category) ? s.openResource : s.open} ↗</a>` : ''}
         ${isHttp(idea.repo) ? `<a class="btn ghost" href="${esc(idea.repo)}" target="_blank" rel="noopener">${s.source} ↗</a>` : ''}
         ${tutorials[idea.url] ? `<button type="button" class="btn ghost" data-tutorial>${s.tutorial}</button>` : ''}
         ${state.isAdmin && idea.id ? `<span class="admin-actions"><button type="button" class="btn ghost" data-edit>${s.edit}</button><button type="button" class="btn danger" data-delete>${s.remove}</button></span>` : ''}

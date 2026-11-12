@@ -1,0 +1,30 @@
+{
+  "https://sugarvei.github.io/idea-vault/assets/pelican-ride.mp4": {
+    "images": [
+      { "src": "assets/tutorial/pelican-prompt.jpg", "zh": "提示词", "en": "The prompt" },
+      { "src": "assets/tutorial/pelican-pipeline.jpg", "zh": "制作流程", "en": "How it was made" },
+      { "src": "assets/tutorial/pelican-still.jpg", "zh": "成片画面", "en": "A frame from the film" },
+      { "src": "assets/tutorial/pelican-details.jpg", "zh": "细节特写", "en": "Close-ups" }
+    ],
+    "zh": {
+      "title": "这部鹈鹕短片是怎么做的",
+      "sections": [
+        { "h": "提示词", "p": "整部片子只从一段话开始：\n\n“每次有新模型发布，大家都让它画‘一只骑自行车的鹈鹕’来判断空间能力，而且几乎都是用 HTML 和 SVG 做动画。我真的看腻了，所以我想让你做出最复杂、最精细、最漂亮的‘鹈鹕骑自行车’动画视频。什么技术都可以用。不着急，你可以花一整天来画。”" },
+        { "h": "用了哪些工具", "p": "Claude Opus 5.5（在 Claude Code 里）写了全部代码，没有手工建模。\nBlender 5.2：三维场景和渲染（Cycles 渲染器）。\nRust：专门写了一个体积云渲染器，算出 12K 的日落天空。\nPython：程序化生成约 2.4 万根羽毛、能转的自行车（36 根编织辐条、92 节链条）和所有动作；配乐和音效也用 Python 合成。\nffmpeg：合成最终视频。" },
+        { "h": "怎么渲染的", "p": "用 Blender Cycles 做路径追踪，真实模拟光线的反射和折射。1920×1080，每帧 40 采样加降噪，带运动模糊和景深。正式渲染前先出了低清样片检查动作。" },
+        { "h": "渲染时间", "p": "一台笔记本的 GTX 1650 Ti 显卡（4 GB），792 帧，平均每帧约 42 秒，总共约 9 小时 19 分钟。之后补渲 65 帧修正细节，又用了约 50 分钟。" },
+        { "h": "结果", "p": "成片 33 秒，画面和声音全部由代码生成，没有用任何现成模型、贴图或音乐。" }
+      ]
+    },
+    "en": {
+      "title": "How this pelican film was made",
+      "sections": [
+        { "h": "The prompt", "p": "The whole film started from one paragraph:\n\n“Every time a new model comes out, everyone has it draw \"a pelican riding a bicycle\" to judge its spatial ability, and it's almost always animated with HTML and SVG. I'm honestly tired of looking at them, so I want you to make the most complex, most detailed, most beautiful animated video of \"a pelican riding a bicycle\". You can use any technology. There's no rush; you can spend a whole day drawing it.”" },
+        { "h": "Tools", "p": "Claude Opus 5.5 (in Claude Code) wrote all of the code; nothing was modelled by hand.\nBlender 5.2: the 3D scene and the rendering (Cycles).\nRust: a purpose-built volumetric cloud renderer for the 12K sunset sky.\nPython: about 24,000 procedurally placed feathers, a working bicycle (36 laced spokes, 92 chain links) and all of the animation; the score and sound effects were synthesized in Python too.\nffmpeg: assembling the final video." },
+        { "h": "How it was rendered", "p": "Path-traced in Blender Cycles, simulating real reflection and refraction of light. 1920×1080, 40 samples per frame plus denoising, with motion blur and depth of field. A low-resolution animatic checked the motion before the final render." },
+        { "h": "Render time", "p": "A laptop GTX 1650 Ti (4 GB) rendered 792 frames at about 42 seconds each, roughly 9 hours 19 minutes in total. Re-rendering 65 frames to fix details took about 50 more minutes." },
+        { "h": "Result", "p": "A 33-second film whose every frame and sound was generated in code, with no stock models, textures or music." }
+      ]
+    }
+  }
+}

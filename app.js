@@ -17,7 +17,7 @@ const UI = {
     coverToggle: '切换实时预览和封面',
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', other: '其它' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
-    count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放',
+    count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看工具', source: '源码', watch: '观看', openVideo: '新窗口播放', tutorial: '教程',
     type: '类型', tech: '技术', host: '托管', year: '年份', close: '关闭', details: '查看详情：',
     add: '导入新创意',
     offline: '暂时连不上数据库，显示的是内置数据',
@@ -58,7 +58,7 @@ const UI = {
     coverToggle: 'Switch between live preview and cover',
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
-    count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab',
+    count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View tool', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab', tutorial: 'Tutorial',
     type: 'Type', tech: 'Tech', host: 'Hosting', year: 'Year', close: 'Close', details: 'View details: ',
     add: 'Import a new idea',
     offline: 'Database unreachable — showing built-in data',
@@ -126,6 +126,10 @@ async function loadIdeas() {
   state.ideas = await loadSeed();
   state.source = 'seed';
 }
+
+// 作品教程：按作品链接对应，放在 data/tutorials.json，有教程的作品详情里才出现“教程”按钮
+let tutorials = {};
+fetch('data/tutorials.json').then(r => r.ok ? r.json() : {}).then(d => { tutorials = d || {}; }).catch(() => {});
 
 async function loadSeed() {
   try { return await (await fetch('data/seed.json')).json(); } catch { return []; }
@@ -362,6 +366,7 @@ function openSheet(idea, origin) {
       <div class="actions">
         ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${video ? s.openVideo : idea.category === 'other' ? s.openResource : s.open} ↗</a>` : ''}
         ${isHttp(idea.repo) ? `<a class="btn ghost" href="${esc(idea.repo)}" target="_blank" rel="noopener">${s.source} ↗</a>` : ''}
+        ${tutorials[idea.url] ? `<button type="button" class="btn ghost" data-tutorial>${s.tutorial}</button>` : ''}
         ${state.isAdmin && idea.id ? `<span class="admin-actions"><button type="button" class="btn ghost" data-edit>${s.edit}</button><button type="button" class="btn danger" data-delete>${s.remove}</button></span>` : ''}
       </div>
     </div>
@@ -374,11 +379,46 @@ function openSheet(idea, origin) {
   sheet.querySelector('.close').addEventListener('click', () => sheet.close());
   sheet.querySelector('[data-edit]')?.addEventListener('click', () => { sheet.close(); openEditor(idea); });
   sheet.querySelector('[data-delete]')?.addEventListener('click', () => deleteIdea(idea));
+  sheet.querySelector('[data-tutorial]')?.addEventListener('click', () => openTutorial(tutorials[idea.url]));
   sheet.showModal();
   if (origin) {
     const c = origin.getBoundingClientRect();
     sheet.style.transformOrigin = `${c.left + c.width / 2 - sheet.offsetLeft}px ${c.top + c.height / 2 - sheet.offsetTop}px`;
   }
+}
+
+/* ---------------- 教程 ---------------- */
+
+const tutorialDlg = $('#tutorial');
+function openTutorial(tut) {
+  if (!tut) return;
+  const s = t();
+  const copy = tut[state.lang] || tut.zh;
+  const imgs = tut.images || [];
+  const cap = im => (state.lang === 'en' && im.en) || im.zh || '';
+  tutorialDlg.innerHTML = `<div class="tut">
+    <div class="tut-media">
+      <a class="tut-main" href="${esc(imgs[0]?.src || '')}" target="_blank" rel="noopener"><img src="${esc(imgs[0]?.src || '')}" alt="${esc(cap(imgs[0] || {}))}"></a>
+      <p class="tut-cap">${esc(cap(imgs[0] || {}))}</p>
+      ${imgs.length > 1 ? `<div class="thumbs">${imgs.map((im, j) => `<button type="button" aria-label="${esc(cap(im))}" aria-current="${j === 0}" data-i="${j}"><img src="${esc(im.src)}" alt=""></button>`).join('')}</div>` : ''}
+    </div>
+    <div class="tut-text">
+      <button type="button" class="close" aria-label="${s.close}" autofocus>×</button>
+      <h2 id="tutorial-title">${esc(copy.title)}</h2>
+      ${(copy.sections || []).map(sec => `<section><h3>${esc(sec.h)}</h3><p>${esc(sec.p)}</p></section>`).join('')}
+    </div>
+  </div>`;
+  const link = tutorialDlg.querySelector('.tut-main');
+  const img = link.querySelector('img');
+  const caption = tutorialDlg.querySelector('.tut-cap');
+  tutorialDlg.querySelectorAll('.thumbs button').forEach(b => b.addEventListener('click', () => {
+    const im = imgs[+b.dataset.i];
+    img.src = link.href = im.src;
+    img.alt = caption.textContent = cap(im);
+    tutorialDlg.querySelectorAll('.thumbs button').forEach(x => x.setAttribute('aria-current', String(x === b)));
+  }));
+  tutorialDlg.querySelector('.close').addEventListener('click', () => tutorialDlg.close());
+  tutorialDlg.showModal();
 }
 
 for (const d of document.querySelectorAll('dialog')) {

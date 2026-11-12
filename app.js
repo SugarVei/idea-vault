@@ -16,6 +16,9 @@ const UI = {
     pinSessionOnly: '本次浏览有效，未能保存设置',
     dark: '切换深色模式', light: '切换浅色模式',
     preview: '实时预览', film: '视频', draft: '草稿',
+    passwordRequired: '需要密码', enterPassword: '输入密码', unlock: '解锁', checkingPassword: '验证中…',
+    memoryPasswordHint: '输入密码后查看 Sugar\' memory。',
+    passwordEmpty: '请输入密码', passwordIncorrect: '密码不正确，请重试', passwordUnavailable: '暂时无法验证，请刷新后重试',
     coverToggle: '切换实时预览和封面',
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', other: '其它' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
@@ -59,6 +62,9 @@ const UI = {
     pinSessionOnly: 'For this visit only; preferences could not be saved',
     dark: 'Switch to dark mode', light: 'Switch to light mode',
     preview: 'Live preview', film: 'Video', draft: 'Draft',
+    passwordRequired: 'Password required', enterPassword: 'Enter password', unlock: 'Unlock', checkingPassword: 'Checking…',
+    memoryPasswordHint: 'Enter the password to view Sugar\' memory.',
+    passwordEmpty: 'Enter the password', passwordIncorrect: 'Incorrect password. Try again.', passwordUnavailable: 'Password check unavailable. Reload and try again.',
     coverToggle: 'Switch between live preview and cover',
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
@@ -106,6 +112,17 @@ const isHttp = u => /^https?:\/\/\S+$/i.test(u || '');
 const imgSrc = p => (isHttp(p) || /^assets\/[\w./-]+$/.test(p || '')) ? p : '';
 // 在线地址是 mp4 时当作视频作品：详情里直接播放，封面用同名的 .jpg
 const isVideo = u => isHttp(u) && /\.mp4(?=$|[?#])/i.test(u);
+
+// This protects the portfolio entry only. The linked album remains public.
+const MEMORY_ID = '5914c38f-84a4-41c4-ba4f-beb47aac1036';
+const MEMORY_PASSWORD_SHA256 = 'f689fad284417164090470b69943bc5387fac170e4da922dce2d01089b307a84';
+function requiresCardPassword(idea) {
+  if (idea.id === MEMORY_ID) return true;
+  try {
+    const url = new URL(idea.url);
+    return url.origin === 'https://sugarvei.github.io' && url.pathname.replace(/\/+$/, '') === '/column-drift-gallery';
+  } catch { return false; }
+}
 
 const state = {
   lang: store.get('vault-lang') === 'en' ? 'en' : 'zh',
@@ -156,6 +173,7 @@ const icons = {
   moon: '<path d="M19.7 15a8.2 8.2 0 0 1-10.7-10.7A8.25 8.25 0 1 0 19.7 15Z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/>',
   play: '<path d="M8 5.5 18 12 8 18.5Z" fill="currentColor" stroke="none"/>',
+  lock: '<rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/>',
   image: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m6 17 5-4 2 2 3-3 2 2"/>'
 };
 const icon = name => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + icons[name] + '</svg>';
@@ -245,12 +263,13 @@ function renderAdminBar() {
 function cardHtml(idea, index) {
   const s = t();
   const title = pick(idea, 'title');
-  const cover = (idea.images || []).map(imgSrc).find(Boolean);
-  const film = isVideo(idea.url);
-  const url = previewUrl(idea.url, film);
-  const demo = film ? undefined : cardDemo(url);
+  const locked = requiresCardPassword(idea);
+  const cover = locked ? '' : (idea.images || []).map(imgSrc).find(Boolean);
+  const film = !locked && isVideo(idea.url);
+  const url = locked ? '' : previewUrl(idea.url, film);
+  const demo = locked || film ? undefined : cardDemo(url);
   const kind = url ? (film ? 'film' : 'site') : 'cover';
-  const details = esc(s.details + title);
+  const details = esc((locked ? s.passwordRequired + ': ' : s.details) + title);
   const previewTitle = esc(s.preview + ' · ' + title);
   const active = bookmarks.has(bookmarkKey(idea));
   const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
@@ -264,11 +283,13 @@ function cardHtml(idea, index) {
     : kind === 'site'
       ? '<button class="preview-toggle" type="button" aria-label="' + esc(s.coverToggle) + '" title="' + esc(s.coverToggle) + '" aria-pressed="false" hidden>' + icon('image') + '</button>'
       : '';
-  const media = demo
+  const media = locked
+    ? '<div class="project-frame password-cover" data-kind="cover" aria-hidden="true">' + icon('lock') + '<span>' + esc(s.enterPassword) + '</span></div>'
+    : demo
     ? '<div class="card-demo" data-demo="' + demo + '"></div>'
     : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';
-  const hint = idea.published === false ? s.draft : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
-  return '<article class="project-card" data-index="' + index + '">' +
+  const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
+  return '<article class="project-card" data-index="' + index + '"' + (locked ? ' data-password-required="true"' : '') + '>' +
     '<div class="stage">' +
       '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
       media +
@@ -287,6 +308,7 @@ function renderGrid() {
   grid.removeAttribute('aria-busy');
   applyPinOrder();
   for (const card of grid.querySelectorAll('.project-card')) {
+    if (card.dataset.passwordRequired === 'true') continue;
     const demo = card.querySelector('.card-demo');
     if (demo) {
       mountCardDemo(demo, state.lang);
@@ -405,6 +427,127 @@ function renderAll() { renderStatic(); renderGrid(); }
 
 const sheet = $('#sheet');
 function openSheet(idea, origin) {
+  if (requiresCardPassword(idea)) {
+    openMemoryAccess(idea, origin);
+    return;
+  }
+  showSheet(idea, origin);
+}
+
+const memoryAccess = $('#memory-access');
+let memoryAccessRequest = null;
+
+function dismissMemoryAccess(restoreFocus = true) {
+  const request = memoryAccessRequest;
+  memoryAccessRequest = null;
+  if (request) {
+    request.input.value = '';
+    request.input.readOnly = false;
+    request.input.removeAttribute('aria-invalid');
+    request.submit.disabled = false;
+    request.submit.textContent = request.strings.unlock;
+    request.error.textContent = '';
+  }
+  if (memoryAccess.open) memoryAccess.close();
+  if (restoreFocus && request?.returnFocus?.isConnected) request.returnFocus.focus({ preventScroll: true });
+}
+
+function openMemoryAccess(idea, origin) {
+  dismissMemoryAccess(false);
+  grid.querySelectorAll('video').forEach(video => video.pause());
+  const s = t();
+  const focused = document.activeElement;
+  memoryAccess.innerHTML = `<form class="form" novalidate>
+    <button type="button" class="close" data-memory-close aria-label="${s.close}">×</button>
+    <h2 id="memory-access-title">${s.enterPassword}</h2>
+    <p class="hint" id="memory-access-hint">${s.memoryPasswordHint}</p>
+    <section class="memory-access-field">
+      <label class="field" for="memory-password"><span>${s.password}</span>
+        <input id="memory-password" name="password" type="password" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="memory-access-error" required autofocus>
+      </label>
+    </section>
+    <p class="form-msg" id="memory-access-error" aria-live="polite"></p>
+    <div class="form-foot"><div class="right">
+      <button type="button" class="btn ghost" data-memory-cancel>${s.cancel}</button>
+      <button type="submit" class="btn primary" id="memory-access-submit">${s.unlock}</button>
+    </div></div>
+  </form>`;
+  const form = memoryAccess.querySelector('form');
+  const request = {
+    input: form.querySelector('#memory-password'),
+    error: form.querySelector('#memory-access-error'),
+    submit: form.querySelector('[type="submit"]'),
+    returnFocus: origin?.contains(focused) ? focused : origin?.querySelector('[data-card-details]'),
+    strings: s,
+    busy: false
+  };
+  memoryAccessRequest = request;
+  const current = () => memoryAccessRequest === request && memoryAccess.open;
+  const sayError = message => {
+    request.error.textContent = message;
+    request.error.classList.add('bad');
+    request.input.setAttribute('aria-invalid', 'true');
+    request.input.focus();
+    request.input.select();
+  };
+  form.addEventListener('input', () => {
+    request.error.textContent = '';
+    request.error.classList.remove('bad');
+    request.input.removeAttribute('aria-invalid');
+  });
+  form.querySelectorAll('[data-memory-cancel], [data-memory-close]').forEach(button => {
+    button.addEventListener('click', () => { if (current()) dismissMemoryAccess(); });
+  });
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!current() || request.busy) return;
+    if (!request.input.value) { sayError(s.passwordEmpty); return; }
+    request.busy = true;
+    request.input.readOnly = true;
+    request.submit.disabled = true;
+    request.submit.textContent = s.checkingPassword;
+    request.error.textContent = '';
+    request.input.removeAttribute('aria-invalid');
+    try {
+      const bytes = new TextEncoder().encode(request.input.value);
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      bytes.fill(0);
+      if (!current()) return;
+      const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+      if (hash === MEMORY_PASSWORD_SHA256) {
+        dismissMemoryAccess(false);
+        showSheet(idea, origin);
+        return;
+      }
+      sayError(s.passwordIncorrect);
+    } catch {
+      if (current()) sayError(s.passwordUnavailable);
+    } finally {
+      if (current()) {
+        request.busy = false;
+        request.input.readOnly = false;
+        request.submit.disabled = false;
+        request.submit.textContent = s.unlock;
+      }
+    }
+  });
+  memoryAccess.showModal();
+  request.input.focus();
+}
+
+memoryAccess.addEventListener('cancel', event => {
+  event.preventDefault();
+  dismissMemoryAccess();
+});
+memoryAccess.addEventListener('click', event => {
+  if (event.target === memoryAccess) dismissMemoryAccess();
+});
+memoryAccess.addEventListener('close', () => {
+  // Ignore a queued close event when a fresh request has already opened.
+  if (!memoryAccess.open) dismissMemoryAccess();
+});
+
+function showSheet(idea, origin) {
   grid.querySelectorAll('video').forEach(video => video.pause());
   const s = t();
   const title = pick(idea, 'title');
@@ -485,7 +628,7 @@ function openTutorial(tut) {
 }
 
 for (const d of document.querySelectorAll('dialog')) {
-  d.addEventListener('click', e => { if (e.target === d && d.id !== 'editor') d.close(); });
+  d.addEventListener('click', e => { if (e.target === d && d.id !== 'editor' && d.id !== 'memory-access') d.close(); });
 }
 sheet.addEventListener('close', () => sheet.querySelector('video')?.pause());
 

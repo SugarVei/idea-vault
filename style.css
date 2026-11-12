@@ -128,6 +128,9 @@ svg { display: block; flex: none; }
 .project-frame > img { object-fit: cover; }
 .project-frame > video { object-fit: contain; background: #111; pointer-events: auto; }
 .cover-letter { display: grid; place-items: center; width: 100%; height: 100%; background: var(--hair); color: var(--ink-3); font-size: 40px; font-weight: 600; }
+.password-cover { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--field); color: var(--ink-2); }
+.password-cover svg { width: 30px; height: 30px; color: var(--ink); }
+.password-cover span { font-size: 13px; }
 .site-preview {
   position: absolute; top: 0; left: 0; display: block; border: 0; background: #fff; transform-origin: top left;
   opacity: 0; pointer-events: none; visibility: hidden;
@@ -232,6 +235,11 @@ dialog.sheet[open]::backdrop { background: rgba(6, 7, 10, .58); }
 /* 表单 */
 dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glass-strong); }
 #login { width: min(440px, calc(100% - 24px)); }
+#memory-access { width: min(440px, calc(100% - 24px)); }
+#memory-access .field input { font-size: 16px; }
+#memory-access .field input[aria-invalid="true"] { border-color: var(--danger); }
+#memory-access .form-msg { min-height: 1.6em; }
+#memory-access .btn { min-height: 44px; }
 .form { position: relative; padding: 28px clamp(18px, 4vw, 36px) 0; }
 .form > .close { top: 18px; right: 18px; }
 .form h2 { font-size: 24px; font-weight: 400; letter-spacing: -.01em; padding-right: 40px; }

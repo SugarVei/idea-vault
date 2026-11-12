@@ -266,7 +266,10 @@ function cardHtml(idea, index) {
   const locked = requiresCardPassword(idea);
   const cover = locked ? '' : (idea.images || []).map(imgSrc).find(Boolean);
   const film = !locked && isVideo(idea.url);
-  const url = locked ? '' : previewUrl(idea.url, film);
+  const preview = locked ? '' : previewUrl(idea.url, film);
+  // This workspace requires sign-in; show its demo screenshots in the gallery.
+  const resumeWorkspace = preview && ['sugarv.mom', 'www.sugarv.mom', 'sugar-job-system.vercel.app'].includes(new URL(preview).hostname);
+  const url = resumeWorkspace ? '' : preview;
   const demo = locked || film ? undefined : cardDemo(url);
   const kind = url ? (film ? 'film' : 'site') : 'cover';
   const details = esc((locked ? s.passwordRequired + ': ' : s.details) + title);

@@ -62,7 +62,7 @@ Supabase Auth 的 Redirect URLs 已添加 `https://works.sugarv.mom/`，供注�
 
 ## Sugar · 简历与求职管理
 
-网站入口为 https://www.sugarv.mom/ ，源码为 https://github.com/SugarVei/sugar-job-system 。作品卡片包含总览、简历库和面试日历三张截图，来自该项目 README 的虚构演示数据；线上作品表和内置备用数据均收录该条目。
+网站入口为 https://www.sugarv.mom/ ，源码为 https://github.com/SugarVei/sugar-job-system 。作品卡片包含总览、简历库和面试日历三张截图，来自该项目 README 的虚构演示数据；线上作品表和内置备用数据均收录该条目。卡片展示这些演示截图，避免实时嵌入时只显示登录页；详情中的在线入口仍指向正式网站。
 
 ## Sugar' memory 卡片入口
 

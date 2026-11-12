@@ -1,7 +1,7 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
-import { Panorama } from './panorama.js?v=1';
+import { Panorama } from './panorama.js?v=2';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -12,9 +12,6 @@ const UI = {
     works: '作品', browse: '浏览作品', categories: '作品分类',
     viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示',
     panoramaRegion: '全景作品画廊', panoramaShow: '查看作品', panoramaDetails: '查看详情',
-    panoramaPrevious: '上一件作品', panoramaNext: '下一件作品',
-    panoramaPause: '暂停自动旋转', panoramaResume: '开始自动旋转',
-    panoramaHint: '拖动浏览 · 点击作品查看详情',
     search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
     noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
     savedWork: '收藏作品', bookmark: '收藏', unsave: '取消收藏',
@@ -63,9 +60,6 @@ const UI = {
     works: 'Work', browse: 'Browse work', categories: 'Project category',
     viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view',
     panoramaRegion: 'Panoramic project gallery', panoramaShow: 'View project', panoramaDetails: 'View details',
-    panoramaPrevious: 'Previous project', panoramaNext: 'Next project',
-    panoramaPause: 'Pause rotation', panoramaResume: 'Start rotation',
-    panoramaHint: 'Drag to browse · Select a project for details',
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
     noResults: 'No matching projects', noSaved: 'No saved projects yet',
     savedWork: 'Saved projects', bookmark: 'Save', unsave: 'Remove from saved',
@@ -275,8 +269,6 @@ function syncPanorama() {
   panoramaHost.hidden = viewMode !== 'panorama' || items.length === 0;
   panorama.setItems(items, {
     region: s.panoramaRegion, show: s.panoramaShow, details: s.panoramaDetails,
-    previous: s.panoramaPrevious, next: s.panoramaNext,
-    pause: s.panoramaPause, resume: s.panoramaResume, hint: s.panoramaHint,
     bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
   });
   panorama.setActive(viewMode === 'panorama' && items.length > 0);

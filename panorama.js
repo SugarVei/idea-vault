@@ -35,16 +35,10 @@ export class Panorama {
         <p class="panorama-subtitle"></p>
         <div class="panorama-actions">
           <button type="button" class="panorama-bookmark pill" aria-pressed="false"></button>
+          <span class="panorama-count"></span>
           <button type="button" class="panorama-pin pill" aria-pressed="false"></button>
         </div>
       </div>
-      <div class="panorama-navigation">
-        <button type="button" class="panorama-previous icon-button"><span aria-hidden="true">←</span></button>
-        <span class="panorama-count"></span>
-        <button type="button" class="panorama-next icon-button"><span aria-hidden="true">→</span></button>
-        <button type="button" class="panorama-pause" aria-pressed="false"></button>
-      </div>
-      <p class="panorama-hint"></p>
       <span class="panorama-announcement" role="status" aria-live="polite" aria-atomic="true"></span>`;
     this.stage = host.querySelector('.panorama-stage');
     this.ring = host.querySelector('.panorama-ring');
@@ -53,21 +47,9 @@ export class Panorama {
     this.count = host.querySelector('.panorama-count');
     this.bookmark = host.querySelector('.panorama-bookmark');
     this.pin = host.querySelector('.panorama-pin');
-    this.pause = host.querySelector('.panorama-pause');
     this.announcement = host.querySelector('.panorama-announcement');
     this.cards = [];
 
-    host.querySelector('.panorama-previous').addEventListener('click', () => this.step(-1));
-    host.querySelector('.panorama-next').addEventListener('click', () => this.step(1));
-    this.pause.addEventListener('click', () => {
-      this.paused = !this.paused;
-      // An explicit play action also works while its button retains focus.
-      this.resumeRequested = !this.paused;
-      if (this.paused) this.go(Math.round(this.position));
-      else this.resumeAt = 0;
-      this.updatePause();
-      this.wake();
-    });
     this.title.addEventListener('click', () => this.openCurrent(this.title));
     this.bookmark.addEventListener('click', () => {
       const item = this.captionItem();
@@ -140,7 +122,7 @@ export class Panorama {
       if (key === 'Home') this.go(this.position + this.nearestOffset(0));
       if (key === 'End') this.go(this.position + this.nearestOffset(this.items.length - 1));
       if (key === 'Enter') this.openCurrent(this.stage);
-      if (key === ' ') this.pause.click();
+      if (key === ' ') this.togglePlayback();
     });
     this.sizes = new ResizeObserver(() => { this.measure(); this.paint(); });
     this.sizes.observe(this.stage);
@@ -163,7 +145,6 @@ export class Panorama {
       this.target = null;
       this.position = Math.round(this.position);
       this.paint();
-      this.updatePause();
       this.wake();
     });
   }
@@ -181,11 +162,6 @@ export class Panorama {
     }
     this.stage.setAttribute('aria-label', labels.region);
     this.title.title = labels.details;
-    this.host.querySelector('.panorama-previous').setAttribute('aria-label', labels.previous);
-    this.host.querySelector('.panorama-next').setAttribute('aria-label', labels.next);
-    this.host.querySelector('.panorama-hint').textContent = labels.hint;
-    this.host.querySelectorAll('.panorama-previous, .panorama-next').forEach(button => { button.disabled = items.length < 2; });
-    this.updatePause();
     this.captionKey = null;
     this.measure();
     this.paint();
@@ -213,7 +189,7 @@ export class Panorama {
   measure() {
     const width = this.stage.clientWidth;
     if (!width) return;
-    this.cardWidth = clamp(width * .19, 150, 228);
+    this.cardWidth = clamp(width * .19, 170, 280);
     this.spacing = this.cardWidth * 1.12;
     this.radius = this.spacing / Math.sin(ANGLE);
     this.stage.style.perspective = `${this.radius * 1.05}px`;
@@ -303,11 +279,14 @@ export class Panorama {
     this.actions.onOpen(item.index, trigger);
   }
 
-  updatePause() {
-    const paused = this.paused || this.reduceMotion.matches;
-    this.pause.textContent = paused ? this.labels.resume || '' : this.labels.pause || '';
-    this.pause.setAttribute('aria-pressed', String(paused));
-    this.pause.disabled = this.reduceMotion.matches || this.items.length < 2;
+  togglePlayback() {
+    if (this.reduceMotion.matches || this.items.length < 2) return;
+    this.paused = !this.paused;
+    // Space explicitly resumes even while the carousel retains keyboard focus.
+    this.resumeRequested = !this.paused;
+    if (this.paused) this.go(Math.round(this.position));
+    else this.resumeAt = 0;
+    this.wake();
   }
 
   paintCaption() {
@@ -370,7 +349,7 @@ export class Panorama {
       const x = Math.sin(angle) * this.radius;
       const z = (1 - Math.cos(angle)) * this.radius;
       card.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(2)}px, 0, ${z.toFixed(2)}px) rotateY(${(-angle * 180 / Math.PI).toFixed(3)}deg)`;
-      card.style.pointerEvents = Math.abs(angle) < .72 ? 'auto' : 'none';
+      card.style.pointerEvents = 'auto';
     }
     this.stage.dataset.current = String(mod(Math.round(this.position), count));
     this.paintCaption();

@@ -145,6 +145,17 @@ svg { display: block; flex: none; }
 .bookmark { position: absolute; z-index: 2; top: 10px; right: 10px; min-width: 31px; height: 31px; }
 .bookmark svg { width: 15px; height: 15px; }
 .bookmark:hover, .bookmark[aria-pressed="true"] { background: var(--glass); }
+.pin-button {
+  position: absolute; z-index: 2; top: 10px; left: 10px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-width: 60px; min-height: 32px; padding: 0 10px; border-radius: 999px;
+  color: var(--ink-2); background: var(--glass); font-size: 11px; font-weight: 550;
+  transition: background .16s, color .16s;
+}
+.pin-button svg { width: 14px; height: 14px; }
+.pin-button:hover { color: var(--ink); background: var(--hover); }
+.pin-button[aria-pressed="true"] { color: var(--bg); background: var(--ink); }
+.pin-button[aria-pressed="true"] svg { fill: currentColor; }
 .card-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 9px 4px 0; }
 .card-caption h2 { min-width: 0; font-size: 14px; line-height: 1.5; }
 .project-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; text-align: start; vertical-align: bottom; font-weight: 585; }
@@ -320,6 +331,8 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
 }
 @media (hover: none) {
   .preview-toggle { opacity: 1; }
+  .pin-button { min-height: 44px; }
+  .bookmark { min-width: 44px; height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }

@@ -50,6 +50,44 @@
     "host": "GitHub Pages"
   },
   {
+    "sort": 8,
+    "published": true,
+    "category": "2d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#d78ca5",
+    "url": "https://www.sugarv.mom/",
+    "repo": "https://github.com/SugarVei/sugar-job-system",
+    "images": [
+      "assets/sugar-job-system-dashboard.jpg",
+      "assets/sugar-job-system-resumes.jpg",
+      "assets/sugar-job-system-interviews.jpg"
+    ],
+    "title_zh": "Sugar · 简历与求职管理",
+    "title_en": "Sugar · Resume & Job Search",
+    "kind_zh": "求职管理网站",
+    "kind_en": "Job Search Workspace",
+    "line_zh": "把简历、投递、公司、面试和 Offer 放在一起，让求职更有条理。",
+    "line_en": "Keep resumes, applications, companies, interviews and offers together.",
+    "lead_zh": "围绕求职全过程设计的个人工作台：保存不同版本的简历，记录岗位投递与招聘进度，整理公司信息，安排面试日历，管理和比较 Offer，并通过智能填表助手减少重复填写。配图使用虚构演示数据。",
+    "lead_en": "A personal workspace for the job search: manage resume versions, track applications and hiring progress, organize companies, schedule interviews, compare offers and reduce repetitive form filling with a browser assistant. Screenshots use fictional demo data.",
+    "tags_zh": [
+      "简历管理",
+      "投递跟踪",
+      "面试日历",
+      "Offer 管理"
+    ],
+    "tags_en": [
+      "Resumes",
+      "Applications",
+      "Interview calendar",
+      "Offers"
+    ],
+    "facts": [],
+    "tech": "React · TypeScript · Vite · Supabase",
+    "host": "Vercel"
+  },
+  {
     "sort": 10,
     "category": "3d",
     "status": "live",

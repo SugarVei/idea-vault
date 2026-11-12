@@ -12,6 +12,8 @@ const UI = {
     search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
     noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
     savedWork: '收藏作品', bookmark: '收藏', unsave: '取消收藏',
+    pin: '置顶', pinned: '已置顶', unpin: '取消置顶', unpinned: '已取消置顶',
+    pinSessionOnly: '本次浏览有效，未能保存设置',
     dark: '切换深色模式', light: '切换浅色模式',
     preview: '实时预览', film: '视频', draft: '草稿',
     coverToggle: '切换实时预览和封面',
@@ -53,6 +55,8 @@ const UI = {
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
     noResults: 'No matching projects', noSaved: 'No saved projects yet',
     savedWork: 'Saved projects', bookmark: 'Save', unsave: 'Remove from saved',
+    pin: 'Pin', pinned: 'Pinned', unpin: 'Unpin', unpinned: 'Unpinned',
+    pinSessionOnly: 'For this visit only; preferences could not be saved',
     dark: 'Switch to dark mode', light: 'Switch to light mode',
     preview: 'Live preview', film: 'Video', draft: 'Draft',
     coverToggle: 'Switch between live preview and cover',
@@ -94,7 +98,7 @@ const MAX_PICS = 6;
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-  set(k, v) { try { localStorage.setItem(k, v); } catch {} }
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } }
 };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -147,6 +151,7 @@ async function refreshAuth(session) {
 /* ---------------- 页面 ---------------- */
 
 const icons = {
+  pin: '<path d="m16 3 5 5-4 1-4 4-1 4-5-5 4-1 4-4 1-4Z"/><path d="m7 17-4 4"/>',
   bookmark: '<path d="M7 4.75h10a1 1 0 0 1 1 1v14l-6-3.9-6 3.9v-14a1 1 0 0 1 1-1Z"/>',
   moon: '<path d="M19.7 15a8.2 8.2 0 0 1-10.7-10.7A8.25 8.25 0 1 0 19.7 15Z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/>',
@@ -172,6 +177,14 @@ function readBookmarks() {
   } catch { return new Set(); }
 }
 const bookmarks = readBookmarks();
+const PIN_STORAGE_KEY = 'vault-pins';
+function readPins() {
+  try {
+    const saved = JSON.parse(store.get(PIN_STORAGE_KEY));
+    return Array.isArray(saved) ? [...new Set(saved.filter(key => typeof key === 'string' && key.length))] : [];
+  } catch { return []; }
+}
+let pins = readPins();
 let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 let savedOnly = false;
 let indexedIdeas = [];
@@ -241,6 +254,8 @@ function cardHtml(idea, index) {
   const previewTitle = esc(s.preview + ' · ' + title);
   const active = bookmarks.has(bookmarkKey(idea));
   const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
+  const pinned = pins.includes(bookmarkKey(idea));
+  const pinLabel = esc((pinned ? s.unpin : s.pin) + ' · ' + title);
   const poster = cover
     ? '<img src="' + esc(cover) + '" alt="" decoding="async"' + (index > 5 ? ' loading="lazy"' : '') + '>'
     : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
@@ -257,6 +272,7 @@ function cardHtml(idea, index) {
     '<div class="stage">' +
       '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
       media +
+      '<button type="button" class="pin-button" data-pin aria-pressed="' + pinned + '" aria-label="' + pinLabel + '" title="' + pinLabel + '">' + icon('pin') + '<span>' + esc(pinned ? s.pinned : s.pin) + '</span></button>' +
       '<button type="button" class="bookmark icon-button" data-bookmark aria-pressed="' + active + '" aria-label="' + bookmarkLabel + '" title="' + bookmarkLabel + '">' + icon('bookmark') + '</button>' +
     '</div>' +
     '<div class="card-caption"><h2><button type="button" class="project-title" data-card-details aria-label="' + details + '">' + esc(title) + '</button></h2>' +
@@ -269,6 +285,7 @@ function renderGrid() {
   grid.innerHTML = state.ideas.map(cardHtml).join('') +
     (state.isAdmin ? '<button type="button" class="stage import-card" data-act="add"><span aria-hidden="true">+</span>' + esc(t().add) + '</button>' : '');
   grid.removeAttribute('aria-busy');
+  applyPinOrder();
   for (const card of grid.querySelectorAll('.project-card')) {
     const demo = card.querySelector('.card-demo');
     if (demo) {
@@ -333,6 +350,52 @@ function toggleBookmark(button, idea) {
   button.setAttribute('aria-label', label);
   button.title = label;
   if (savedOnly) applyFilter();
+}
+
+function applyPinOrder() {
+  const ranks = new Map(pins.map((key, rank) => [key, rank]));
+  const rankOf = card => ranks.get(bookmarkKey(state.ideas[Number(card.dataset.index)])) ?? Infinity;
+  const cards = [...grid.querySelectorAll('.project-card')].sort((a, b) =>
+    rankOf(a) - rankOf(b) || Number(a.dataset.index) - Number(b.dataset.index));
+  const focused = grid.contains(document.activeElement) ? document.activeElement : null;
+  let next = grid.firstElementChild;
+  for (const card of cards) {
+    if (card === next) next = next.nextElementSibling;
+    // Move existing cards so their demos and controls keep their state. DOM order
+    // matches visual order for keyboard and screen-reader navigation.
+    else if (typeof grid.moveBefore === 'function') grid.moveBefore(card, next);
+    else grid.insertBefore(card, next);
+  }
+  if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
+  livePreviews.schedule();
+}
+
+function updatePinButtons() {
+  for (const button of grid.querySelectorAll('[data-pin]')) {
+    const idea = state.ideas[Number(button.closest('.project-card').dataset.index)];
+    const active = pins.includes(bookmarkKey(idea));
+    const label = (active ? t().unpin : t().pin) + ' · ' + pick(idea, 'title');
+    button.setAttribute('aria-pressed', String(active));
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.querySelector('span').textContent = active ? t().pinned : t().pin;
+  }
+}
+
+function togglePin(button, idea) {
+  const key = bookmarkKey(idea);
+  const active = !pins.includes(key);
+  pins = pins.filter(saved => saved !== key);
+  if (active) pins.unshift(key);
+  const persisted = store.set(PIN_STORAGE_KEY, JSON.stringify(pins));
+  updatePinButtons();
+  applyPinOrder();
+  // Keep the activated control in view after its card moves, including when
+  // using Enter / Space to pin or unpin a card deep in the gallery.
+  button.focus({ preventScroll: true });
+  button.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  toast((active ? t().pinned : t().unpinned) + ' · ' + pick(idea, 'title') +
+    (persisted ? '' : ' · ' + t().pinSessionOnly));
 }
 
 function renderAll() { renderStatic(); renderGrid(); }
@@ -796,6 +859,8 @@ document.addEventListener('click', event => {
     if (event.target.closest('[data-card-details]')) openSheet(idea, card);
     const bookmark = event.target.closest('[data-bookmark]');
     if (bookmark) toggleBookmark(bookmark, idea);
+    const pin = event.target.closest('[data-pin]');
+    if (pin) togglePin(pin, idea);
   }
   const act = event.target.closest('[data-act]')?.dataset.act;
   if (act === 'add') openEditor();
@@ -803,6 +868,12 @@ document.addEventListener('click', event => {
   if (act === 'signout') signOut();
 });
 addEventListener('hashchange', renderAdminBar);
+addEventListener('storage', event => {
+  if (event.key !== PIN_STORAGE_KEY && event.key !== null) return;
+  pins = readPins();
+  updatePinButtons();
+  applyPinOrder();
+});
 
 function updateSearch() {
   applyFilter();

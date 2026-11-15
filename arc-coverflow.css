@@ -1,0 +1,65 @@
+.arc-coverflow {
+  --arc-width: 240px;
+  --arc-radius: 896px;
+  overflow: clip;
+  padding: 16px 0 40px;
+  isolation: isolate;
+}
+.arc-stage {
+  position: relative;
+  height: 448px;
+  max-width: 960px;
+  margin: 0 auto;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.arc-stage.is-dragging { cursor: grabbing; }
+.arc-stage:focus-visible { outline-offset: -4px; border-radius: 16px; }
+.arc-card {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: var(--arc-width);
+  margin-left: calc(var(--arc-width) / -2);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--well);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  transform-origin: 50% calc(100% + var(--arc-radius));
+  filter: saturate(.6) brightness(.85);
+  transition: transform 700ms cubic-bezier(.22,1,.36,1), opacity 700ms cubic-bezier(.22,1,.36,1), filter 700ms cubic-bezier(.22,1,.36,1);
+  cursor: inherit;
+}
+.arc-card[aria-current="true"] { filter: none; }
+.arc-card:focus-visible { outline-offset: -4px; }
+.arc-card > img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.arc-card > .cover-letter { position: absolute; inset: 0; }
+.arc-card > .password-cover { height: 100%; }
+.arc-caption {
+  position: relative;
+  z-index: 21;
+  max-width: 680px;
+  margin: 40px auto 0;
+  padding: 0 20px;
+  text-align: center;
+}
+.arc-title { max-width: 100%; font-size: 24px; font-weight: 500; line-height: 1.35; text-wrap: balance; overflow-wrap: anywhere; }
+.arc-title:hover { text-decoration: underline; text-underline-offset: 5px; }
+.arc-subtitle { margin-top: 4px; font: 400 12px/1.5 var(--mono); color: var(--ink-2); text-wrap: balance; }
+.arc-actions { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+.arc-actions .pill { min-height: 34px; padding: 0 12px; font-size: 11px; font-weight: 450; }
+.arc-actions .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.arc-count { min-width: 56px; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.arc-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 767px) {
+  .arc-coverflow { --arc-width: 160px; --arc-radius: 512px; padding-top: 8px; padding-bottom: 32px; }
+  .arc-stage { height: 352px; }
+  .arc-caption { padding-inline: 12px; }
+  .arc-actions .pill { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arc-card { transition: none; }
+}

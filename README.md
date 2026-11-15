@@ -11,6 +11,8 @@
 | `index.html` | 页面骨架 |
 | `style.css` | 全部样式 |
 | `app.js` | 渲染卡片、详情、筛选、语言切换，以及管理员登录和导入 |
+| `panorama.js` / `panorama.css` | 横向立体全景展示 |
+| `arc-coverflow.js` / `arc-coverflow.css` | 弧形卡片展示，独立实现公开预览中的布局与交互 |
 | `particles-background.js` | 覆盖完整视口的粒子场：推开、点击扩散、回弹，跟随浏览器原生刷新率，不设帧率上限 |
 | `particle-background.css` | 首页与两个设计画廊共用的背景层，适配各页面配色 |
 | `background-controls.js` | 启动粒子背景，离开页面时释放 |
@@ -27,6 +29,14 @@ node serve.mjs
 ```
 
 然后打开 http://127.0.0.1:8420/ 。页面用了 ES 模块，直接双击 `index.html`（file:// 协议）打不开。
+
+## 展示方式
+
+作品分类右侧的三个圆点依次切换网格、全景和弧形展示；选择保存在当前浏览器中。
+弧形展示参考 [Coverflow 5 的公开预览](https://www.shadcnblocks.com/block/coverflow5)，使用本站作品封面。
+左右拖动、方向键或点击侧卡可切换作品；点击居中卡片或下方标题打开详情。
+Home / End 跳到首尾，首尾不循环；手机纵向滑动仍可滚动页面。
+三种样式共用分类、搜索、收藏、置顶和密码验证，支持双语、深色主题及减少动态效果设置。
 
 ## 导入新创意
 

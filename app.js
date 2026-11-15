@@ -2,6 +2,7 @@ import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
 import { Panorama } from './panorama.js?v=2';
+import { ArcCoverflow } from './arc-coverflow.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -10,7 +11,8 @@ const UI = {
     title: 'Sugar 的仓库',
     sub: '我的交互作品、设计实验与开源收藏。',
     works: '作品', browse: '浏览作品', categories: '作品分类',
-    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示',
+    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示', arcView: '弧形展示',
+    arcRegion: '弧形作品画廊',
     panoramaRegion: '全景作品画廊', panoramaShow: '查看作品', panoramaDetails: '查看详情',
     search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
     noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
@@ -58,7 +60,8 @@ const UI = {
     title: "Sugar's Vault",
     sub: 'My interactive projects, design experiments, and open-source finds.',
     works: 'Work', browse: 'Browse work', categories: 'Project category',
-    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view',
+    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view', arcView: 'Arc view',
+    arcRegion: 'Arc project gallery',
     panoramaRegion: 'Panoramic project gallery', panoramaShow: 'View project', panoramaDetails: 'View details',
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
     noResults: 'No matching projects', noSaved: 'No saved projects yet',
@@ -212,9 +215,15 @@ let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 let savedOnly = false;
 let indexedIdeas = [];
 const VIEW_MODE_STORAGE_KEY = 'vault-view-mode';
-let viewMode = store.get(VIEW_MODE_STORAGE_KEY) === 'panorama' ? 'panorama' : 'grid';
+const VIEW_MODES = ['grid', 'panorama', 'arc'];
+function readViewMode() {
+  const saved = store.get(VIEW_MODE_STORAGE_KEY);
+  return VIEW_MODES.includes(saved) ? saved : 'grid';
+}
+let viewMode = readViewMode();
 const panoramaHost = $('#panorama');
-const panorama = new Panorama(panoramaHost, {
+const arcHost = $('#arc-coverflow');
+const galleryActions = {
   onOpen(index, trigger) {
     const idea = state.ideas[index];
     if (idea) openSheet(idea, trigger);
@@ -227,20 +236,23 @@ const panorama = new Panorama(panoramaHost, {
     const button = grid.querySelector('[data-index="' + index + '"] [data-pin]');
     if (button) togglePin(button, state.ideas[index], false);
   }
-});
+};
+const panorama = new Panorama(panoramaHost, galleryActions);
+const arc = new ArcCoverflow(arcHost, galleryActions);
 
 function renderViewSwitch() {
   const s = t();
+  const labels = { grid: s.gridView, panorama: s.panoramaView, arc: s.arcView };
   $('#view-switch').setAttribute('aria-label', s.viewMode);
   for (const button of document.querySelectorAll('[data-view-mode]')) {
-    const label = button.dataset.viewMode === 'grid' ? s.gridView : s.panoramaView;
+    const label = labels[button.dataset.viewMode];
     button.setAttribute('aria-label', label);
     button.title = label;
     button.setAttribute('aria-pressed', String(button.dataset.viewMode === viewMode));
   }
 }
 
-function panoramaCoverHtml(idea) {
+function galleryCoverHtml(idea) {
   const title = pick(idea, 'title');
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const image = cover
@@ -252,7 +264,7 @@ function panoramaCoverHtml(idea) {
     '<span>' + esc(t().enterPassword) + '</span></div></div>';
 }
 
-function syncPanorama() {
+function syncGalleryViews() {
   const s = t();
   // DOM order includes the visitor's pins; hidden cards already reflect every filter.
   const items = [...grid.querySelectorAll('.project-card:not([hidden])')].map(card => {
@@ -262,25 +274,27 @@ function syncPanorama() {
     return {
       key, index, title: pick(idea, 'title'),
       subtitle: requiresCardPassword(idea) ? s.passwordRequired : pick(idea, 'kind') || pick(idea, 'line'),
-      coverHtml: panoramaCoverHtml(idea), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
+      coverHtml: galleryCoverHtml(idea), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
     };
   });
-  grid.hidden = viewMode === 'panorama';
-  panoramaHost.hidden = viewMode !== 'panorama' || items.length === 0;
-  panorama.setItems(items, {
-    region: s.panoramaRegion, show: s.panoramaShow, details: s.panoramaDetails,
+  grid.hidden = viewMode !== 'grid';
+  const labels = {
+    show: s.panoramaShow, details: s.panoramaDetails,
     bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
-  });
+  };
+  panorama.setItems(items, { ...labels, region: s.panoramaRegion });
   panorama.setActive(viewMode === 'panorama' && items.length > 0);
+  arc.setItems(items, { ...labels, region: s.arcRegion });
+  arc.setActive(viewMode === 'arc' && items.length > 0);
 }
 
 function setViewMode(mode, persist = true) {
-  if (mode !== 'grid' && mode !== 'panorama') return;
+  if (!VIEW_MODES.includes(mode)) return;
   viewMode = mode;
   if (persist) store.set(VIEW_MODE_STORAGE_KEY, mode);
-  if (mode === 'panorama') grid.querySelectorAll('video').forEach(video => video.pause());
+  if (mode !== 'grid') grid.querySelectorAll('video').forEach(video => video.pause());
   renderViewSwitch();
-  syncPanorama();
+  syncGalleryViews();
   livePreviews.schedule();
 }
 
@@ -433,7 +447,7 @@ function applyFilter() {
   $('#count').textContent = ready ? t().count(count) : '';
   $('#empty-results').hidden = !ready || count > 0 || (importing && !importing.hidden);
   $('#empty-message').textContent = savedOnly && !bookmarks.size ? t().noSaved : t().noResults;
-  syncPanorama();
+  syncGalleryViews();
   livePreviews.schedule();
 }
 
@@ -455,7 +469,7 @@ function toggleBookmark(button, idea) {
   button.setAttribute('aria-label', label);
   button.title = label;
   if (savedOnly) applyFilter();
-  else syncPanorama();
+  else syncGalleryViews();
 }
 
 function applyPinOrder(sync = true) {
@@ -473,7 +487,7 @@ function applyPinOrder(sync = true) {
     else grid.insertBefore(card, next);
   }
   if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
-  if (sync) syncPanorama();
+  if (sync) syncGalleryViews();
   livePreviews.schedule();
 }
 
@@ -1102,7 +1116,7 @@ document.addEventListener('click', event => {
 addEventListener('hashchange', renderAdminBar);
 addEventListener('storage', event => {
   if (event.key === VIEW_MODE_STORAGE_KEY || event.key === null) {
-    setViewMode(store.get(VIEW_MODE_STORAGE_KEY) === 'panorama' ? 'panorama' : 'grid', false);
+    setViewMode(readViewMode(), false);
   }
   if (event.key !== PIN_STORAGE_KEY && event.key !== null) return;
   pins = readPins();

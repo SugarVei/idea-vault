@@ -359,7 +359,9 @@ function cardHtml(idea, index) {
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const film = !locked && isVideo(idea.url);
   // Resource pages use their official covers; their hosts may disallow embedding.
-  const preview = locked || idea.category === 'factory' ? '' : previewUrl(idea.url, film);
+  // Use screenshots for Punch Drive so the game only starts when opened.
+  const showCover = locked || idea.category === 'factory' || idea.url === 'https://works.sugarv.mom/sumo-cars/';
+  const preview = showCover ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.
   const resumeWorkspace = preview && ['sugarv.mom', 'www.sugarv.mom', 'sugar-job-system.vercel.app'].includes(new URL(preview).hostname);
   const url = resumeWorkspace ? '' : preview;

@@ -50,6 +50,55 @@
     "host": "GitHub Pages"
   },
   {
+    "sort": 6,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#3bd3e8",
+    "url": "https://works.sugarv.mom/sumo-cars/",
+    "repo": null,
+    "images": [
+      "assets/punch-drive-menu.webp",
+      "assets/punch-drive-sumo.webp",
+      "assets/punch-drive-race.webp"
+    ],
+    "title_zh": "PUNCH DRIVE · 重拳飞车",
+    "title_en": "PUNCH DRIVE",
+    "kind_zh": "3D 碰碰车游戏",
+    "kind_en": "3D Bumper Car Game",
+    "line_zh": "漂移攒氮气，用弹簧拳把对手撞出擂台。",
+    "line_en": "Drift to charge your boost and punch rival cars off the arena.",
+    "lead_zh": "五种玩法包括相扑擂台、霓虹大奖赛、王冠争夺、熔毁生存和派对巡回赛。选好场地、车型和涂装，即可在浏览器里开赛。支持键盘和触屏操作。",
+    "lead_en": "Choose a venue, car, and paint job and jump into Sumo, Neon Grand Prix, Crown Clash, Meltdown, or Party Tour. Play in your browser with keyboard or touch controls.",
+    "tags_zh": [
+      "碰碰车",
+      "竞速",
+      "相扑擂台",
+      "漂移"
+    ],
+    "tags_en": [
+      "Bumper Cars",
+      "Racing",
+      "Sumo",
+      "Drifting"
+    ],
+    "facts": [
+      {
+        "n": "5",
+        "zh": "种玩法",
+        "en": "game modes"
+      },
+      {
+        "n": "3",
+        "zh": "种车型",
+        "en": "car classes"
+      }
+    ],
+    "tech": "Three.js · cannon-es · WebGL",
+    "host": "GitHub Pages"
+  },
+  {
     "sort": 8,
     "published": true,
     "category": "2d",

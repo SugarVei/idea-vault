@@ -92,17 +92,20 @@ export class Panorama {
       // to the stage bubbles the card's loss event; it must not cancel the drag.
       if (event.target === this.stage && this.drag?.id === event.pointerId && !this.stage.hasPointerCapture(event.pointerId)) this.pointerEnd(event, true);
     });
-    this.stage.addEventListener('dragstart', event => event.preventDefault());
+    this.stage.addEventListener('dragstart', event => {
+      if (!event.target.closest('.carousel-preview')) event.preventDefault();
+    });
     this.stage.addEventListener('click', event => {
+      if (event.target.closest('.carousel-preview')) return;
       const card = event.target.closest('.panorama-card');
       if (!card || performance.now() < (this.suppressClickUntil || 0)) return;
       const slot = Number(card.dataset.slot);
       this.hoverKey = null;
-      if (Math.abs(slot - this.position) < .14) this.openCurrent(this.stage);
+      if (Math.abs(slot - this.position) < .14) this.openCurrent(card.coverButton);
       else this.go(slot);
     });
     this.stage.addEventListener('wheel', event => {
-      if (event.ctrlKey || this.items.length < 2) return;
+      if (event.target.closest('.carousel-preview') || event.ctrlKey || this.items.length < 2) return;
       const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
       if (Math.abs(delta) < 2) return;
       event.preventDefault();
@@ -112,7 +115,7 @@ export class Panorama {
       if (freshGesture) this.step(Math.sign(delta));
     }, { passive: false });
     this.stage.addEventListener('keydown', event => {
-      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.target.closest('.carousel-preview') || event.altKey || event.ctrlKey || event.metaKey) return;
       const key = event.key;
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' '].includes(key)) return;
       event.preventDefault();
@@ -176,6 +179,7 @@ export class Panorama {
       this.paint();
       this.wake();
     } else {
+      this.setCenter(null);
       this.sleep();
       this.drag = null;
       this.hovered = false;
@@ -224,7 +228,7 @@ export class Panorama {
   }
 
   pointerDown(event) {
-    if (!event.isPrimary || event.button !== 0 || this.items.length < 2) return;
+    if (event.target.closest('.carousel-preview') || !event.isPrimary || event.button !== 0 || this.items.length < 2) return;
     this.target = null;
     this.resumeRequested = false;
     this.hoverKey = null;
@@ -269,7 +273,9 @@ export class Panorama {
   }
 
   captionItem() {
-    return this.items.find(item => item.key === this.hoverKey) || this.items[mod(Math.round(this.position), this.items.length)];
+    const centered = this.items[mod(Math.round(this.position), this.items.length)];
+    if (this.host.classList.contains('is-preview-engaged')) return centered;
+    return this.items.find(item => item.key === this.hoverKey) || centered;
   }
 
   openCurrent(trigger) {
@@ -306,18 +312,41 @@ export class Panorama {
     if (!this.reduceMotion.matches) this.title.animate([{ opacity: .35, transform: 'translateY(3px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 180 });
   }
 
+  setCenter(card, item) {
+    if (this.centerCard === card && this.centerItem === item) return;
+    this.centerCard = card;
+    this.centerItem = item;
+    this.actions.onCenter(this.host, card, item?.index);
+  }
+
+  settlePreview() {
+    this.position = Math.round(this.position);
+    this.target = null;
+    this.hoverKey = null;
+    this.resumeAt = performance.now() + 3500;
+    this.paint();
+  }
+
   paint() {
     const count = this.items.length;
-    if (!count || !this.cardWidth) return;
-    const slots = count < 5 ? Array.from({ length: count }, (_, i) => i) : Array.from({ length: 9 }, (_, i) => Math.floor(this.position) + i - 4);
+    if (!this.active || !count || !this.cardWidth) {
+      this.setCenter(null);
+      return;
+    }
+    const centerSlot = Math.round(this.position);
+    const slots = count < 5 ? Array.from({ length: count }, (_, i) => i) : Array.from({ length: 9 }, (_, i) => centerSlot + i - 4);
     while (this.cards.length > slots.length) this.cards.pop().remove();
     while (this.cards.length < slots.length) {
-      const card = document.createElement('button');
-      card.type = 'button';
+      const card = document.createElement('div');
       card.className = 'panorama-card';
-      card.tabIndex = -1;
+      const coverButton = document.createElement('button');
+      coverButton.type = 'button';
+      coverButton.className = 'carousel-card-cover';
+      coverButton.tabIndex = -1;
+      card.coverButton = coverButton;
+      card.append(coverButton);
       card.addEventListener('pointerenter', event => {
-        if (event.pointerType === 'touch' || this.drag) return;
+        if (event.pointerType === 'touch' || this.drag || this.host.classList.contains('is-preview-engaged')) return;
         this.hoverKey = card.dataset.key;
         this.paintCaption();
       });
@@ -328,6 +357,8 @@ export class Panorama {
       this.ring.append(card);
       this.cards.push(card);
     }
+    let centerCard = null;
+    let centerItem;
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
       const item = this.items[mod(slot, count)];
@@ -335,12 +366,14 @@ export class Panorama {
       const identity = `${item.key}|${item.title}|${item.coverHtml}`;
       if (card._identity !== identity) {
         card._identity = identity;
-        card.innerHTML = item.coverHtml;
-        card.querySelectorAll('img').forEach(img => { img.draggable = false; });
+        card.coverButton.innerHTML = item.coverHtml;
+        card.coverButton.querySelectorAll('img').forEach(img => { img.draggable = false; });
       }
       card.dataset.key = item.key;
       card.dataset.slot = String(slot);
-      card.setAttribute('aria-label', `${this.labels.show}: ${item.title}`);
+      const selected = slot === centerSlot;
+      card.coverButton.setAttribute('aria-label', `${selected ? this.labels.details : this.labels.show}: ${item.title}`);
+      card.coverButton.setAttribute('aria-current', String(selected));
       const angle = (slot - this.position) * ANGLE;
       const visible = Math.abs(angle) < .88;
       card.style.visibility = visible ? 'visible' : 'hidden';
@@ -350,7 +383,12 @@ export class Panorama {
       const z = (1 - Math.cos(angle)) * this.radius;
       card.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(2)}px, 0, ${z.toFixed(2)}px) rotateY(${(-angle * 180 / Math.PI).toFixed(3)}deg)`;
       card.style.pointerEvents = 'auto';
+      if (selected && !this.drag?.moved && this.target === null) {
+        centerCard = card;
+        centerItem = item;
+      }
     }
+    this.setCenter(centerCard, centerItem);
     this.stage.dataset.current = String(mod(Math.round(this.position), count));
     this.paintCaption();
     if (this.announceAtRest && this.target === null) {
@@ -369,6 +407,7 @@ export class Panorama {
 
   canAutoplay() {
     return this.items.length > 1 && !this.paused && !this.reduceMotion.matches &&
+      !this.host.classList.contains('is-preview-engaged') &&
       (this.resumeRequested || (!this.hovered && !this.focused));
   }
 

@@ -188,7 +188,7 @@ function jolly(host, zh) {
   const middleX = (columns - 1) / 2;
   const middleY = (rows - 1) / 2;
   const view = button('jolly-gaze', zh ? '移动指针或轻触，让 Jolly 看向你' : 'Move the pointer or tap to make Jolly look');
-  const stage = host.closest('.stage');
+  const stage = host.closest('.stage') || host;
   const sprite = image('card-jolly-smooth.webp');
   sprite.className = 'jolly-sprite';
   sprite.draggable = false;

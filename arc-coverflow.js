@@ -48,14 +48,15 @@ export class ArcCoverflow {
       if (item) this.actions.onPin(item.index);
     });
     this.stage.addEventListener('click', event => {
+      if (event.target.closest('.carousel-preview')) return;
       const card = event.target.closest('.arc-card');
       if (!this.active || !card || performance.now() < this.suppressClickUntil) return;
       const index = this.items.findIndex(item => item.key === card.dataset.key);
-      if (index === this.index) this.openCurrent(card);
+      if (index === this.index) this.openCurrent(card.coverButton);
       else this.go(index);
     });
     this.stage.addEventListener('keydown', event => {
-      if (!this.active || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (!this.active || event.target.closest('.carousel-preview') || event.altKey || event.ctrlKey || event.metaKey) return;
       const { key } = event;
       if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) {
         event.preventDefault();
@@ -63,7 +64,7 @@ export class ArcCoverflow {
         if (fromCard) this.stage.focus({ preventScroll: true });
         this.resetDrag();
         this.go(key === 'Home' ? 0 : key === 'End' ? this.items.length - 1 : this.index + (key === 'ArrowRight' ? 1 : -1));
-        if (fromCard) this.cards.get(this.items[this.index]?.key)?.focus({ preventScroll: true });
+        if (fromCard) this.cards.get(this.items[this.index]?.key)?.coverButton.focus({ preventScroll: true });
       } else if ((key === 'Enter' || key === ' ') && event.target === this.stage) {
         // Native card buttons handle their own Enter/Space activation.
         event.preventDefault();
@@ -81,7 +82,9 @@ export class ArcCoverflow {
       // Transferring a touch's implicit capture from a card bubbles its own loss.
       if (event.target === this.stage && this.drag?.id === event.pointerId && !this.stage.hasPointerCapture(event.pointerId)) this.pointerEnd(event);
     });
-    this.stage.addEventListener('dragstart', event => event.preventDefault());
+    this.stage.addEventListener('dragstart', event => {
+      if (!event.target.closest('.carousel-preview')) event.preventDefault();
+    });
     this.reducedMotion.addEventListener('change', () => {
       if (this.reducedMotion.matches) this.titleAnimation?.cancel();
     });
@@ -101,23 +104,27 @@ export class ArcCoverflow {
     const keys = new Set(items.map(item => item.key));
     for (const [key, card] of this.cards) {
       if (keys.has(key)) continue;
-      if (card === document.activeElement) this.stage.focus({ preventScroll: true });
+      if (card.contains(document.activeElement)) this.stage.focus({ preventScroll: true });
       card.remove();
       this.cards.delete(key);
     }
     for (const item of items) {
       let card = this.cards.get(item.key);
       if (!card) {
-        card = document.createElement('button');
-        card.type = 'button';
+        card = document.createElement('div');
         card.className = 'arc-card';
+        const coverButton = document.createElement('button');
+        coverButton.type = 'button';
+        coverButton.className = 'carousel-card-cover';
+        card.coverButton = coverButton;
+        card.append(coverButton);
         card.dataset.key = item.key;
         this.cards.set(item.key, card);
         this.stage.append(card);
       }
       card.dataset.index = item.index;
       if (card.coverHtml !== item.coverHtml) {
-        card.innerHTML = item.coverHtml;
+        card.coverButton.innerHTML = item.coverHtml;
         card.coverHtml = item.coverHtml;
       }
     }
@@ -131,6 +138,7 @@ export class ArcCoverflow {
       this.resetDrag();
       this.titleAnimation?.cancel();
     }
+    this.updateCenter();
   }
 
   go(index) {
@@ -139,6 +147,16 @@ export class ArcCoverflow {
     if (next === this.index) return;
     this.index = next;
     this.paint();
+  }
+
+  updateCenter() {
+    const current = this.items[this.index];
+    const card = this.active && !this.drag?.moved && current ? this.cards.get(current.key) : null;
+    const item = card ? current : undefined;
+    if (this.centerCard === card && this.centerItem === item) return;
+    this.centerCard = card;
+    this.centerItem = item;
+    this.actions.onCenter(this.host, card, item?.index);
   }
 
   paint() {
@@ -156,11 +174,13 @@ export class ArcCoverflow {
       card.style.opacity = visible ? '1' : '0';
       card.classList.toggle('is-outside', !visible);
       card.inert = !visible;
-      card.tabIndex = selected ? 0 : -1;
+      card.coverButton.tabIndex = selected ? 0 : -1;
       card.setAttribute('aria-current', String(selected));
       card.setAttribute('aria-hidden', String(!visible));
-      card.setAttribute('aria-label', `${selected ? this.labels.details : this.labels.show}: ${item.title}`);
+      card.coverButton.setAttribute('aria-current', String(selected));
+      card.coverButton.setAttribute('aria-label', `${selected ? this.labels.details : this.labels.show}: ${item.title}`);
     }
+    this.updateCenter();
     if (!current) {
       this.title.textContent = '';
       this.subtitle.textContent = '';
@@ -196,7 +216,7 @@ export class ArcCoverflow {
   }
 
   pointerDown(event) {
-    if (!this.active || !event.isPrimary || event.button !== 0 || this.items.length < 2) return;
+    if (!this.active || event.target.closest('.carousel-preview') || !event.isPrimary || event.button !== 0 || this.items.length < 2) return;
     this.drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY, stepX: event.clientX, moved: false };
     if (event.pointerType === 'mouse') this.stage.focus({ preventScroll: true });
   }
@@ -212,6 +232,7 @@ export class ArcCoverflow {
       drag.moved = true;
       this.stage.setPointerCapture(event.pointerId);
       this.stage.classList.add('is-dragging');
+      this.updateCenter();
     }
     const delta = drag.stepX - event.clientX;
     if (Math.abs(delta) >= DRAG_STEP) {
@@ -223,6 +244,7 @@ export class ArcCoverflow {
   pointerEnd(event) {
     if (this.drag?.id !== event.pointerId) return;
     this.resetDrag();
+    this.updateCenter();
   }
 
   resetDrag() {

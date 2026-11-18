@@ -6,11 +6,13 @@ const LOAD_TIMEOUT = 12000;
 const POND_ORIGIN = 'https://sugarvei.github.io';
 const POND_WIDTH = 720;
 const POND_HEIGHT = 332;
+const LEGACY_TRAINING_URL = 'https://sugarvei.github.io/idea-vault/qinglian/';
+const TRAINING_URL = 'https://works.sugarv.mom/qinglian/';
 const isPond = url => url.origin === POND_ORIGIN && url.pathname.replace(/\/+$/, '') === '/koi-pond';
 
 export function previewUrl(value, isFilm) {
   try {
-    const url = new URL(value);
+    const url = new URL(value === LEGACY_TRAINING_URL ? TRAINING_URL : value);
     if (url.protocol !== 'https:' || url.username || url.password) return '';
     if (!isFilm && url.origin === location.origin) {
       const pagePath = path => path.replace(/\/index\.html$/, '/').replace(/\/$/, '');
@@ -48,7 +50,8 @@ export function bindFilm(host) {
 }
 
 export class LivePreviews {
-  constructor() {
+  constructor({ loadTimeout = LOAD_TIMEOUT } = {}) {
+    this.loadTimeout = loadTimeout;
     this.sites = new Map();
     this.pending = 0;
     this.intersections = new IntersectionObserver(entries => {
@@ -87,7 +90,7 @@ export class LivePreviews {
         const site = { host, pond, frame: null, nearby: false, cover: false, timer: 0 };
         this.sites.set(host, site);
         const toggle = host.querySelector('.preview-toggle');
-        toggle.addEventListener('click', () => {
+        toggle?.addEventListener('click', () => {
           site.cover = !site.cover;
           toggle.setAttribute('aria-pressed', String(site.cover));
           if (site.cover) this.unmount(site);
@@ -130,8 +133,8 @@ export class LivePreviews {
   }
 
   scale(site) {
-    const scale = site.host.clientWidth / site.frame.width;
-    site.frame.style.transform = 'scale(' + scale + ')';
+    const scale = Math.min(site.host.clientWidth / site.frame.width, site.host.clientHeight / site.frame.height);
+    site.frame.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
   }
 
   mount(site) {
@@ -156,7 +159,7 @@ export class LivePreviews {
       if (site.frame !== frame) return;
       this.unmount(site);
       host.dataset.previewState = 'unavailable';
-      toggle.hidden = true;
+      if (toggle) toggle.hidden = true;
     };
     frame.addEventListener('load', () => {
       if (site.frame !== frame || host.dataset.previewState === 'ready') return;
@@ -168,7 +171,7 @@ export class LivePreviews {
       }
     }, { once: true });
     frame.addEventListener('error', showCover, { once: true });
-    site.timer = setTimeout(showCover, LOAD_TIMEOUT);
+    site.timer = setTimeout(showCover, this.loadTimeout);
     frame.src = url.href;
     host.append(frame);
     this.scale(site);
@@ -178,7 +181,8 @@ export class LivePreviews {
   showFrame(site) {
     clearTimeout(site.timer);
     site.host.dataset.previewState = 'ready';
-    site.host.querySelector('.preview-toggle').hidden = false;
+    const toggle = site.host.querySelector('.preview-toggle');
+    if (toggle) toggle.hidden = false;
   }
 
   unmount(site) {
@@ -188,6 +192,7 @@ export class LivePreviews {
     site.frame.remove();
     site.frame = null;
     site.host.dataset.previewState = 'cover';
-    site.host.querySelector('.preview-toggle').hidden = !site.cover;
+    const toggle = site.host.querySelector('.preview-toggle');
+    if (toggle) toggle.hidden = !site.cover;
   }
 }

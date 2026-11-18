@@ -34,10 +34,6 @@
   cursor: inherit;
 }
 .arc-card[aria-current="true"] { filter: none; }
-.arc-card:focus-visible { outline-offset: -4px; }
-.arc-card > img { display: block; width: 100%; height: 100%; pointer-events: none; }
-.arc-card > .cover-letter { position: absolute; inset: 0; }
-.arc-card > .password-cover { height: 100%; }
 .arc-caption {
   position: relative;
   z-index: 21;

@@ -144,7 +144,7 @@ svg { display: block; flex: none; }
 .project-frame > img, .project-frame > video { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
 .project-frame:not(.password-cover) { width: 82%; margin-top: 16px; }
 .project-frame:not(.password-cover) > img,
-.panorama-card > img, .arc-card > img,
+.carousel-card-cover > img,
 .gallery .main img, .gallery .thumbs img,
 .demo-view > img {
   object-fit: contain;
@@ -172,7 +172,7 @@ svg { display: block; flex: none; }
 .password-cover svg { width: 30px; height: 30px; color: var(--ink); }
 .password-cover span { font-size: 13px; font-weight: 500; }
 .site-preview {
-  position: absolute; top: 0; left: 0; display: block; border: 0; background: #fff; transform-origin: top left;
+  position: absolute; top: 50%; left: 50%; display: block; border: 0; background: #fff;
   opacity: 0; pointer-events: none; visibility: hidden;
 }
 [data-preview-state="ready"] .site-preview { opacity: 1; pointer-events: auto; visibility: visible; }
@@ -185,6 +185,40 @@ svg { display: block; flex: none; }
 .preview-toggle { position: absolute; z-index: 1; right: 6px; bottom: 6px; width: 28px; height: 28px; opacity: 0; transition: opacity .16s; }
 .preview-toggle svg { width: 16px; height: 16px; }
 .stage:hover .preview-toggle, .stage:focus-within .preview-toggle, .preview-toggle[aria-pressed="true"] { opacity: 1; }
+.carousel-card-cover { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; cursor: inherit; }
+.carousel-card-cover:focus-visible { outline-offset: -4px; }
+.carousel-card-cover > img { display: block; width: 100%; height: 100%; pointer-events: none; }
+.carousel-preview { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+.carousel-preview.is-engaged, .carousel-preview-toggle { pointer-events: auto; }
+.carousel-preview .carousel-preview-toggle {
+  position: absolute; right: 8px; bottom: 8px;
+  background: var(--glass-strong); color: var(--ink); box-shadow: var(--shadow);
+}
+.carousel-preview-toggle:focus-visible { outline-offset: -3px; }
+.carousel-preview-content {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--preview-accent, var(--ink)) 9%, var(--well));
+}
+.carousel-preview .project-frame:not(.password-cover) {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+  aspect-ratio: auto; border-radius: 0; background: transparent; box-shadow: none;
+}
+.carousel-preview .carousel-preview-content > .card-demo {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+}
+.carousel-preview .demo-view { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+.carousel-preview .particle-preview { height: auto; }
+.carousel-preview .harbor-scenes { position: absolute; bottom: 8px; margin: 0; }
+.carousel-preview .earth-globe, .carousel-preview .jolly-gaze { justify-self: center; height: 92%; width: auto; }
+.carousel-preview .earth-globe { aspect-ratio: 1; }
+.carousel-preview .jolly-gaze { border-radius: 10px; }
+.carousel-preview .preview-next { cursor: pointer; }
+.preview-status { position: absolute; left: 50%; bottom: 8px; translate: -50%; white-space: nowrap; pointer-events: none; }
+.preview-status > span { display: none; padding: 3px 9px; border-radius: 999px; background: var(--glass-strong); font-size: 11px; }
+[data-preview-state="loading"] .preview-status > span:first-child,
+[data-preview-state="unavailable"] .preview-status > span:last-child { display: block; }
+.panorama-actions, .arc-actions { flex-wrap: wrap; }
 .bookmark { position: absolute; z-index: 2; top: 10px; right: 10px; min-width: 31px; height: 31px; }
 .bookmark svg { width: 15px; height: 15px; }
 .bookmark:hover, .bookmark[aria-pressed="true"] { background: var(--glass); }
@@ -381,6 +415,7 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
 }
 @media (hover: none) {
   .preview-toggle { opacity: 1; }
+  .carousel-preview-toggle.pill { min-height: 44px; }
   .pin-button { min-height: 44px; }
   .bookmark { min-width: 44px; height: 44px; }
 }

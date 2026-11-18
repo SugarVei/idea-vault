@@ -1,8 +1,8 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
-import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
-import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
-import { Panorama } from './panorama.js?v=3';
-import { ArcCoverflow } from './arc-coverflow.js?v=2';
+import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
+import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=3';
+import { Panorama } from './panorama.js?v=4';
+import { ArcCoverflow } from './arc-coverflow.js?v=3';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -24,7 +24,8 @@ const UI = {
     passwordRequired: '需要密码', enterPassword: '输入密码', unlock: '解锁', checkingPassword: '验证中…',
     memoryPasswordHint: '输入密码后查看 Sugar\' memory。',
     passwordEmpty: '请输入密码', passwordIncorrect: '密码不正确，请重试', passwordUnavailable: '暂时无法验证，请刷新后重试',
-    coverToggle: '切换实时预览和封面',
+    coverToggle: '切换实时预览和封面', inlinePreview: '互动预览', inlineCover: '返回封面',
+    previewLoading: '正在加载预览…', previewUnavailable: '预览暂不可用',
     filters: { all: '全部', '3d': '3D 场景', '2d': '2D 交互', video: '视频', factory: '工厂模型设计', other: '其它' },
     status: { live: '已上线', wip: '制作中', idea: '点子' },
     count: n => `${n} 件作品`, play: '去玩', open: '在线体验', view: '查看', openResource: '查看资源', source: '源码', watch: '观看', openVideo: '新窗口播放', tutorial: '教程',
@@ -73,7 +74,8 @@ const UI = {
     passwordRequired: 'Password required', enterPassword: 'Enter password', unlock: 'Unlock', checkingPassword: 'Checking…',
     memoryPasswordHint: 'Enter the password to view Sugar\' memory.',
     passwordEmpty: 'Enter the password', passwordIncorrect: 'Incorrect password. Try again.', passwordUnavailable: 'Password check unavailable. Reload and try again.',
-    coverToggle: 'Switch between live preview and cover',
+    coverToggle: 'Switch between live preview and cover', inlinePreview: 'Try in card', inlineCover: 'Back to cover',
+    previewLoading: 'Loading preview…', previewUnavailable: 'Preview unavailable',
     filters: { all: 'All', '3d': '3D scenes', '2d': '2D interaction', video: 'Films', factory: 'Factory Model Design', other: 'Other' },
     status: { live: 'Live', wip: 'In progress', idea: 'Idea' },
     count: n => `${n} ${n === 1 ? 'project' : 'projects'}`, play: 'Play', open: 'Play online', view: 'View', openResource: 'View resource', source: 'Source', watch: 'Watch', openVideo: 'Open in new tab', tutorial: 'Tutorial',
@@ -188,6 +190,7 @@ const icon = name => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const search = $('#search');
 const grid = $('#grid');
 const livePreviews = new LivePreviews();
+const carouselLivePreviews = new LivePreviews({ loadTimeout: 22000 });
 const searchText = value => String(value ?? '').normalize('NFKC').toLowerCase();
 const bookmarkKey = idea => idea.url || idea.id || idea.title_zh;
 const searchIndex = idea => searchText([
@@ -223,10 +226,15 @@ function readViewMode() {
 let viewMode = readViewMode();
 const panoramaHost = $('#panorama');
 const arcHost = $('#arc-coverflow');
+let centeredPreview = null;
 const galleryActions = {
+  onCenter: updateCenteredPreview,
   onOpen(index, trigger) {
     const idea = state.ideas[index];
-    if (idea) openSheet(idea, trigger);
+    if (idea) {
+      centeredPreview?.close();
+      openSheet(idea, trigger);
+    }
   },
   onBookmark(index) {
     const button = grid.querySelector('[data-index="' + index + '"] [data-bookmark]');
@@ -254,6 +262,102 @@ function renderViewSwitch() {
 
 function previewAccent(idea) {
   return /^#[a-f0-9]{6}$/i.test(idea.hue) ? idea.hue : 'var(--ink)';
+}
+
+function updateCenteredPreview(view, card, index) {
+  if (view !== (viewMode === 'panorama' ? panoramaHost : viewMode === 'arc' ? arcHost : null)) {
+    if (centeredPreview?.view === view) removeCenteredPreview();
+    return;
+  }
+  const idea = card ? state.ideas[index] : null;
+  const preview = idea && projectPreview(idea, true);
+  const identity = preview && JSON.stringify(preview);
+  const language = state.lang;
+  // The live catalog can replace seed entries while a visitor is using an identical preview.
+  if (card && centeredPreview?.card === card && centeredPreview.identity === identity && centeredPreview.lang === language) return;
+  removeCenteredPreview();
+  if (!preview || preview.locked || (preview.kind === 'cover' && !preview.demo && preview.photos.length < 2)) return;
+
+  const labels = t();
+  const surface = document.createElement('div');
+  surface.className = 'carousel-preview';
+  surface.style.setProperty('--preview-accent', previewAccent(idea));
+  card.append(surface);
+
+  let close = () => {};
+  if (preview.kind === 'cover' && !preview.demo) {
+    surface.innerHTML = projectMediaHtml(preview);
+    mountCoverPreview(surface.firstElementChild, preview.photos, language);
+    if (view === panoramaHost) surface.addEventListener('click', () => panorama.settlePreview());
+  } else {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'carousel-preview-toggle pill';
+    const openLabel = preview.kind === 'film' ? labels.watch : labels.inlinePreview;
+    toggle.textContent = openLabel;
+    toggle.setAttribute('aria-label', openLabel + ' · ' + preview.title);
+    toggle.setAttribute('aria-expanded', 'false');
+    surface.append(toggle);
+
+    let frame = null;
+    close = () => {
+      if (!frame) return;
+      carouselLivePreviews.reset([]);
+      frame.remove();
+      frame = null;
+      surface.classList.remove('is-engaged');
+      view.classList.remove('is-preview-engaged');
+      surface.append(toggle);
+      toggle.textContent = openLabel;
+      toggle.setAttribute('aria-label', openLabel + ' · ' + preview.title);
+      toggle.setAttribute('aria-expanded', 'false');
+      if (view === panoramaHost) panorama.wake();
+    };
+    toggle.addEventListener('click', () => {
+      if (frame) {
+        close();
+        toggle.focus({ preventScroll: true });
+        return;
+      }
+      surface.classList.add('is-engaged');
+      view.classList.add('is-preview-engaged');
+      toggle.textContent = labels.inlineCover;
+      toggle.setAttribute('aria-label', labels.inlineCover + ' · ' + preview.title);
+      toggle.setAttribute('aria-expanded', 'true');
+      view.querySelector('.panorama-actions, .arc-actions').append(toggle);
+      toggle.focus({ preventScroll: true });
+      if (view === panoramaHost) {
+        panorama.settlePreview();
+        panorama.wake();
+      }
+
+      frame = document.createElement('div');
+      frame.className = 'carousel-preview-content';
+      frame.innerHTML = projectMediaHtml(preview, { inline: true });
+      surface.prepend(frame);
+      const media = frame.firstElementChild;
+      if (preview.demo) {
+        mountCardDemo(media, language);
+      } else {
+        carouselLivePreviews.reset([media]);
+        if (preview.kind === 'film') media.querySelector('.video-start').click();
+      }
+    });
+    surface.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !frame) return;
+      event.preventDefault();
+      close();
+      toggle.focus();
+    });
+  }
+  centeredPreview = { view, card, identity, lang: language, surface, close };
+}
+
+function removeCenteredPreview() {
+  if (!centeredPreview) return;
+  centeredPreview.close();
+  centeredPreview.surface.remove();
+  centeredPreview = null;
 }
 
 function galleryCoverHtml(idea) {
@@ -356,40 +460,54 @@ function renderAdminBar() {
   bar.hidden = !html;
 }
 
-function cardHtml(idea, index) {
-  const s = t();
+function projectPreview(idea, carousel = false) {
   const title = pick(idea, 'title');
   const locked = requiresCardPassword(idea);
-  const cover = (idea.images || []).map(imgSrc).find(Boolean);
+  const photos = (idea.images || []).map(imgSrc).filter(Boolean);
   const film = !locked && isVideo(idea.url);
   // Resource pages use their official covers; their hosts may disallow embedding.
-  // Use screenshots for Punch Drive so the game only starts when opened.
-  const showCover = locked || idea.category === 'factory' || idea.url === 'https://works.sugarv.mom/sumo-cars/';
+  // Start Punch Drive only on request in a carousel; grid uses its photo gallery.
+  const showCover = locked || idea.category === 'factory' || (!carousel && idea.url === 'https://works.sugarv.mom/sumo-cars/');
   const preview = showCover ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.
   const resumeWorkspace = preview && ['sugarv.mom', 'www.sugarv.mom', 'sugar-job-system.vercel.app'].includes(new URL(preview).hostname);
   const url = resumeWorkspace ? '' : preview;
   const demo = locked || film ? undefined : cardDemo(url);
   const kind = url ? (film ? 'film' : 'site') : 'cover';
-  const details = esc((locked ? s.passwordRequired + ': ' : s.details) + title);
+  return { title, locked, photos, url, demo, kind };
+}
+
+function projectMediaHtml({ title, locked, photos, url, demo, kind }, { lazy = false, inline = false } = {}) {
+  const s = t();
+  const cover = photos[0];
   const previewTitle = esc(s.preview + ' · ' + title);
-  const active = bookmarks.has(bookmarkKey(idea));
-  const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
-  const pinned = pins.includes(bookmarkKey(idea));
-  const pinLabel = esc((pinned ? s.unpin : s.pin) + ' · ' + title);
   const poster = cover
-    ? '<img src="' + esc(cover) + '" alt="" decoding="async"' + (index > 5 ? ' loading="lazy"' : '') + '>'
+    ? '<img src="' + esc(cover) + '" alt="" decoding="async"' + (lazy ? ' loading="lazy"' : '') + '>'
     : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
   const control = kind === 'film'
     ? '<button class="video-start" type="button" aria-label="' + esc(s.watch + ' · ' + title) + '">' + icon('play') + '</button>'
+    : kind === 'site' && inline
+      ? '<span class="preview-status" role="status"><span>' + esc(s.previewLoading) + '</span><span>' + esc(s.previewUnavailable) + '</span></span>'
     : kind === 'site'
       ? '<button class="preview-toggle" type="button" aria-label="' + esc(s.coverToggle) + '" title="' + esc(s.coverToggle) + '" aria-pressed="false" hidden>' + icon('image') + '</button>'
       : '';
-  const media = locked
+  return locked
     ? '<div class="project-frame password-cover" data-kind="cover" aria-hidden="true">' + (cover ? poster : '') + '<div class="password-cover-glass"></div><div class="password-cover-label">' + icon('lock') + '<span>' + esc(s.enterPassword) + '</span></div></div>'
     : demo
     ? '<div class="card-demo" data-demo="' + demo + '"></div>'
     : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';
+}
+
+function cardHtml(idea, index) {
+  const s = t();
+  const preview = projectPreview(idea);
+  const { title, locked, demo, kind } = preview;
+  const details = esc((locked ? s.passwordRequired + ': ' : s.details) + title);
+  const active = bookmarks.has(bookmarkKey(idea));
+  const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
+  const pinned = pins.includes(bookmarkKey(idea));
+  const pinLabel = esc((pinned ? s.unpin : s.pin) + ' · ' + title);
+  const media = projectMediaHtml(preview, { lazy: index > 5 });
   const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
   return '<article class="project-card" data-index="' + index + '" style="--preview-accent:' + previewAccent(idea) + '"' + (locked ? ' data-password-required="true"' : '') + '>' +
     '<div class="stage">' +

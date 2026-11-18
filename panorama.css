@@ -14,8 +14,7 @@
   overflow: hidden; border-radius: 16px; background: var(--well); backface-visibility: hidden;
   cursor: inherit; outline: none; will-change: transform; border: 1px solid color-mix(in srgb, var(--edge), transparent 65%);
 }
-.panorama-card > img, .panorama-password-cover > img { display: block; width: 100%; height: 100%; pointer-events: none; }
-.panorama-card > .cover-letter { position: absolute; inset: 0; }
+.panorama-password-cover > img { display: block; width: 100%; height: 100%; pointer-events: none; }
 .panorama-password-cover { position: relative; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
 .panorama-password-cover > img { position: absolute; inset: 0; }
 .panorama-password-cover .password-cover-label { padding: 14px 12px; gap: 7px; }

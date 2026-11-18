@@ -205,13 +205,15 @@ svg { display: block; flex: none; }
 }
 .carousel-preview [data-preview-state="ready"] > :is(img, .cover-letter) { visibility: hidden; }
 .carousel-preview .carousel-preview-content > .card-demo {
-  width: 100%; height: 100%; display: grid; place-items: center;
+  position: absolute; inset: 0; width: auto; height: auto; display: grid; place-items: center;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
 }
 .carousel-preview .demo-view { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
 .carousel-preview .particle-preview { height: auto; }
 .carousel-preview .harbor-scenes { position: absolute; bottom: 8px; margin: 0; }
-.carousel-preview .earth-globe, .carousel-preview .jolly-gaze { justify-self: center; height: 92%; width: auto; }
+.carousel-preview .earth-globe, .carousel-preview .jolly-gaze {
+  position: absolute; inset: 0; margin: auto; height: 92%; width: auto; max-width: 100%;
+}
 .carousel-preview .earth-globe { aspect-ratio: 1; }
 .carousel-preview .jolly-gaze { border-radius: 10px; }
 .carousel-preview .preview-next { cursor: pointer; }

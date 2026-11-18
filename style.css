@@ -203,6 +203,7 @@ svg { display: block; flex: none; }
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
   aspect-ratio: auto; border-radius: 0; background: transparent; box-shadow: none;
 }
+.carousel-preview [data-preview-state="ready"] > :is(img, .cover-letter) { visibility: hidden; }
 .carousel-preview .carousel-preview-content > .card-demo {
   width: 100%; height: 100%; display: grid; place-items: center;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);

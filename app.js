@@ -1,8 +1,8 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-2';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=2';
-import { Panorama } from './panorama.js?v=2';
-import { ArcCoverflow } from './arc-coverflow.js?v=1';
+import { Panorama } from './panorama.js?v=3';
+import { ArcCoverflow } from './arc-coverflow.js?v=2';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -252,11 +252,15 @@ function renderViewSwitch() {
   }
 }
 
+function previewAccent(idea) {
+  return /^#[a-f0-9]{6}$/i.test(idea.hue) ? idea.hue : 'var(--ink)';
+}
+
 function galleryCoverHtml(idea) {
   const title = pick(idea, 'title');
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const image = cover
-    ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false">'
+    ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false" style="--preview-accent:' + previewAccent(idea) + '">'
     : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
   if (!requiresCardPassword(idea)) return image;
   return '<div class="password-cover panorama-password-cover" aria-hidden="true">' + image +
@@ -387,7 +391,7 @@ function cardHtml(idea, index) {
     ? '<div class="card-demo" data-demo="' + demo + '"></div>'
     : '<div class="project-frame" data-kind="' + kind + '" data-preview-url="' + esc(url) + '" data-title="' + previewTitle + '" data-preview-state="cover">' + poster + control + '</div>';
   const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
-  return '<article class="project-card" data-index="' + index + '"' + (locked ? ' data-password-required="true"' : '') + '>' +
+  return '<article class="project-card" data-index="' + index + '" style="--preview-accent:' + previewAccent(idea) + '"' + (locked ? ' data-password-required="true"' : '') + '>' +
     '<div class="stage">' +
       '<button type="button" class="stage-details" data-card-details aria-label="' + details + '"></button>' +
       media +
@@ -662,7 +666,7 @@ function showSheet(idea, origin) {
     ? `<video src="${esc(idea.url)}" ${imgs.length ? `poster="${esc(imgs[0])}"` : ''} controls playsinline preload="metadata" aria-label="${esc(title)}"></video>`
     : imgs.length ? `<img src="${esc(imgs[0])}" alt="${esc(title)}">` : `<div class="media" style="--hue:${esc(idea.hue)}"><span class="cover-letter">${esc(title.slice(0, 1))}</span></div>`;
   sheet.innerHTML = `<div class="sheet-in">
-    <div class="gallery">
+    <div class="gallery" style="--preview-accent:${previewAccent(idea)}">
       <div class="main${video ? ' video' : ''}">${mainHtml}</div>
       ${imgs.length > 1 && !video ? `<div class="thumbs">${imgs.map((src, j) => `<button type="button" aria-label="${j + 1}" aria-current="${j === 0}" data-src="${esc(src)}"><img src="${esc(src)}" alt=""></button>`).join('')}</div>` : ''}
     </div>

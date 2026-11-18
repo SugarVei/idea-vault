@@ -148,7 +148,7 @@ export class ArcCoverflow {
       const card = this.cards.get(item.key);
       const offset = index - this.index;
       const selected = offset === 0;
-      const visible = Math.abs(offset) <= 4;
+      const visible = Math.abs(offset) <= 2;
       card.style.transform = `rotate(${clamp(offset, -7, 7) * ANGLE}deg)`;
       card.style.zIndex = String(20 - Math.min(19, Math.abs(offset)));
       card.style.visibility = visible ? 'visible' : 'hidden';

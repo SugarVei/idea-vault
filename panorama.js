@@ -189,8 +189,8 @@ export class Panorama {
   measure() {
     const width = this.stage.clientWidth;
     if (!width) return;
-    this.cardWidth = clamp(width * .19, 170, 280);
-    this.spacing = this.cardWidth * 1.12;
+    this.cardWidth = Math.min(width * .74, clamp(width * .27, 282, 360));
+    this.spacing = this.cardWidth * 1.07;
     this.radius = this.spacing / Math.sin(ANGLE);
     this.stage.style.perspective = `${this.radius * 1.05}px`;
     this.ring.style.setProperty('--panorama-card-width', `${this.cardWidth}px`);

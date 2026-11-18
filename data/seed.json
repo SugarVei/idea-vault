@@ -250,8 +250,8 @@
     "url": "https://little-earth-livid.vercel.app",
     "repo": null,
     "images": [
-      "assets/earth-0.jpg",
       "assets/earth-2.jpg",
+      "assets/earth-0.jpg",
       "assets/earth-3.jpg",
       "assets/earth-4.jpg"
     ],

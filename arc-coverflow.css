@@ -1,14 +1,14 @@
 .arc-coverflow {
-  --arc-width: 240px;
-  --arc-radius: 896px;
+  --arc-width: clamp(250px, 30vw, 360px);
+  --arc-radius: calc(7.2 * var(--arc-width));
   overflow: clip;
   padding: 16px 0 40px;
   isolation: isolate;
 }
 .arc-stage {
   position: relative;
-  height: 448px;
-  max-width: 960px;
+  height: calc(1.1 * var(--arc-width) + 16px);
+  max-width: 1440px;
   margin: 0 auto;
   cursor: grab;
   touch-action: pan-y;
@@ -23,7 +23,7 @@
   left: 50%;
   width: var(--arc-width);
   margin-left: calc(var(--arc-width) / -2);
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 16px;
   background: var(--well);
@@ -35,14 +35,14 @@
 }
 .arc-card[aria-current="true"] { filter: none; }
 .arc-card:focus-visible { outline-offset: -4px; }
-.arc-card > img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.arc-card > img { display: block; width: 100%; height: 100%; pointer-events: none; }
 .arc-card > .cover-letter { position: absolute; inset: 0; }
 .arc-card > .password-cover { height: 100%; }
 .arc-caption {
   position: relative;
   z-index: 21;
   max-width: 680px;
-  margin: 40px auto 0;
+  margin: calc(-.15 * var(--arc-width)) auto 0;
   padding: 0 20px;
   text-align: center;
 }
@@ -55,9 +55,9 @@
 .arc-count { min-width: 56px; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .arc-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 767px) {
-  .arc-coverflow { --arc-width: 160px; --arc-radius: 512px; padding-top: 8px; padding-bottom: 32px; }
-  .arc-stage { height: 352px; }
-  .arc-caption { padding-inline: 12px; }
+  .arc-coverflow { --arc-width: min(74vw, 280px); --arc-radius: calc(3.2 * var(--arc-width)); padding-top: 8px; padding-bottom: 32px; }
+  .arc-stage { height: calc(.78 * var(--arc-width) + 16px); }
+  .arc-caption { margin-top: 4px; padding-inline: 12px; }
   .arc-actions .pill { min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {

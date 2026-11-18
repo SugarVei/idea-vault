@@ -142,11 +142,18 @@ svg { display: block; flex: none; }
   border-radius: 15px; background: var(--glass); box-shadow: var(--shadow); pointer-events: none;
 }
 .project-frame > img, .project-frame > video { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
-.project-frame > img { object-fit: cover; }
+.project-frame:not(.password-cover) { width: 82%; margin-top: 16px; }
+.project-frame:not(.password-cover) > img,
+.panorama-card > img, .arc-card > img,
+.gallery .main img, .gallery .thumbs img,
+.demo-view > img {
+  object-fit: contain;
+  background: color-mix(in srgb, var(--preview-accent, var(--ink)) 9%, var(--well));
+}
 .project-frame > video { object-fit: contain; background: #111; pointer-events: auto; }
 .cover-letter { display: grid; place-items: center; width: 100%; height: 100%; background: var(--hair); color: var(--ink-3); font-size: 40px; font-weight: 600; }
 .password-cover { display: grid; place-items: center; isolation: isolate; background: var(--field); color: var(--ink); }
-.password-cover > img { filter: blur(9px) saturate(.8); transform: scale(1.12); }
+.password-cover > img { object-fit: cover; filter: blur(9px) saturate(.8); transform: scale(1.12); }
 .password-cover-glass {
   position: absolute; inset: 0;
   background: linear-gradient(135deg, rgb(255 255 255 / 48%), rgb(255 255 255 / 18%));
@@ -192,9 +199,9 @@ svg { display: block; flex: none; }
 .pin-button:hover { color: var(--ink); background: var(--hover); }
 .pin-button[aria-pressed="true"] { color: var(--bg); background: var(--ink); }
 .pin-button[aria-pressed="true"] svg { fill: currentColor; }
-.card-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 9px 4px 0; }
+.card-caption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; padding: 9px 4px 0; }
 .card-caption h2 { min-width: 0; font-size: 14px; line-height: 1.5; }
-.project-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; text-align: start; vertical-align: bottom; font-weight: 585; }
+.project-title { overflow-wrap: anywhere; max-width: 100%; text-align: start; vertical-align: bottom; font-weight: 585; }
 .project-title:hover { text-decoration: underline; text-underline-offset: 3px; }
 .project-kind { flex: none; color: var(--ink-3); font-size: 11px; }
 .import-card { align-content: center; gap: 5px; color: var(--ink-2); }
@@ -220,8 +227,8 @@ dialog.sheet[open]::backdrop { background: rgba(6, 7, 10, .58); }
 
 /* 详情 */
 .sheet-in { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; padding: 14px; }
-.gallery .main { aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden; background: var(--hair); }
-.gallery .main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery .main { aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden; background: var(--hair); }
+.gallery .main img { width: 100%; height: 100%; display: block; }
 .gallery .main.video { aspect-ratio: 16 / 9; }
 .gallery .main video { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gallery .main .media { position: relative; inset: auto; width: 100%; height: 100%; }
@@ -229,7 +236,7 @@ dialog.sheet[open]::backdrop { background: rgba(6, 7, 10, .58); }
 .thumbs button { flex: 1; max-width: 25%; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; opacity: .55; transition: opacity .2s var(--ease-ui); outline-offset: 2px; }
 .thumbs button:hover { opacity: .85; }
 .thumbs button[aria-current="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
-.thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumbs img { width: 100%; height: 100%; display: block; }
 .info { position: relative; padding: 18px 12px 12px 0; display: flex; flex-direction: column; }
 .info h2 { font-size: clamp(26px, 3vw, 34px); line-height: 1.25; font-weight: 400; letter-spacing: -.015em; padding-right: 44px; }
 .info .lead { margin-top: 16px; font-size: 15px; line-height: 1.8; color: var(--ink-2); white-space: pre-line; }
@@ -388,7 +395,7 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   border-radius: 15px; background: var(--glass); box-shadow: var(--shadow);
 }
 .demo-view > img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none; user-select: none;
 }
 .card-demo[data-demo="harbor"] { width: 72%; }

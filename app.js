@@ -313,10 +313,29 @@ function updateCenteredPreview(view, card, index) {
       toggle.setAttribute('aria-expanded', 'false');
       if (view === panoramaHost) panorama.wake();
     };
+    const returnToCover = () => {
+      close();
+      toggle.focus({ preventScroll: true });
+    };
+    // A captured touch drag inside a demo can suppress the next synthesized click.
+    // Handle the close button's touch tap directly and leave mouse/keyboard clicks native.
+    let touchStart;
+    toggle.addEventListener('touchstart', event => {
+      touchStart = frame && event.touches.length === 1 ? event.changedTouches[0] : null;
+    }, { passive: true });
+    toggle.addEventListener('touchcancel', () => { touchStart = null; });
+    toggle.addEventListener('touchend', event => {
+      const start = touchStart;
+      touchStart = null;
+      const end = event.changedTouches[0];
+      if (!frame || !start || event.touches.length || start.identifier !== end.identifier ||
+          Math.hypot(end.clientX - start.clientX, end.clientY - start.clientY) > 10) return;
+      event.preventDefault();
+      returnToCover();
+    }, { passive: false });
     toggle.addEventListener('click', () => {
       if (frame) {
-        close();
-        toggle.focus({ preventScroll: true });
+        returnToCover();
         return;
       }
       surface.classList.add('is-engaged');
@@ -346,8 +365,7 @@ function updateCenteredPreview(view, card, index) {
     surface.addEventListener('keydown', event => {
       if (event.key !== 'Escape' || !frame) return;
       event.preventDefault();
-      close();
-      toggle.focus();
+      returnToCover();
     });
   }
   centeredPreview = { view, card, identity, lang: language, surface, close };

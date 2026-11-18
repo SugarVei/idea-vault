@@ -190,6 +190,7 @@ svg { display: block; flex: none; }
 .carousel-card-cover > img { display: block; width: 100%; height: 100%; pointer-events: none; }
 .carousel-preview { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
 .carousel-preview.is-engaged, .carousel-preview-toggle { pointer-events: auto; }
+.carousel-preview-toggle { touch-action: manipulation; }
 .carousel-preview .carousel-preview-toggle {
   position: absolute; right: 8px; bottom: 8px;
   background: var(--glass-strong); color: var(--ink); box-shadow: var(--shadow);

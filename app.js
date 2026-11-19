@@ -326,21 +326,26 @@ function updateCenteredPreview(view, card, index) {
       close();
       toggle.focus({ preventScroll: true });
     };
-    // A captured touch drag inside a demo can suppress the next synthesized click.
-    // Handle the close button's touch tap directly and leave mouse/keyboard clicks native.
+    const togglePreview = () => {
+      if (frame) returnToCover();
+      else open();
+    };
+    // Captured touch drags can suppress the next synthesized click. A confirmed
+    // tap opens the dissolve preview after a swipe and closes any active preview.
+    const touchOpensPreview = view === dissolveHost;
     let touchStart;
     toggle.addEventListener('touchstart', event => {
-      touchStart = frame && event.touches.length === 1 ? event.changedTouches[0] : null;
+      touchStart = (frame || touchOpensPreview) && event.touches.length === 1 ? event.changedTouches[0] : null;
     }, { passive: true });
     toggle.addEventListener('touchcancel', () => { touchStart = null; });
     toggle.addEventListener('touchend', event => {
       const start = touchStart;
       touchStart = null;
       const end = event.changedTouches[0];
-      if (!frame || !start || event.touches.length || start.identifier !== end.identifier ||
+      if ((!frame && !touchOpensPreview) || !start || event.touches.length || start.identifier !== end.identifier ||
           Math.hypot(end.clientX - start.clientX, end.clientY - start.clientY) > 10) return;
       event.preventDefault();
-      returnToCover();
+      togglePreview();
     }, { passive: false });
     open = (automatic = false) => {
       if (frame) return;
@@ -368,10 +373,7 @@ function updateCenteredPreview(view, card, index) {
         if (preview.kind === 'film') media.querySelector('.video-start').click();
       }
     };
-    toggle.addEventListener('click', () => {
-      if (frame) returnToCover();
-      else open();
-    });
+    toggle.addEventListener('click', togglePreview);
     surface.addEventListener('keydown', event => {
       if (event.key !== 'Escape' || !frame) return;
       event.preventDefault();

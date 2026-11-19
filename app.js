@@ -285,6 +285,7 @@ function updateCenteredPreview(view, card, index) {
   card.append(surface);
 
   let close = () => {};
+  let open = () => {};
   if (preview.kind === 'cover' && !preview.demo) {
     surface.innerHTML = projectMediaHtml(preview);
     mountCoverPreview(surface.firstElementChild, preview.photos, language);
@@ -333,18 +334,15 @@ function updateCenteredPreview(view, card, index) {
       event.preventDefault();
       returnToCover();
     }, { passive: false });
-    toggle.addEventListener('click', () => {
-      if (frame) {
-        returnToCover();
-        return;
-      }
+    open = (automatic = false) => {
+      if (frame) return;
       surface.classList.add('is-engaged');
       view.classList.add('is-preview-engaged');
       toggle.textContent = labels.inlineCover;
       toggle.setAttribute('aria-label', labels.inlineCover + ' · ' + preview.title);
       toggle.setAttribute('aria-expanded', 'true');
       view.querySelector('.panorama-actions, .arc-actions').append(toggle);
-      toggle.focus({ preventScroll: true });
+      if (!automatic) toggle.focus({ preventScroll: true });
       if (view === panoramaHost) {
         panorama.settlePreview();
         panorama.wake();
@@ -361,6 +359,10 @@ function updateCenteredPreview(view, card, index) {
         carouselLivePreviews.reset([media]);
         if (preview.kind === 'film') media.querySelector('.video-start').click();
       }
+    };
+    toggle.addEventListener('click', () => {
+      if (frame) returnToCover();
+      else open();
     });
     surface.addEventListener('keydown', event => {
       if (event.key !== 'Escape' || !frame) return;
@@ -369,6 +371,9 @@ function updateCenteredPreview(view, card, index) {
     });
   }
   centeredPreview = { view, card, identity, lang: language, surface, close };
+  // Publish the preview first: settling the panorama paints the same card again.
+  // Its live content is ready to use without opening details or pressing a toggle.
+  if (view === panoramaHost && preview.kind === 'site') open(true);
 }
 
 function removeCenteredPreview() {
@@ -484,7 +489,7 @@ function projectPreview(idea, carousel = false) {
   const photos = (idea.images || []).map(imgSrc).filter(Boolean);
   const film = !locked && isVideo(idea.url);
   // Resource pages use their official covers; their hosts may disallow embedding.
-  // Start Punch Drive only on request in a carousel; grid uses its photo gallery.
+  // Carousels can embed Punch Drive; the grid uses its photo gallery.
   const showCover = locked || idea.category === 'factory' || (!carousel && idea.url === 'https://works.sugarv.mom/sumo-cars/');
   const preview = showCover ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.

@@ -3,6 +3,7 @@ import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=3';
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
+import { DissolveCarousel } from './dissolve-carousel.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -11,8 +12,10 @@ const UI = {
     title: 'Sugar 的仓库',
     sub: '我的交互作品、设计实验与开源收藏。',
     works: '作品', browse: '浏览作品', categories: '作品分类',
-    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示', arcView: '弧形展示',
+    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示', arcView: '弧形展示', dissolveView: '粒子展示',
     arcRegion: '弧形作品画廊',
+    dissolveRegion: '粒子作品轮播', dissolvePrevious: '上一件作品', dissolveNext: '下一件作品',
+    dissolveDesktopHelp: '拖动、横向滚动或按方向键切换', dissolveTouchHelp: '左右滑动切换',
     panoramaRegion: '全景作品画廊', panoramaShow: '查看作品', panoramaDetails: '查看详情',
     search: '搜索作品', clear: '清空搜索', showAll: '查看全部作品',
     noResults: '没有找到匹配的作品', noSaved: '还没有收藏作品',
@@ -61,8 +64,10 @@ const UI = {
     title: "Sugar's Vault",
     sub: 'My interactive projects, design experiments, and open-source finds.',
     works: 'Work', browse: 'Browse work', categories: 'Project category',
-    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view', arcView: 'Arc view',
+    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view', arcView: 'Arc view', dissolveView: 'Dissolve view',
     arcRegion: 'Arc project gallery',
+    dissolveRegion: 'Dissolve project carousel', dissolvePrevious: 'Previous project', dissolveNext: 'Next project',
+    dissolveDesktopHelp: 'Drag, scroll sideways or use the arrow keys', dissolveTouchHelp: 'Swipe to browse',
     panoramaRegion: 'Panoramic project gallery', panoramaShow: 'View project', panoramaDetails: 'View details',
     search: 'Search projects', clear: 'Clear search', showAll: 'Show all projects',
     noResults: 'No matching projects', noSaved: 'No saved projects yet',
@@ -218,7 +223,7 @@ let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 let savedOnly = false;
 let indexedIdeas = [];
 const VIEW_MODE_STORAGE_KEY = 'vault-view-mode';
-const VIEW_MODES = ['grid', 'panorama', 'arc'];
+const VIEW_MODES = ['grid', 'panorama', 'arc', 'dissolve'];
 function readViewMode() {
   const saved = store.get(VIEW_MODE_STORAGE_KEY);
   return VIEW_MODES.includes(saved) ? saved : 'grid';
@@ -226,6 +231,8 @@ function readViewMode() {
 let viewMode = readViewMode();
 const panoramaHost = $('#panorama');
 const arcHost = $('#arc-coverflow');
+const dissolveHost = $('#dissolve-carousel');
+const carouselHosts = { panorama: panoramaHost, arc: arcHost, dissolve: dissolveHost };
 let centeredPreview = null;
 const galleryActions = {
   onCenter: updateCenteredPreview,
@@ -247,10 +254,11 @@ const galleryActions = {
 };
 const panorama = new Panorama(panoramaHost, galleryActions);
 const arc = new ArcCoverflow(arcHost, galleryActions);
+const dissolve = new DissolveCarousel(dissolveHost, galleryActions);
 
 function renderViewSwitch() {
   const s = t();
-  const labels = { grid: s.gridView, panorama: s.panoramaView, arc: s.arcView };
+  const labels = { grid: s.gridView, panorama: s.panoramaView, arc: s.arcView, dissolve: s.dissolveView };
   $('#view-switch').setAttribute('aria-label', s.viewMode);
   for (const button of document.querySelectorAll('[data-view-mode]')) {
     const label = labels[button.dataset.viewMode];
@@ -265,7 +273,7 @@ function previewAccent(idea) {
 }
 
 function updateCenteredPreview(view, card, index) {
-  if (view !== (viewMode === 'panorama' ? panoramaHost : viewMode === 'arc' ? arcHost : null)) {
+  if (view !== carouselHosts[viewMode]) {
     if (centeredPreview?.view === view) removeCenteredPreview();
     return;
   }
@@ -341,7 +349,7 @@ function updateCenteredPreview(view, card, index) {
       toggle.textContent = labels.inlineCover;
       toggle.setAttribute('aria-label', labels.inlineCover + ' · ' + preview.title);
       toggle.setAttribute('aria-expanded', 'true');
-      view.querySelector('.panorama-actions, .arc-actions').append(toggle);
+      view.querySelector('.panorama-actions, .arc-actions, .dissolve-actions').append(toggle);
       if (!automatic) toggle.focus({ preventScroll: true });
       if (view === panoramaHost) {
         panorama.settlePreview();
@@ -383,13 +391,13 @@ function removeCenteredPreview() {
   centeredPreview = null;
 }
 
-function galleryCoverHtml(idea) {
+function galleryCoverHtml(idea, locked, accent) {
   const title = pick(idea, 'title');
   const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const image = cover
-    ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false" style="--preview-accent:' + previewAccent(idea) + '">'
+    ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false" style="--preview-accent:' + accent + '">'
     : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
-  if (!requiresCardPassword(idea)) return image;
+  if (!locked) return image;
   return '<div class="password-cover panorama-password-cover" aria-hidden="true">' + image +
     '<div class="password-cover-glass"></div><div class="password-cover-label">' + icon('lock') +
     '<span>' + esc(t().enterPassword) + '</span></div></div>';
@@ -402,10 +410,12 @@ function syncGalleryViews() {
     const index = Number(card.dataset.index);
     const idea = state.ideas[index];
     const key = bookmarkKey(idea);
+    const locked = requiresCardPassword(idea);
+    const accent = previewAccent(idea);
     return {
-      key, index, title: pick(idea, 'title'),
-      subtitle: requiresCardPassword(idea) ? s.passwordRequired : pick(idea, 'kind') || pick(idea, 'line'),
-      coverHtml: galleryCoverHtml(idea), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
+      key, index, title: pick(idea, 'title'), locked, accent: accent.startsWith('#') ? accent : '',
+      subtitle: locked ? s.passwordRequired : pick(idea, 'kind') || pick(idea, 'line'),
+      coverHtml: galleryCoverHtml(idea, locked, accent), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
     };
   });
   grid.hidden = viewMode !== 'grid';
@@ -417,6 +427,11 @@ function syncGalleryViews() {
   panorama.setActive(viewMode === 'panorama' && items.length > 0);
   arc.setItems(items, { ...labels, region: s.arcRegion });
   arc.setActive(viewMode === 'arc' && items.length > 0);
+  dissolve.setItems(items, {
+    ...labels, region: s.dissolveRegion, previous: s.dissolvePrevious, next: s.dissolveNext,
+    desktopHelp: s.dissolveDesktopHelp, touchHelp: s.dissolveTouchHelp
+  });
+  dissolve.setActive(viewMode === 'dissolve' && items.length > 0);
 }
 
 function setViewMode(mode, persist = true) {

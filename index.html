@@ -14,8 +14,9 @@
   <link rel="stylesheet" href="style.css?v=sugar-vault-16">
   <link rel="stylesheet" href="panorama.css?v=4">
   <link rel="stylesheet" href="arc-coverflow.css?v=3">
+  <link rel="stylesheet" href="dissolve-carousel.css?v=1">
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-  <script type="module" src="app.js?v=sugar-vault-21-direct-panorama"></script>
+  <script type="module" src="app.js?v=sugar-vault-22-dissolve"></script>
 </head>
 <body>
   <header class="topbar">
@@ -64,12 +65,14 @@
             <button type="button" class="view-switch-button" data-view-mode="grid" aria-pressed="true" aria-label="网格展示" title="网格展示" aria-controls="grid"><span aria-hidden="true"></span></button>
             <button type="button" class="view-switch-button" data-view-mode="panorama" aria-pressed="false" aria-label="全景展示" title="全景展示" aria-controls="panorama"><span aria-hidden="true"></span></button>
             <button type="button" class="view-switch-button" data-view-mode="arc" aria-pressed="false" aria-label="弧形展示" title="弧形展示" aria-controls="arc-coverflow"><span aria-hidden="true"></span></button>
+            <button type="button" class="view-switch-button" data-view-mode="dissolve" aria-pressed="false" aria-label="粒子展示" title="粒子展示" aria-controls="dissolve-carousel"><span aria-hidden="true"></span></button>
           </div>
         </div>
       </div>
       <div class="grid" id="grid" aria-busy="true"></div>
       <div id="panorama" hidden></div>
       <div id="arc-coverflow" hidden></div>
+      <div id="dissolve-carousel" hidden></div>
       <div class="empty-results" id="empty-results" hidden>
         <p id="empty-message"></p>
         <button class="pill" id="reset-filters" type="button" data-t="showAll">查看全部作品</button>

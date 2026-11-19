@@ -3,7 +3,7 @@ import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=3';
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
-import { DissolveCarousel } from './dissolve-carousel.js?v=1';
+import { DissolveCarousel } from './dissolve-carousel.js?v=2';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -342,7 +342,7 @@ function updateCenteredPreview(view, card, index) {
       const start = touchStart;
       touchStart = null;
       const end = event.changedTouches[0];
-      if ((!frame && !touchOpensPreview) || !start || event.touches.length || start.identifier !== end.identifier ||
+      if ((!frame && !touchOpensPreview) || !start || !end || event.touches.length || start.identifier !== end.identifier ||
           Math.hypot(end.clientX - start.clientX, end.clientY - start.clientY) > 10) return;
       event.preventDefault();
       togglePreview();

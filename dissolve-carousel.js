@@ -17,6 +17,7 @@ export class DissolveCarousel {
     this.frame = 0;
     this.active = false;
     this.drag = null;
+    this.coverTap = null;
     this.clickBlockedUntil = 0;
     this.wheelOffset = 0;
     this.wheelTime = -Infinity;
@@ -69,6 +70,12 @@ export class DissolveCarousel {
     this.stage.addEventListener('pointermove', event => this.pointerMove(event));
     this.stage.addEventListener('pointerup', event => this.pointerEnd(event));
     this.stage.addEventListener('pointercancel', event => this.pointerEnd(event, true));
+    this.stage.addEventListener('touchstart', event => {
+      const button = event.target.closest('.carousel-card-cover');
+      this.coverTap = button && event.touches.length === 1 ? { button, point: event.changedTouches[0] } : null;
+    }, { passive: true });
+    this.stage.addEventListener('touchcancel', () => { this.coverTap = null; });
+    this.stage.addEventListener('touchend', event => this.finishCoverTap(event), { passive: false });
     this.stage.addEventListener('pointerleave', event => {
       if (this.drag?.id === event.pointerId && !this.drag.moved) this.releaseDrag();
     });
@@ -152,6 +159,7 @@ export class DissolveCarousel {
       this.updateCaption();
       this.measure();
     } else {
+      this.coverTap = null;
       this.releaseDrag();
       this.stopAnimation();
       this.position = this.target = this.index;
@@ -298,7 +306,25 @@ export class DissolveCarousel {
     if (!this.active || event.target.closest('.carousel-preview') ||
         (event.detail && performance.now() < this.clickBlockedUntil)) return;
     const card = event.target.closest('.dissolve-card');
-    if (!card) return;
+    if (card) this.activateCard(card);
+  }
+
+  finishCoverTap(event) {
+    const tap = this.coverTap;
+    this.coverTap = null;
+    const end = event.changedTouches[0];
+    if (!this.active || this.inMotion || !tap?.point || !end || event.touches.length ||
+        tap.point.identifier !== end.identifier ||
+        Math.hypot(end.clientX - tap.point.clientX, end.clientY - tap.point.clientY) > 10) return;
+    const card = tap.button.parentElement;
+    if (!card?.isConnected || card.hidden) return;
+    // The browser may omit a native click on the first tap after a captured swipe.
+    event.preventDefault();
+    tap.button.focus({ preventScroll: true });
+    this.activateCard(card);
+  }
+
+  activateCard(card) {
     const index = Number(card.dataset.index);
     if (index === this.index && !this.inMotion) {
       this.openCurrent(card.firstElementChild);

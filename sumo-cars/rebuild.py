@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 
 from gameplay_fixes import update_gameplay
+from presentation_fixes import update_presentation
 
 
 HERE = Path(__file__).resolve().parent
@@ -186,6 +187,7 @@ def main():
     for transform in (update_models, update_controls, update_sumo_items, update_ui):
         text = transform(text)
     text = update_gameplay(text, replace)
+    text = update_presentation(text, replace)
     args.output.write_text(text, encoding='utf-8', newline='\n')
 
 

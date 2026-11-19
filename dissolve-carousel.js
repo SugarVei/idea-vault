@@ -1,4 +1,4 @@
-import { DissolveEffect } from './dissolve-effect.js?v=1';
+import { DissolveEffect } from './dissolve-effect.js?v=2';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const wrap = (value, count) => ((value % count) + count) % count;
@@ -227,11 +227,11 @@ export class DissolveCarousel {
       if (distance >= VISIBLE_DISTANCE) continue;
       const card = this.coverCard(item);
       const { element, button, image } = card;
-      const scale = 1 - .28 * distance;
+      const scale = 1 - .30 * distance;
       const opacity = clamp((VISIBLE_DISTANCE - distance) / .35, 0, 1);
       const x = offset * this.pitch;
-      const y = distance * (this.compact ? 7 : 12);
-      const erosion = Math.max(0, distance - .065) * (this.compact ? .76 : .69);
+      const y = distance * (this.compact ? 3 : 5);
+      const erosion = Math.max(0, distance - .065) * (this.compact ? .90 : .87);
       const fragmented = motionAllowed && this.effect?.ready && image?.naturalWidth > 0 && erosion > 0;
       const selected = index === this.index && !this.inMotion;
       const label = `${selected ? this.labels.details : this.labels.show} · ${item.title}`;

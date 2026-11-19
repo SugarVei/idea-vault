@@ -7,6 +7,8 @@ const DUST_HEIGHT = 512;
 const DUST_REACH = 1.62;
 const DUST_SPAN = 1.85;
 const DUST_HEADROOM = .55;
+const EDGE_THRESHOLD_SLOPE = .59;
+const AVERAGE_INNER_THRESHOLD = EDGE_THRESHOLD_SLOPE + (.28 + .095 + .16) / 2;
 
 const unit = value => Math.max(0, Math.min(1, value));
 
@@ -32,7 +34,7 @@ function makeField() {
   for (let y = 0; y < MASK_HEIGHT; y++) {
     for (let x = 0; x < MASK_WIDTH; x++) {
       // The outer edge erodes first. Fine grain breaks up the contours of the larger tears.
-      field[y * MASK_WIDTH + x] = .59 * x / MASK_WIDTH +
+      field[y * MASK_WIDTH + x] = EDGE_THRESHOLD_SLOPE * x / MASK_WIDTH +
         .28 * noise(x / 39, y / 32) + .095 * noise(x / 13, y / 9) + .16 * grain(x, y);
     }
   }
@@ -40,8 +42,8 @@ function makeField() {
 }
 
 function makeSpecks(field) {
-  const columns = 192;
-  const rows = 128;
+  const columns = 224;
+  const rows = 148;
   const specks = [];
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
@@ -54,11 +56,24 @@ function makeSpecks(field) {
         u, v, curl, threshold: field[fieldIndex],
         speed: .32 + .40 * grain(index, 3) + .13 * curl,
         lift: .09 + .44 * (1 - v) + .18 * grain(index, 4),
-        opacity: .48 + .52 * grain(index, 5)
+        opacity: .52 + .48 * grain(index, 5),
+        retention: grain(index, 6)
       });
     }
   }
   return specks;
+}
+
+function edgeTint(color, dark, direction) {
+  const value = Number.parseInt(color.slice(1), 16);
+  const channels = [value >> 16, (value >> 8) & 255, value & 255];
+  const luma = .2126 * channels[0] + .7152 * channels[1] + .0722 * channels[2];
+  if (dark) {
+    const lift = unit((150 - luma) / Math.max(1, 255 - luma));
+    return channels.map(channel => Math.round(channel + (255 - channel) * lift));
+  }
+  const shade = Math.min(1, (direction > 0 ? 90 : 102) / Math.max(1, luma));
+  return channels.map(channel => Math.round(channel * shade));
 }
 
 function buffer(width, height) {
@@ -159,22 +174,33 @@ export class DissolveEffect {
     const columns = Math.min(DUST_WIDTH, Math.ceil(availableWidth * DUST_WIDTH / trailWidth) + 1);
     if (columns <= 0) return;
 
+    // Follow the approximate breakup line as it moves across the cover during a swipe.
+    const pixelScale = DUST_WIDTH / DUST_REACH;
+    const edge = unit((AVERAGE_INNER_THRESHOLD - erosion) / EDGE_THRESHOLD_SLOPE) * .92 * pixelScale;
+    const falloffWidth = Math.max(.18 * DUST_WIDTH, columns - edge);
+    const nearOpacity = direction > 0 ? 1.13 : 1.06;
     const pixels = this.dustPixels.data;
     pixels.fill(0);
     for (const speck of this.specks) {
       const age = (erosion - speck.threshold) * 1.32;
       if (age <= 0 || age >= 1) continue;
       const outward = speck.u * .92 + age * (speck.speed + .22 * age);
+      const x = Math.floor(outward * pixelScale);
+      if (x >= columns) continue;
+      const progress = unit((x - edge) / falloffWidth);
+      const falloff = progress * progress * (3 - 2 * progress);
+      if (speck.retention < .64 * falloff) continue;
+
       const heightFromTop = DUST_HEADROOM + speck.v + age * ((speck.v - .5) * .46 + speck.curl * .32 - speck.lift - .15 * age);
-      const x = Math.floor(outward * DUST_WIDTH / DUST_REACH);
       const y = Math.floor(heightFromTop * DUST_HEIGHT / DUST_SPAN);
-      if (x < 0 || x >= columns || y < 0 || y >= DUST_HEIGHT) continue;
-      const alpha = 255 * speck.opacity * Math.min(1, age * 28) * (1 - age) * (1 - .16 * age);
+      if (y < 0 || y >= DUST_HEIGHT) continue;
+      const strength = nearOpacity - (nearOpacity - .46) * falloff;
+      const alpha = 255 * speck.opacity * Math.min(1, age * 38) * (1 - .54 * age) * strength;
       const pixel = (y * DUST_WIDTH + x) * 4 + 3;
       if (alpha > pixels[pixel]) pixels[pixel] = alpha;
     }
     this.dustMaskContext.putImageData(this.dustPixels, 0, 0, 0, 0, columns, DUST_HEIGHT);
-    this.colorDust(columns, direction, erosion, accent, dark);
+    this.colorDust({ columns, direction, erosion, accent, dark, edge, falloffWidth });
 
     this.context.save();
     this.context.translate(innerEdge, top - height * DUST_HEADROOM);
@@ -184,7 +210,7 @@ export class DissolveEffect {
     this.context.restore();
   }
 
-  colorDust(columns, direction, erosion, accent, dark) {
+  colorDust({ columns, direction, erosion, accent, dark, edge, falloffWidth }) {
     const context = this.dustContext;
     const color = accent || (dark ? '#a4b8cf' : '#536b83');
     context.fillStyle = color;
@@ -212,9 +238,15 @@ export class DissolveEffect {
         context.drawImage(this.source, index * stripWidth, 0, stripWidth, TEXTURE_HEIGHT, x, top, width, height);
       }
     }
-    context.globalAlpha = dark ? .32 : .46;
+    const channels = edgeTint(color, dark, direction).join(', ');
+    const edgeOpacity = dark ? .55 : direction > 0 ? .74 : .66;
+    const gradient = context.createLinearGradient(edge, 0, edge + falloffWidth, 0);
+    gradient.addColorStop(0, `rgba(${channels}, ${edgeOpacity})`);
+    gradient.addColorStop(.33, `rgba(${channels}, ${edgeOpacity * .83})`);
+    gradient.addColorStop(.7, `rgba(${channels}, ${edgeOpacity * .42})`);
+    gradient.addColorStop(1, `rgba(${channels}, .12)`);
+    context.fillStyle = gradient;
     context.fillRect(0, 0, columns, DUST_HEIGHT);
-    context.globalAlpha = 1;
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(this.dustMask, 0, 0, columns, DUST_HEIGHT, 0, 0, columns, DUST_HEIGHT);
     context.globalCompositeOperation = 'source-over';

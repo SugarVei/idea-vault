@@ -3,7 +3,7 @@ import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=3';
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
-import { DissolveCarousel } from './dissolve-carousel.js?v=3';
+import { DissolveCarousel } from './dissolve-carousel.js?v=4';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 

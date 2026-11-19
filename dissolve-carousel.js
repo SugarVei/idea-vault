@@ -1,4 +1,4 @@
-import { DissolveEffect } from './dissolve-effect.js?v=2';
+import { DissolveEffect } from './dissolve-effect.js?v=3';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const wrap = (value, count) => ((value % count) + count) % count;

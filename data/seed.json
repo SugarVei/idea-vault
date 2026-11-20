@@ -55,34 +55,34 @@
     "category": "3d",
     "status": "live",
     "year": 2026,
-    "hue": "#3bd3e8",
+    "hue": "#ff7a24",
     "url": "https://works.sugarv.mom/sumo-cars/",
     "repo": "https://github.com/SugarVei/sumo-cars",
     "images": [
       "assets/punch-drive-menu.webp",
-      "assets/punch-drive-garage.webp",
       "assets/punch-drive-sumo.webp",
+      "assets/punch-drive-garage.webp",
       "assets/punch-drive-race.webp"
     ],
     "title_zh": "PUNCH DRIVE · 重拳飞车",
     "title_en": "PUNCH DRIVE",
-    "kind_zh": "3D 越野乱斗游戏",
-    "kind_en": "3D Offroad Brawler",
-    "line_zh": "美式硬派越野 + 潮酷涂鸦派对，漂移攒氮气，用前杠重拳把对手轰出擂台。",
-    "line_en": "American offroad trucks meet street pop-art: drift for nitro and punch rivals off the arena.",
-    "lead_zh": "五种玩法包括派对巡回赛、霓虹大奖赛、相扑擂台、王冠争夺与熔毁生存。内置三款精细美式硬派越野 3D 车模与四款可换装前杠武器，支持单人键鼠、本地双人分屏、手柄与触屏操作。",
-    "lead_en": "Five modes including Party Tour, Neon Grand Prix, Sumo, Crown Clash, and Meltdown. Features three detailed American offroad 3D trucks, four swappable bumper weapons, local split-screen, gamepad and touch support.",
+    "kind_zh": "3D 相扑乱斗与竞速",
+    "kind_en": "3D Sumo Brawler & Racer",
+    "line_zh": "撞色工业测试场 3v3 相扑乱斗，高光烤漆小车 + 物理摆锤深坑 + 极简斜切现代电竞 HUD。",
+    "line_en": "3v3 industrial test-pit sumo brawl with glossy clearcoat cars, swinging wrecking balls, and clean skewed HUD.",
+    "lead_zh": "五种玩法涵盖 3v3 相扑团队赛、霓虹大奖赛、派对巡回赛、王冠争夺与熔毁生存。全模式同步汽车级烤漆车模、金属火花与 3D 冲击飘字、22 秒持久胎痕、蓝白速度拖尾与饱和器引擎声浪，支持键鼠、本地双人、手柄与触屏。",
+    "lead_en": "Five modes including 3v3 Team Sumo, Neon Grand Prix, Party Tour, Crown Clash, and Meltdown. Unified clearcoat cars, metal sparks with 3D impact popups, persistent skid marks, physics wrecking balls & pit arena, local duo, gamepad and touch support.",
     "tags_zh": [
-      "碰碰车",
+      "3v3 相扑",
+      "工业测试场",
       "竞速",
-      "相扑擂台",
-      "漂移"
+      "物理乱斗"
     ],
     "tags_en": [
-      "Bumper Cars",
+      "3v3 Sumo",
+      "Test Pit",
       "Racing",
-      "Sumo",
-      "Drifting"
+      "Physics Brawl"
     ],
     "facts": [
       {

@@ -1469,5 +1469,52 @@
     ],
     "tech": "HTML · CSS · JavaScript · Three.js",
     "host": "GitHub Pages"
+  },
+  {
+    "sort": 320,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#4181f0",
+    "url": "https://works.sugarv.mom/cimine-chose-neon/",
+    "repo": "https://github.com/SugarVei/Cimine-chose-neon",
+    "images": [
+      "assets/cimine-chose-neon.webp",
+      "assets/cimine-chose-neon-map.webp",
+      "assets/cimine-chose-neon-wall.webp"
+    ],
+    "title_zh": "Cimine chose-neon",
+    "title_en": "Cimine chose-neon",
+    "kind_zh": "3D 影院选座",
+    "kind_en": "3D Cinema Seat Preview",
+    "line_zh": "抓起蓝色连座跨过道换位，点击 Preview 沿弧线飞入影厅坐姿看银幕，横向拖动原位环顾。",
+    "line_en": "Grab paired seats across the aisle, fly into the boutique hall on Preview, and drag to look around.",
+    "lead_zh": "96 座阶梯式精品影厅与 2D 座位图实现逐一透视对齐，支持抓起连座跨过中央过道换位、1–4 张票数联动、4 秒平滑弧线飞入所选座位眼高、暖白竖向灯带墙与银幕画面实时程序化渲染，支持手机触屏与桌面直接体验。",
+    "lead_en": "A 96-seat tiered boutique theater aligned 1:1 with the 2D seating map. Grab and drag paired seats across the aisle, adjust 1–4 tickets, fly smoothly into your eye-level view in 4 seconds, drag to look around the warm-lit walls, and return via Seats.",
+    "tags_zh": [
+      "影院选座",
+      "连座拖放",
+      "实时渲染"
+    ],
+    "tags_en": [
+      "Cinema seating",
+      "Seat drag & drop",
+      "Real-time 3D"
+    ],
+    "facts": [
+      {
+        "n": "96",
+        "zh": "个座位",
+        "en": "seats"
+      },
+      {
+        "n": "8",
+        "zh": "排座椅",
+        "en": "rows"
+      }
+    ],
+    "tech": "HTML · CSS · JavaScript · Three.js",
+    "host": "GitHub Pages"
   }
 ]

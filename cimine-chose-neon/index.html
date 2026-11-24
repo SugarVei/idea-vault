@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0C0C0C" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Cimine chose-neon — Avengers: Doomsday</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0C0C0C;
+    color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: none;
+  }
+
+  /* Fullscreen WebGL canvas */
+  #gl-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: 1;
+    background: #0C0C0C;
+  }
+
+  /* Blackout veil that reveals the 3D theater during 0.0-0.8s */
+  #theater-veil {
+    position: fixed;
+    inset: 0;
+    background: #0C0C0C;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 1;
+    will-change: opacity;
+  }
+
+  /* Look-around drag capture layer (active only in SEATED mode) */
+  #look-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    cursor: grab;
+  }
+  #look-layer.active {
+    pointer-events: auto;
+  }
+  #look-layer.dragging {
+    cursor: grabbing;
+  }
+
+  /* 1000x1000 scaled design stage for the 2D seat map */
+  #map-stage {
+    position: fixed;
+    width: 1000px;
+    height: 1000px;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* Screen arc + subtle glow + SCREEN label */
+  #screen-arc-group {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1000px;
+    height: 1000px;
+    pointer-events: none;
+    will-change: opacity;
+  }
+
+  #screen-label {
+    position: absolute;
+    left: 500px;
+    top: 281px;
+    transform: translateX(-50%);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    color: rgba(255, 255, 255, 0.34);
+    pointer-events: none;
+  }
+
+  /* Seat grid layers inside 1000x1000 stage */
+  #seats-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  #seats-static-layer,
+  #seats-selected-layer,
+  #seats-ghost-layer,
+  #seats-drag-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    will-change: opacity;
+  }
+
+  .row-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.34);
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    width: 18px;
+    text-align: center;
+  }
+
+  /* Individual seat unit: rounded square backrest + independent bottom short line */
+  .seat-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+  }
+
+  .seat-back {
+    width: var(--sw, 27px);
+    height: var(--sh, 24px);
+    border-radius: 6.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.14s ease;
+    position: relative;
+  }
+
+  .seat-bar {
+    width: calc(var(--sw, 27px) * 0.64);
+    height: 2.5px;
+    border-radius: 2px;
+    margin-top: 2.5px;
+    transition: background-color 0.16s ease, opacity 0.16s ease;
+  }
+
+  /* Free seat */
+  .seat-node.free {
+    cursor: pointer;
+  }
+  .seat-node.free .seat-back {
+    background: #0F1012;
+    border: 1.2px solid rgba(255, 255, 255, 0.24);
+    color: transparent;
+  }
+  .seat-node.free .seat-bar {
+    background: rgba(255, 255, 255, 0.22);
+  }
+  .seat-node.free:hover .seat-back {
+    border-color: rgba(255, 255, 255, 0.48);
+    background: #16181D;
+  }
+  .seat-node.free:hover .seat-bar {
+    background: rgba(255, 255, 255, 0.42);
+  }
+
+  /* Taken seat */
+  .seat-node.taken {
+    cursor: default;
+    pointer-events: none;
+  }
+  .seat-node.taken .seat-back {
+    background: #1B1B1B;
+    border: 1.2px solid #222224;
+    color: transparent;
+  }
+  .seat-node.taken .seat-bar {
+    background: #1B1B1B;
+  }
+
+  /* Selected seat (Yours) */
+  .seat-node.selected {
+    cursor: grab;
+    z-index: 4;
+    touch-action: none;
+  }
+  .seat-node.selected::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+  }
+  .seat-node.selected:active {
+    cursor: grabbing;
+  }
+  .seat-node.selected .seat-back {
+    background: linear-gradient(180deg, #4D8CF7 0%, #3E7CEB 100%);
+    border: 1.2px solid rgba(135, 184, 255, 0.55);
+    color: #FFFFFF;
+    box-shadow: 0 3px 12px rgba(65, 129, 240, 0.34);
+  }
+  .seat-node.selected .seat-bar {
+    background: #4181F0;
+    box-shadow: 0 0 8px rgba(65, 129, 240, 0.45);
+  }
+  .seat-node.selected:hover .seat-back {
+    background: linear-gradient(180deg, #5895FA 0%, #4483F2 100%);
+    box-shadow: 0 4px 16px rgba(65, 129, 240, 0.48);
+  }
+
+  /* Candidate target hollow blue outline while dragging */
+  .seat-node.ghost {
+    pointer-events: none;
+    z-index: 3;
+  }
+  .seat-node.ghost .seat-back {
+    background: rgba(65, 129, 240, 0.08);
+    border: 1.5px solid #4181F0;
+    color: transparent;
+    box-shadow: 0 0 12px rgba(65, 129, 240, 0.25);
+  }
+  .seat-node.ghost .seat-bar {
+    background: rgba(65, 129, 240, 0.72);
+  }
+
+  /* Lifted floating blue seats during drag */
+  .drag-cluster {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: 20;
+    will-change: transform;
+  }
+  .drag-cluster .seat-node.lifted {
+    pointer-events: none;
+  }
+  .drag-cluster .seat-node.lifted .seat-back {
+    background: linear-gradient(180deg, #5695FA 0%, #3E7EEB 100%);
+    border: 1.3px solid rgba(168, 204, 255, 0.78);
+    color: #FFFFFF;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.65), 0 4px 18px rgba(65, 129, 240, 0.50);
+  }
+  .drag-cluster .seat-node.lifted .seat-bar {
+    background: #4F8EF7;
+    box-shadow: 0 4px 12px rgba(65, 129, 240, 0.55);
+  }
+
+  /* Floating white candidate tooltip pill above cursor (~25px) */
+  #drag-tooltip {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 40;
+    pointer-events: none;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #F4F5F7;
+    color: #0C0C0C;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.58), 0 1px 2px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) scale(calc(var(--tip-scale, 1) * 0.92));
+    transition: opacity 0.14s ease, transform 0.14s ease;
+    will-change: left, top, opacity, transform;
+  }
+  #drag-tooltip.visible {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(var(--tip-scale, 1));
+  }
+
+  /* Legend at y=678 */
+  #legend-row {
+    position: absolute;
+    left: 500px;
+    top: 678px;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    pointer-events: none;
+    will-change: opacity;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.54);
+  }
+  .legend-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .legend-icon .lb {
+    width: 13px;
+    height: 11.5px;
+    border-radius: 3.5px;
+  }
+  .legend-icon .ll {
+    width: 8.5px;
+    height: 1.8px;
+    border-radius: 1px;
+    margin-top: 1.5px;
+  }
+  .legend-icon.free .lb {
+    background: #0F1012;
+    border: 1.2px solid rgba(255, 255, 255, 0.30);
+  }
+  .legend-icon.free .ll {
+    background: rgba(255, 255, 255, 0.26);
+  }
+  .legend-icon.taken .lb {
+    background: #232326;
+    border: 1px solid #2A2A2E;
+  }
+  .legend-icon.taken .ll {
+    background: #232326;
+  }
+  .legend-icon.yours .lb {
+    background: #4181F0;
+    border: 1px solid rgba(135, 184, 255, 0.5);
+  }
+  .legend-icon.yours .ll {
+    background: #4181F0;
+  }
+
+  /* Divider line at y=709 inside map stage */
+  #map-divider {
+    position: absolute;
+    left: 244px;
+    top: 709px;
+    width: 512px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.10);
+    pointer-events: none;
+    will-change: opacity;
+  }
+
+  /* =========================================================
+     Floating HUD Elements (smoothly animate between 1000x1000
+     design coordinates and viewport-pinned preview positions)
+     ========================================================= */
+  .hud-block {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    z-index: 15;
+    will-change: transform;
+  }
+
+  /* Top-left movie header */
+  #hud-header {
+    pointer-events: none;
+  }
+  .movie-title {
+    font-size: 23px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+    color: #F6F7F9;
+    white-space: nowrap;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  }
+  .movie-meta {
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.48);
+    white-space: nowrap;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Top-right ticket stepper pill: 188 x 48 px */
+  #hud-stepper {
+    width: 188px;
+    height: 48px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(31, 32, 37, 0.92) 0%, rgba(21, 22, 26, 0.92) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.095);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7px;
+    pointer-events: auto;
+  }
+
+  .step-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.085);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  }
+  .step-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+  }
+  .step-btn:active:not(:disabled) {
+    transform: scale(0.93);
+  }
+  .step-btn:disabled {
+    opacity: 0.30;
+    cursor: not-allowed;
+  }
+
+  #ticket-count-label {
+    font-size: 14.5px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.90);
+    white-space: nowrap;
+  }
+
+  /* Bottom purchase dock: 512px wide */
+  #hud-bottom {
+    width: 512px;
+    pointer-events: auto;
+  }
+
+  /* Mini seat map floating above the bottom dock in seated preview */
+  #mini-map-wrap {
+    position: absolute;
+    left: 50%;
+    bottom: 118px;
+    transform: translateX(-50%) translateY(8px);
+    width: 400px;
+    height: 100px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    will-change: opacity, transform;
+    background: radial-gradient(ellipse 68% 62% at 50% 50%, rgba(10, 11, 14, 0.62) 0%, rgba(10, 11, 14, 0.28) 58%, rgba(10, 11, 14, 0) 100%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.45) 18%,
+      rgba(0, 0, 0, 0.95) 36%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0.95) 64%,
+      rgba(0, 0, 0, 0.45) 82%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.45) 18%,
+      rgba(0, 0, 0, 0.95) 36%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0.95) 64%,
+      rgba(0, 0, 0, 0.45) 82%,
+      transparent 100%
+    );
+  }
+  #mini-map-wrap.interactive {
+    pointer-events: auto;
+  }
+
+  #mini-map-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mini-row {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: opacity 0.28s ease, filter 0.28s ease, transform 0.28s ease;
+  }
+  .mini-row.is-active {
+    opacity: 1;
+    filter: none;
+  }
+  .mini-row.is-near {
+    opacity: 0.64;
+    filter: blur(1.2px);
+  }
+  .mini-row.is-far {
+    opacity: 0.24;
+    filter: blur(2.4px);
+  }
+
+  .mini-row-label {
+    width: 14px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.66);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  }
+  .mini-side {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mini-aisle {
+    width: 24px;
+  }
+  .mini-seat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: default;
+  }
+  .mini-row.is-active .mini-seat.free {
+    cursor: pointer;
+  }
+  .mini-seat-back {
+    width: 18px;
+    height: 16px;
+    border-radius: 4.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .mini-seat-bar {
+    width: 11px;
+    height: 1.8px;
+    border-radius: 1px;
+    margin-top: 1.8px;
+  }
+  .mini-seat.free .mini-seat-back {
+    background: rgba(15, 16, 20, 0.56);
+    border: 1.1px solid rgba(255, 255, 255, 0.42);
+    color: transparent;
+  }
+  .mini-seat.free .mini-seat-bar {
+    background: rgba(255, 255, 255, 0.36);
+  }
+  .mini-row.is-active .mini-seat.free:hover .mini-seat-back {
+    border-color: rgba(255, 255, 255, 0.72);
+    background: rgba(34, 38, 46, 0.82);
+  }
+  .mini-seat.taken .mini-seat-back {
+    background: rgba(46, 48, 54, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: transparent;
+  }
+  .mini-seat.taken .mini-seat-bar {
+    background: rgba(46, 48, 54, 0.68);
+  }
+  .mini-seat.selected .mini-seat-back {
+    background: linear-gradient(180deg, #5292FA 0%, #3E7EEB 100%);
+    border: 1px solid rgba(175, 210, 255, 0.80);
+    color: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(65, 129, 240, 0.60);
+  }
+  .mini-seat.selected .mini-seat-bar {
+    background: #5594FA;
+  }
+
+  /* Summary info row above the 2 pill buttons */
+  .summary-row {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  #summary-seats {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: #F2F3F5;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+  }
+  #summary-price {
+    font-size: 15.5px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.50);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Action buttons row: 168 + 12 + 332 = 512px, height 64px */
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 64px;
+  }
+
+  #btn-preview {
+    width: 168px;
+    height: 64px;
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(30, 31, 36, 0.90) 0%, rgba(20, 21, 25, 0.92) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #F3F4F6;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.14s ease;
+  }
+  #btn-preview:hover {
+    border-color: rgba(255, 255, 255, 0.26);
+    background: linear-gradient(180deg, rgba(40, 42, 48, 0.94) 0%, rgba(27, 28, 34, 0.95) 100%);
+  }
+  #btn-preview:active {
+    transform: scale(0.975);
+  }
+  #btn-preview .icon-slot {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  #btn-preview svg {
+    position: absolute;
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+  #icon-cube {
+    opacity: 1;
+    transform: scale(1);
+  }
+  #icon-grid {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  #btn-preview.is-seats #icon-cube {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  #btn-preview.is-seats #icon-grid {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #btn-book {
+    width: 332px;
+    height: 64px;
+    border-radius: 32px;
+    border: none;
+    background: linear-gradient(180deg, #F4F5F7 0%, #E7E8EC 100%);
+    color: #0C0C0C;
+    font-family: inherit;
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    transition: filter 0.16s ease, transform 0.14s ease, box-shadow 0.18s ease;
+  }
+  #btn-book:hover {
+    filter: brightness(1.04);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 0 22px rgba(255, 255, 255, 0.12);
+  }
+  #btn-book:active {
+    transform: scale(0.985);
+  }
+
+  /* Booking toast confirmation */
+  #booking-toast {
+    position: fixed;
+    left: 50%;
+    top: 28px;
+    transform: translate(-50%, -18px);
+    z-index: 60;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: rgba(244, 245, 247, 0.96);
+    color: #0C0C0C;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #booking-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  /* Global dragging cursor override */
+  body.is-dragging-seats,
+  body.is-dragging-seats * {
+    cursor: grabbing !important;
+  }
+</style>
+</head>
+<body>
+  <canvas id="gl-canvas"></canvas>
+  <div id="theater-veil"></div>
+  <div id="look-layer" aria-label="Drag horizontally to look around the theater"></div>
+
+  <!-- 1000 x 1000 scaled design canvas for the 2D seat map -->
+  <div id="map-stage">
+    <div id="screen-arc-group">
+      <svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="screenGlowGrad" x1="500" y1="260" x2="500" y2="314" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.14"/>
+            <stop offset="42%" stop-color="#D8DCE6" stop-opacity="0.045"/>
+            <stop offset="100%" stop-color="#0C0C0C" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="screenStrokeGrad" x1="284" y1="274" x2="716" y2="274" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+            <stop offset="18%" stop-color="#FFFFFF" stop-opacity="0.38"/>
+            <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.58"/>
+            <stop offset="82%" stop-color="#FFFFFF" stop-opacity="0.38"/>
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+          </linearGradient>
+        </defs>
+        <!-- Soft grey glow beneath the arc -->
+        <path d="M 284 274 Q 500 246 716 274 L 694 316 Q 500 294 306 316 Z" fill="url(#screenGlowGrad)"/>
+        <!-- Thin curved screen line: endpoints (284,274)-(716,274), apex (500,260) via control (500,246) -->
+        <path d="M 284 274 Q 500 246 716 274" stroke="url(#screenStrokeGrad)" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div id="screen-label">SCREEN</div>
+    </div>
+
+    <div id="seats-layer">
+      <div id="seats-static-layer"></div>
+      <div id="seats-ghost-layer"></div>
+      <div id="seats-selected-layer"></div>
+      <div id="seats-drag-layer"></div>
+    </div>
+
+    <div id="legend-row">
+      <div class="legend-item">
+        <span class="legend-icon free"><span class="lb"></span><span class="ll"></span></span>
+        <span>Free</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-icon taken"><span class="lb"></span><span class="ll"></span></span>
+        <span>Taken</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-icon yours"><span class="lb"></span><span class="ll"></span></span>
+        <span>Yours</span>
+      </div>
+    </div>
+
+    <div id="map-divider"></div>
+  </div>
+
+  <!-- HUD Block 1: Movie Title & Showtime -->
+  <div id="hud-header" class="hud-block">
+    <div class="movie-title">Avengers: Doomsday</div>
+    <div class="movie-meta">Fri 18 Dec · 20:30 · Hall 3</div>
+  </div>
+
+  <!-- HUD Block 2: Ticket Stepper Pill (188x48) -->
+  <div id="hud-stepper" class="hud-block">
+    <button id="btn-minus" class="step-btn" type="button" aria-label="Decrease tickets">−</button>
+    <span id="ticket-count-label">2 tickets</span>
+    <button id="btn-plus" class="step-btn" type="button" aria-label="Increase tickets">+</button>
+  </div>
+
+  <!-- HUD Block 3: Bottom Purchase Area + Mini Seat Map -->
+  <div id="hud-bottom" class="hud-block">
+    <div id="mini-map-wrap">
+      <div id="mini-map-track"></div>
+    </div>
+    <div class="summary-row">
+      <div id="summary-seats">Row G · Seats 9–10</div>
+      <div id="summary-price">2 × €12.00</div>
+    </div>
+    <div class="action-row">
+      <button id="btn-preview" type="button">
+        <span class="icon-slot">
+          <!-- Wireframe Cube Icon (Preview) -->
+          <svg id="icon-cube" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.8 20.2 7.5v9L12 21.2 3.8 16.5v-9L12 2.8z"/>
+            <path d="M12 21.2V12"/>
+            <path d="M20.2 7.5 12 12 3.8 7.5"/>
+          </svg>
+          <!-- Four-Square Grid Icon (Seats) -->
+          <svg id="icon-grid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/>
+            <rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/>
+            <rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/>
+            <rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/>
+          </svg>
+        </span>
+        <span id="btn-preview-label">Preview</span>
+      </button>
+      <button id="btn-book" type="button">Book seats · €24.00</button>
+    </div>
+  </div>
+
+  <!-- Floating white pill showing candidate drop position while dragging -->
+  <div id="drag-tooltip">Row F · 8–9</div>
+  <div id="booking-toast">Seats reserved</div>
+
+  <!-- Load local bundled Three.js r147 first (zero CDN dependency for mobile/offline), with CDN fallback -->
+  <script src="./three.min.js"
+          onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js';s.onload=window.__bootCinemaApp;s.onerror=function(){var s2=document.createElement('script');s2.src='https://unpkg.com/three@0.147.0/build/three.min.js';s2.onload=window.__bootCinemaApp;document.head.appendChild(s2);};document.head.appendChild(s);"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    function bootApp() {
+      if (window.__cinemaBooted || typeof THREE === 'undefined') return;
+      window.__cinemaBooted = true;
+
+      /* =====================================================================
+         1. EXACT CINEMA GEOMETRY & 3D-TO-2D PROJECTION CONSTANTS
+            Solved so the 96 real 3D seat cushions project under the Overview
+            Camera to rows y = [333, 371, 410, 451, 493, 536, 581, 628]
+            within < 0.37px error on the 1000x1000 design canvas!
+         ===================================================================== */
+      const ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      const SEATS_PER_ROW = 12;
+      const TICKET_PRICE = 12.0;
+
+      // Fixed taken seats distribution (exact match to specification)
+      const TAKEN_MAP = {
+        0: [1, 2, 11],                   // A: 1/2/11
+        1: [5, 6],                       // B: 5/6
+        2: [3, 4, 9, 10],                // C: 3/4/9/10
+        3: [1, 7, 8, 9],                 // D: 1/7/8/9
+        4: [2, 3, 4, 11, 12],            // E: 2/3/4/11/12
+        5: [1, 2, 10, 11, 12],           // F: 1/2/10/11/12
+        6: [3, 4, 5, 6, 7, 8],           // G: 3/4/5/6/7/8
+        7: [1, 2, 3, 9, 10, 11, 12]      // H: 1/2/3/9/10/11/12
+      };
+
+      const isTaken = (r, c) => TAKEN_MAP[r].includes(c);
+
+      // Physical boutique theater dimensions (meters)
+      const GEOM = {
+        zA: 3.80,             // Row A cushion center Z (screen is at z = 0)
+        dz: 1.12,             // Row pitch
+        floorA: 0.20,         // Row A platform floor Y
+        dy: 0.22,             // Tier step height per row
+        cushionOffsetY: 0.48, // Cushion top center above tier floor (yA = 0.68)
+        eyeOffsetY: 1.21,     // Seated eye height above tier floor (lower third shows front seatbacks cleanly)
+        dxSeat: 0.803,        // Seat horizontal center-to-center pitch
+        aisleCenterGap: 2.069,// Center-to-center gap between seat 6 and seat 7
+        hallHalfW: 6.35,      // Side wall X = ±6.35m (12.7m wide boutique hall)
+        ceilingY: 7.05,       // Black acoustic ceiling height
+        backWallZ: 14.35,     // Back wall behind Row H
+        screenW: 9.20,        // 2.35:1 scope screen width (occupies ~70% viewport width from E5-6)
+        screenH: 3.92,        // Screen height
+        screenCenterY: 3.30,  // Screen vertical center (bottom y=1.34, top y=5.26)
+        stageHeight: 0.56,    // Low dark matte stage beneath screen
+        stageDepth: 1.75
+      };
+
+      // Overview camera parameters (exact sub-pixel match to 2D map)
+      const OVERVIEW_CAM = {
+        fovDesign: 48.001,
+        pitchDeg: 76.015,
+        y: 27.806,
+        z: 15.000
+      };
+
+      function getSeatWorld(r, c) {
+        // c is 1..12; left block 1..6, right block 7..12
+        const halfAisle = GEOM.aisleCenterGap * 0.5;
+        let x;
+        if (c <= 6) {
+          x = -(halfAisle + (6 - c) * GEOM.dxSeat);
+        } else {
+          x = halfAisle + (c - 7) * GEOM.dxSeat;
+        }
+        const floorY = GEOM.floorA + r * GEOM.dy;
+        const y = floorY + GEOM.cushionOffsetY;
+        const z = GEOM.zA + r * GEOM.dz;
+        return { x, y, z, floorY };
+      }
+
+      // Project a 3D world point through OVERVIEW_CAM onto the 1000x1000 design canvas
+      function projectOverviewDesign(x, y, z) {
+        const p = THREE.MathUtils.degToRad(OVERVIEW_CAM.pitchDeg);
+        const cp = Math.cos(p), sp = Math.sin(p);
+        const py = y - OVERVIEW_CAM.y;
+        const pz = z - OVERVIEW_CAM.z;
+        const depth = -py * sp - pz * cp;
+        const yView = py * cp - pz * sp;
+        const f = 500.0 / Math.tan(THREE.MathUtils.degToRad(OVERVIEW_CAM.fovDesign * 0.5));
+        return {
+          x: 500.0 + (x / depth) * f,
+          y: 500.0 - (yView / depth) * f,
+          pxPerMeter: f / depth
+        };
+      }
+
+      // Precompute all 96 seat layout records (3D world + exact 2D design projection)
+      const SEATS = [];
+      const SEAT_BY_RC = Array.from({ length: 8 }, () => new Array(13));
+      const ROW_PROJ = [];
+
+      for (let r = 0; r < 8; r++) {
+        const wSample = getSeatWorld(r, 1);
+        const pSample = projectOverviewDesign(wSample.x, wSample.y, wSample.z);
+        const pRight = projectOverviewDesign(-wSample.x, wSample.y, wSample.z);
+        ROW_PROJ.push({
+          row: r,
+          y: pSample.y,
+          leftX: pSample.x,
+          rightX: pRight.x,
+          pxPerMeter: pSample.pxPerMeter
+        });
+        for (let c = 1; c <= 12; c++) {
+          const w = getSeatWorld(r, c);
+          const pr = projectOverviewDesign(w.x, w.y, w.z);
+          // Match 3D cushion visual width (~0.64m * pxPerMeter => ~25.5px in A, ~27px in E, ~28.5px in H)
+          const sw = Math.max(24.5, Math.min(29.0, 0.65 * pr.pxPerMeter));
+          const sh = sw * 0.89;
+          const rec = {
+            r, c,
+            side: c <= 6 ? 0 : 1,
+            taken: isTaken(r, c),
+            world: w,
+            dx: pr.x,
+            dy: pr.y,
+            sw,
+            sh
+          };
+          SEATS.push(rec);
+          SEAT_BY_RC[r][c] = rec;
+        }
+      }
+
+      /* =====================================================================
+         2. APPLICATION STATE
+         ===================================================================== */
+      const state = {
+        ticketCount: 2,
+        selectedRow: 6,        // Row G (0-indexed)
+        selectedCols: [9, 10], // Initial selection: G9, G10
+        mode: 'MAP',           // 'MAP' | 'FLY_IN' | 'SEATED' | 'FLY_OUT'
+        animTime: 0,           // 0..4.0 seconds
+        animDir: 1,
+        // Seated look-around
+        lookYaw: 0,
+        lookYawTarget: 0,
+        lookPitchOffset: 0,
+        lookPitchTarget: 0,
+        hasLookedAround: false,
+        // Seated camera shift smoothing (when changing seats via stepper/mini-map in preview)
+        seatedCamPos: null,
+        seatedCamYaw: 0,
+        seatedCamPitch: 0,
+        // Dragging seats state
+        drag: {
+          active: false,
+          pointerId: null,
+          grabOffsetX: 0,
+          grabOffsetY: 0,
+          clusterX: 0,
+          clusterY: 0,
+          candidate: null, // { r, cols }
+          relSeats: []     // [{ col, ox, oy, sw, sh }]
+        },
+        // Viewport metrics
+        vw: window.innerWidth,
+        vh: window.innerHeight,
+        designScale: 1,
+        designOriginX: 0,
+        designOriginY: 0
+      };
+
+      function getAllValidGroups(count) {
+        const groups = [];
+        for (let r = 0; r < 8; r++) {
+          // Left side: 1..6, Right side: 7..12
+          const blocks = [[1, 6], [7, 12]];
+          for (const [start, end] of blocks) {
+            for (let c0 = start; c0 <= end - count + 1; c0++) {
+              let ok = true;
+              const cols = [];
+              for (let k = 0; k < count; k++) {
+                if (isTaken(r, c0 + k)) { ok = false; break; }
+                cols.push(c0 + k);
+              }
+              if (ok) {
+                let cx = 0, cy = 0;
+                for (const col of cols) {
+                  cx += SEAT_BY_RC[r][col].dx;
+                  cy += SEAT_BY_RC[r][col].dy;
+                }
+                cx /= count;
+                cy /= count;
+                groups.push({ r, cols, cx, cy });
+              }
+            }
+          }
+        }
+        return groups;
+      }
+
+      function findNearestValidGroup(designX, designY, count) {
+        const groups = getAllValidGroups(count);
+        let best = null, bestD2 = Infinity;
+        for (const g of groups) {
+          const dx = g.cx - designX;
+          const dy = g.cy - designY;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < bestD2) {
+            bestD2 = d2;
+            best = g;
+          }
+        }
+        return best;
+      }
+
+      function formatSeatRange(cols) {
+        if (cols.length === 1) return `${cols[0]}`;
+        return `${cols[0]}–${cols[cols.length - 1]}`;
+      }
+
+      function getSeatedTargetForSelection(r, cols) {
+        let sx = 0, sz = 0, floorY = 0;
+        for (const c of cols) {
+          const w = SEAT_BY_RC[r][c].world;
+          sx += w.x;
+          sz += w.z;
+          floorY += w.floorY;
+        }
+        sx /= cols.length;
+        sz /= cols.length;
+        floorY /= cols.length;
+
+        const eyePos = new THREE.Vector3(sx, floorY + GEOM.eyeOffsetY, sz + 0.12);
+        // Natural slight gaze toward screen center (x=0, y slightly below screen midpoint so lower third shows front seatbacks)
+        const lookAt = new THREE.Vector3(sx * 0.10, GEOM.screenCenterY - 0.36, 0.0);
+        const dir = new THREE.Vector3().subVectors(lookAt, eyePos).normalize();
+        const yaw = Math.atan2(-dir.x, -dir.z);
+        const pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.95, 0.95));
+        return { pos: eyePos, yaw, pitch };
+      }
+
+      /* =====================================================================
+         3. PROCEDURAL TEXTURES (ALL GENERATED BY CODE)
+         ===================================================================== */
+      function createFabricNormalAndRoughness() {
+        const size = 256;
+        const cBump = document.createElement('canvas');
+        cBump.width = cBump.height = size;
+        const ctx = cBump.getContext('2d');
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, size, size);
+
+        // Woven velvet / acoustic upholstery micro-grain
+        const img = ctx.getImageData(0, 0, size, size);
+        const d = img.data;
+        let seed = 1337;
+        const rand = () => {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+        };
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const idx = (y * size + x) * 4;
+            const weave = ((x & 3) < 2 ? 8 : -8) * ((y & 3) < 2 ? 1 : -1);
+            const grain = (rand() - 0.5) * 34;
+            const v = Math.max(0, Math.min(255, 128 + weave + grain));
+            d[idx] = d[idx + 1] = d[idx + 2] = v;
+            d[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const tex = new THREE.CanvasTexture(cBump);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(3, 3);
+        return tex;
+      }
+
+      function createCarpetTexture() {
+        const size = 512;
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#151619';
+        ctx.fillRect(0, 0, size, size);
+
+        let seed = 9187;
+        const rand = () => {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+        };
+        const img = ctx.getImageData(0, 0, size, size);
+        const d = img.data;
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const idx = (y * size + x) * 4;
+            const rib = Math.sin(x * 0.45) * 2.5 + Math.sin(y * 0.15) * 1.5;
+            const speckle = (rand() - 0.5) * 14;
+            const base = 22 + rib + speckle;
+            d[idx]     = Math.max(8, Math.min(48, base));
+            d[idx + 1] = Math.max(8, Math.min(50, base + 0.5));
+            d[idx + 2] = Math.max(10, Math.min(54, base + 2.2));
+            d[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(6, 12);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
+      }
+
+      function createAcousticWallTexture() {
+        const w = 512, h = 512;
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#111215';
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle vertical acoustic slat ribs
+        for (let x = 0; x < w; x += 16) {
+          ctx.fillStyle = '#0B0C0E';
+          ctx.fillRect(x, 0, 2, h);
+          ctx.fillStyle = 'rgba(255,255,255,0.015)';
+          ctx.fillRect(x + 2, 0, 2, h);
+        }
+        // Subtle noise
+        let seed = 4242;
+        const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+        for (let i = 0; i < 6500; i++) {
+          const x = rand() * w, y = rand() * h;
+          const a = rand() * 0.035;
+          ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+          ctx.fillRect(x, y, 2, 2);
+        }
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(8, 2);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
+      }
+
+      function createGlowTexture(innerColor, midColor) {
+        const w = 128, h = 256;
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, w, h);
+
+        // Horizontal Gaussian glow + soft vertical fade at tips
+        const img = ctx.createImageData(w, h);
+        const d = img.data;
+        for (let y = 0; y < h; y++) {
+          const ny = (y / (h - 1)) * 2 - 1; // -1..1
+          const vMask = Math.pow(Math.max(0, 1 - Math.pow(Math.abs(ny), 3.4)), 1.5);
+          for (let x = 0; x < w; x++) {
+            const nx = (x / (w - 1)) * 2 - 1;
+            const hGlow = Math.exp(-nx * nx * 6.8);
+            const hCore = Math.exp(-nx * nx * 38.0);
+            const a = Math.min(1, (hGlow * 0.72 + hCore * 0.65) * vMask);
+            const mix = Math.min(1, hCore * 1.4);
+            const r = innerColor[0] * mix + midColor[0] * (1 - mix);
+            const g = innerColor[1] * mix + midColor[1] * (1 - mix);
+            const b = innerColor[2] * mix + midColor[2] * (1 - mix);
+            const idx = (y * w + x) * 4;
+            d[idx] = r;
+            d[idx + 1] = g;
+            d[idx + 2] = b;
+            d[idx + 3] = Math.round(a * 255);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const tex = new THREE.CanvasTexture(c);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
+      }
+
+      function createRadialSpotTexture(r, g, b) {
+        const s = 128;
+        const c = document.createElement('canvas');
+        c.width = c.height = s;
+        const ctx = c.getContext('2d');
+        const grad = ctx.createRadialGradient(s/2, s/2, 1, s/2, s/2, s/2);
+        grad.addColorStop(0.0, `rgba(${r},${g},${b},1.0)`);
+        grad.addColorStop(0.18, `rgba(${r},${g},${b},0.65)`);
+        grad.addColorStop(0.50, `rgba(${r},${g},${b},0.16)`);
+        grad.addColorStop(1.0, `rgba(${r},${g},${b},0.0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, s, s);
+        const tex = new THREE.CanvasTexture(c);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
+      }
+
+      /* ---------------------------------------------------------------------
+         High-Resolution Procedural Movie Screen Artwork:
+         "AVENGERS: DOOMSDAY"
+         Deep emerald-green & obsidian faceted slanted metallic 'A' monolith,
+         cold emerald light bleeding through precision armor seams,
+         metallic italic silver-grey "AVENGERS" + bright wide-tracked "DOOMSDAY".
+         --------------------------------------------------------------------- */
+      function createAvengersDoomsdayScreenTexture() {
+        const W = 2048, H = 870;
+        const c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        const ctx = c.getContext('2d');
+
+        // 1. Deep cinematic dark-emerald atmosphere backdrop
+        const bgGrad = ctx.createRadialGradient(W * 0.51, H * 0.48, 30, W * 0.50, H * 0.50, W * 0.62);
+        bgGrad.addColorStop(0.00, '#0D3B24');
+        bgGrad.addColorStop(0.28, '#072215');
+        bgGrad.addColorStop(0.62, '#04100B');
+        bgGrad.addColorStop(1.00, '#020404');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Volumetric diagonal cold-green light shafts behind the A monolith
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        const shafts = [
+          { x1: W * 0.42, y1: 0, x2: W * 0.24, y2: H, w: 280, a: 0.16 },
+          { x1: W * 0.56, y1: 0, x2: W * 0.44, y2: H, w: 360, a: 0.22 },
+          { x1: W * 0.68, y1: 0, x2: W * 0.58, y2: H, w: 210, a: 0.13 },
+          { x1: W * 0.50, y1: H * 0.46, x2: W * 0.85, y2: H * 0.22, w: 180, a: 0.11 }
+        ];
+        for (const sh of shafts) {
+          const g = ctx.createLinearGradient(sh.x1, sh.y1, sh.x2, sh.y2);
+          g.addColorStop(0, `rgba(26, 232, 126, 0)`);
+          g.addColorStop(0.45, `rgba(38, 255, 146, ${sh.a})`);
+          g.addColorStop(1, `rgba(12, 130, 74, 0)`);
+          ctx.strokeStyle = g;
+          ctx.lineWidth = sh.w;
+          ctx.beginPath();
+          ctx.moveTo(sh.x1, sh.y1);
+          ctx.lineTo(sh.x2, sh.y2);
+          ctx.stroke();
+        }
+
+        // Intense cold-green core glow positioned directly behind the armor cracks
+        const coreGlow1 = ctx.createRadialGradient(W * 0.505, H * 0.46, 12, W * 0.505, H * 0.46, 470);
+        coreGlow1.addColorStop(0.0, 'rgba(130, 255, 190, 0.82)');
+        coreGlow1.addColorStop(0.18, 'rgba(42, 245, 140, 0.52)');
+        coreGlow1.addColorStop(0.50, 'rgba(12, 125, 68, 0.18)');
+        coreGlow1.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = coreGlow1;
+        ctx.fillRect(0, 0, W, H);
+
+        // Secondary seam glow near the crossbar arrow
+        const coreGlow2 = ctx.createRadialGradient(W * 0.56, H * 0.58, 8, W * 0.56, H * 0.58, 280);
+        coreGlow2.addColorStop(0.0, 'rgba(160, 255, 205, 0.72)');
+        coreGlow2.addColorStop(0.35, 'rgba(30, 235, 128, 0.30)');
+        coreGlow2.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = coreGlow2;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+
+        // 2. Monumental Faceted Metallic Slanted "A" Structure
+        // Constructed from sharp dark-emerald & black bevelled metallic armor plates
+        // with narrow illuminated seams between plates!
+        ctx.save();
+        ctx.translate(W * 0.50, H * 0.50);
+
+        // Helper to draw a metallic faceted polygon with brushed sheen + cold-green rim
+        function drawFacet(pts, c1, c2, c3, rimColor, rimAlpha) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], pts[0][1]);
+          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+          ctx.closePath();
+
+          let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+          for (const [px, py] of pts) {
+            if (px < minX) minX = px; if (px > maxX) maxX = px;
+            if (py < minY) minY = py; if (py > maxY) maxY = py;
+          }
+          const grad = ctx.createLinearGradient(minX, minY, maxX, maxY);
+          grad.addColorStop(0.0, c1);
+          grad.addColorStop(0.52, c2);
+          grad.addColorStop(1.0, c3);
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          // Subtle metallic brushed lines clipped inside facet
+          ctx.clip();
+          ctx.strokeStyle = 'rgba(170, 255, 210, 0.045)';
+          ctx.lineWidth = 1.2;
+          for (let s = -480; s < 480; s += 7) {
+            ctx.beginPath();
+            ctx.moveTo(minX - 60, minY + s);
+            ctx.lineTo(maxX + 60, minY + s + 140);
+            ctx.stroke();
+          }
+
+          // Specular ridge highlight
+          ctx.strokeStyle = rimColor || `rgba(92, 255, 168, ${rimAlpha || 0.35})`;
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], pts[0][1]);
+          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Outer metallic broken ring arc (subtle architectural Doom/Avengers halo)
+        ctx.save();
+        ctx.strokeStyle = 'rgba(34, 155, 92, 0.24)';
+        ctx.lineWidth = 24;
+        ctx.beginPath();
+        ctx.arc(0, 12, 345, -Math.PI * 0.88, -Math.PI * 0.24);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 12, 345, Math.PI * 0.10, Math.PI * 0.72);
+        ctx.stroke();
+
+        // Dark beveled metallic ring fragments
+        ctx.strokeStyle = '#09140F';
+        ctx.lineWidth = 16;
+        ctx.beginPath();
+        ctx.arc(0, 12, 345, -Math.PI * 0.87, -Math.PI * 0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 12, 345, Math.PI * 0.11, Math.PI * 0.71);
+        ctx.stroke();
+
+        // Thin bright green inner ring rim
+        ctx.strokeStyle = 'rgba(84, 255, 164, 0.48)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 12, 336, -Math.PI * 0.85, -Math.PI * 0.27);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 12, 336, Math.PI * 0.13, Math.PI * 0.69);
+        ctx.stroke();
+        ctx.restore();
+
+        // Background giant diagonal dark metallic shards framing the composition
+        drawFacet([[-780, -435], [-430, -435], [-660, 435], [-920, 435]], '#050B08', '#091811', '#030605', 'rgba(42,190,110,0.12)');
+        drawFacet([[450, -435], [820, -435], [580, 435], [320, 435]], '#040907', '#081610', '#020504', 'rgba(42,190,110,0.12)');
+
+        // --- MASSIVE SLANTED "A" MONOLITH ---
+        // Left diagonal leg (split into upper/lower beveled facets with glowing green seam!)
+        // Left leg outer dark facet (upper)
+        drawFacet(
+          [[18, -425], [108, -425], [-102, 58], [-192, 58]],
+          '#0C2318', '#07140E', '#040907', 'rgba(85, 255, 165, 0.42)'
+        );
+        // Left leg inner lit bevel (upper)
+        drawFacet(
+          [[108, -425], [150, -390], [-52, 62], [-102, 58]],
+          '#184D33', '#0D2B1D', '#07160F', 'rgba(130, 255, 190, 0.62)'
+        );
+        // Left leg lower split piece (separated by a glowing cold-green diagonal gap!)
+        drawFacet(
+          [[-202, 82], [-110, 82], [-270, 435], [-382, 435]],
+          '#0B2016', '#06110C', '#030605', 'rgba(72, 245, 152, 0.46)'
+        );
+        drawFacet(
+          [[-110, 82], [-58, 86], [-212, 435], [-270, 435]],
+          '#1A5438', '#0C281B', '#05100B', 'rgba(135, 255, 195, 0.58)'
+        );
+
+        // Right vertical/slanted main pillar (split cleanly to let emerald energy bleed through!)
+        // Upper right pillar
+        drawFacet(
+          [[122, -420], [216, -420], [188, -14], [100, -14]],
+          '#103121', '#081A11', '#050D09', 'rgba(95, 255, 172, 0.52)'
+        );
+        drawFacet(
+          [[216, -420], [268, -380], [234, -14], [188, -14]],
+          '#07140E', '#040A07', '#020504', 'rgba(58, 220, 136, 0.28)'
+        );
+        // Lower right pillar (below the iconic Avengers crossbar arrow gap)
+        drawFacet(
+          [[92, 132], [182, 132], [156, 435], [58, 435]],
+          '#123825', '#091D13', '#040B08', 'rgba(98, 255, 174, 0.48)'
+        );
+        drawFacet(
+          [[182, 132], [230, 132], [208, 435], [156, 435]],
+          '#06110C', '#030806', '#020403', 'rgba(52, 200, 120, 0.25)'
+        );
+
+        // Iconic Avengers Crossbar + Arrowhead cutting diagonally across the A
+        drawFacet(
+          [[-124, 24], [148, 24], [116, 72], [-150, 72]],
+          '#1C5B3B', '#0E3120', '#071810', 'rgba(155, 255, 205, 0.72)'
+        );
+        drawFacet(
+          [[-150, 72], [116, 72], [140, 114], [-174, 114]],
+          '#091C13', '#050F0A', '#030705', 'rgba(78, 248, 158, 0.45)'
+        );
+        // Arrowhead tip piercing right through the pillar seam
+        drawFacet(
+          [[128, -4], [254, 68], [122, 138], [148, 68]],
+          '#25704A', '#113A26', '#071B11', 'rgba(180, 255, 218, 0.85)'
+        );
+
+        // Glowing emerald laser-bright seams cutting through the gaps!
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        function drawSeamGlow(x1, y1, x2, y2, width, alpha) {
+          ctx.lineCap = 'round';
+          // Outer green bloom
+          ctx.strokeStyle = `rgba(28, 245, 132, ${alpha * 0.42})`;
+          ctx.lineWidth = width * 4.5;
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          // Mid bright green
+          ctx.strokeStyle = `rgba(92, 255, 168, ${alpha * 0.75})`;
+          ctx.lineWidth = width * 1.8;
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          // White-mint hot core
+          ctx.strokeStyle = `rgba(225, 255, 238, ${alpha})`;
+          ctx.lineWidth = width * 0.65;
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        }
+        // Horizontal seam on left leg
+        drawSeamGlow(-208, 70, -52, 74, 5.5, 0.95);
+        // Inner vertical seam along left leg bevel
+        drawSeamGlow(110, -415, -96, 56, 3.2, 0.75);
+        // Gap between upper right pillar and arrowhead
+        drawSeamGlow(94, -12, 242, -12, 4.0, 0.85);
+        // Diagonal glowing energy edge on arrowhead
+        drawSeamGlow(130, -4, 254, 68, 4.5, 0.95);
+        drawSeamGlow(254, 68, 122, 138, 4.5, 0.92);
+        // Lower right pillar top seam
+        drawSeamGlow(88, 128, 232, 128, 3.6, 0.78);
+        // Inner diagonal back-light bleed along left leg lower half
+        drawSeamGlow(-58, 86, -212, 428, 3.2, 0.68);
+        ctx.restore();
+
+        ctx.restore(); // end monolith centered transform
+
+        // Subtle atmospheric mist band behind typography for clean legibility
+        const midBand = ctx.createLinearGradient(0, H * 0.30, 0, H * 0.76);
+        midBand.addColorStop(0.0, 'rgba(2, 8, 5, 0)');
+        midBand.addColorStop(0.45, 'rgba(3, 10, 7, 0.42)');
+        midBand.addColorStop(0.65, 'rgba(3, 10, 7, 0.46)');
+        midBand.addColorStop(1.0, 'rgba(2, 8, 5, 0)');
+        ctx.fillStyle = midBand;
+        ctx.fillRect(0, H * 0.28, W, H * 0.50);
+
+        // 3. Silver-Grey Italic Metallic Title: "AVENGERS"
+        ctx.save();
+        ctx.translate(W * 0.50, H * 0.515);
+        ctx.transform(1, 0, -0.17, 1, 0, 0); // crisp heroic italic slant
+        const titleText = 'AVENGERS';
+        ctx.font = '900 176px "Inter", "Arial Black", "Impact", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Helper to draw tracked text
+        function drawTrackedText(text, tracking, mode) {
+          const chars = text.split('');
+          let totalW = 0;
+          const widths = chars.map(ch => {
+            const w = ctx.measureText(ch).width;
+            totalW += w;
+            return w;
+          });
+          totalW += tracking * (chars.length - 1);
+          let curX = -totalW * 0.5;
+          for (let i = 0; i < chars.length; i++) {
+            const cx = curX + widths[i] * 0.5;
+            if (mode === 'fill') ctx.fillText(chars[i], cx, 0);
+            else ctx.strokeText(chars[i], cx, 0);
+            curX += widths[i] + tracking;
+          }
+        }
+
+        // Deep dramatic drop shadow + slight emerald back-rim
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.88)';
+        ctx.shadowBlur = 28;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 12;
+        ctx.fillStyle = '#080C0B';
+        drawTrackedText(titleText, 12, 'fill');
+
+        // Crisp dark bevel extrude
+        ctx.shadowColor = 'rgba(28, 220, 120, 0.25)';
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetY = 0;
+        ctx.lineWidth = 7;
+        ctx.strokeStyle = '#1B2226';
+        drawTrackedText(titleText, 12, 'stroke');
+
+        // Multi-stop brushed silver-steel metallic gradient
+        const metalGrad = ctx.createLinearGradient(0, -88, 0, 88);
+        metalGrad.addColorStop(0.00, '#F5F8FA');
+        metalGrad.addColorStop(0.24, '#C6D0D9');
+        metalGrad.addColorStop(0.46, '#7E8A96');
+        metalGrad.addColorStop(0.51, '#4E5863');
+        metalGrad.addColorStop(0.56, '#DCE4EC');
+        metalGrad.addColorStop(0.80, '#A0ACB8');
+        metalGrad.addColorStop(1.00, '#626D78');
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = metalGrad;
+        drawTrackedText(titleText, 12, 'fill');
+
+        // Specular razor top highlight
+        const topShine = ctx.createLinearGradient(0, -84, 0, 10);
+        topShine.addColorStop(0, 'rgba(255, 255, 255, 0.72)');
+        topShine.addColorStop(0.4, 'rgba(255, 255, 255, 0.0)');
+        topShine.addColorStop(1, 'rgba(140, 255, 195, 0.14)');
+        ctx.lineWidth = 2.0;
+        ctx.strokeStyle = topShine;
+        drawTrackedText(titleText, 12, 'stroke');
+        ctx.restore();
+
+        // 4. Bright Green Wide-Tracked Subtitle: "DOOMSDAY"
+        ctx.save();
+        // Subtle dark emerald legibility band behind DOOMSDAY
+        const subBand = ctx.createRadialGradient(W * 0.50, H * 0.688, 20, W * 0.50, H * 0.688, 360);
+        subBand.addColorStop(0.0, 'rgba(2, 10, 6, 0.72)');
+        subBand.addColorStop(0.6, 'rgba(2, 10, 6, 0.25)');
+        subBand.addColorStop(1.0, 'rgba(2, 10, 6, 0)');
+        ctx.fillStyle = subBand;
+        ctx.fillRect(W * 0.26, H * 0.61, W * 0.48, H * 0.16);
+
+        ctx.translate(W * 0.50, H * 0.688);
+        ctx.font = '600 44px "Inter", "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const subText = 'DOOMSDAY';
+        const subTracking = 34;
+        const subChars = subText.split('');
+        let subTotal = 0;
+        const subW = subChars.map(ch => {
+          const w = ctx.measureText(ch).width;
+          subTotal += w;
+          return w;
+        });
+        subTotal += subTracking * (subChars.length - 1);
+
+        // Outer neon-emerald glow pass
+        ctx.shadowColor = 'rgba(32, 255, 136, 0.90)';
+        ctx.shadowBlur = 24;
+        ctx.fillStyle = '#38F28A';
+        let sx = -subTotal * 0.5;
+        for (let i = 0; i < subChars.length; i++) {
+          ctx.fillText(subChars[i], sx + subW[i] * 0.5, 0);
+          sx += subW[i] + subTracking;
+        }
+        // Crisp bright green-mint core pass
+        ctx.shadowBlur = 7;
+        ctx.shadowColor = 'rgba(130, 255, 190, 0.95)';
+        ctx.fillStyle = '#84FFBA';
+        sx = -subTotal * 0.5;
+        for (let i = 0; i < subChars.length; i++) {
+          ctx.fillText(subChars[i], sx + subW[i] * 0.5, 0);
+          sx += subW[i] + subTracking;
+        }
+        ctx.restore();
+
+        // 5. Subtle cinema vignette & delicate metallic dust motes
+        ctx.save();
+        let seed = 7771;
+        const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+        for (let i = 0; i < 180; i++) {
+          const x = rand() * W;
+          const y = rand() * H;
+          const rad = 0.8 + rand() * 2.1;
+          const al = 0.08 + rand() * 0.28;
+          ctx.fillStyle = `rgba(120, 255, 185, ${al.toFixed(2)})`;
+          ctx.beginPath();
+          ctx.arc(x, y, rad, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        const vig = ctx.createRadialGradient(W * 0.5, H * 0.5, W * 0.25, W * 0.5, H * 0.5, W * 0.62);
+        vig.addColorStop(0.0, 'rgba(0,0,0,0)');
+        vig.addColorStop(0.75, 'rgba(0,0,0,0.22)');
+        vig.addColorStop(1.0, 'rgba(0,0,0,0.68)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.encoding = THREE.sRGBEncoding;
+        tex.anisotropy = 8;
+        return tex;
+      }
+
+      /* =====================================================================
+         4. THREE.JS REAL-TIME 3D BOUTIQUE CINEMA SCENE
+         ===================================================================== */
+      const canvas = document.getElementById('gl-canvas');
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        powerPreference: 'high-performance',
+        alpha: false
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setClearColor(0x0C0C0C, 1);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.04;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0C0C0C);
+      scene.fog = new THREE.FogExp2(0x090A0C, 0.017);
+
+      const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.12, 85);
+      camera.rotation.order = 'YXZ';
+
+      // Shared procedural maps
+      const fabricBump = createFabricNormalAndRoughness();
+      const carpetTex = createCarpetTexture();
+      const wallTex = createAcousticWallTexture();
+      const warmStripGlowTex = createGlowTexture([255, 240, 206], [255, 174, 88]);
+      const wallWashTex = createGlowTexture([255, 214, 150], [255, 154, 68]);
+      const spotGlowTex = createRadialSpotTexture(255, 204, 136);
+      const greenFloorGlowTex = createRadialSpotTexture(34, 214, 118);
+      const screenTex = createAvengersDoomsdayScreenTexture();
+
+      /* --- Lighting (Boutique dark exposure, warm tungsten wall strips + localized cool emerald screen bounce) --- */
+      const hemiLight = new THREE.HemisphereLight(0x2a292b, 0x0b0b0d, 0.36);
+      scene.add(hemiLight);
+
+      // Gentle neutral-warm overhead fill (preserves subtle velvet sheen on seat crowns without washing blacks)
+      const topFill = new THREE.DirectionalLight(0xe6e0d8, 0.22);
+      topFill.position.set(0, 18, 9);
+      scene.add(topFill);
+
+      // Localized screen cool-green bounce light (kissing the front stage & front rows only — never tinting rear walls/ceiling green)
+      const screenBounceCenter = new THREE.PointLight(0x22c874, 0.72, 8.6, 2.0);
+      screenBounceCenter.position.set(0, 3.15, 1.55);
+      scene.add(screenBounceCenter);
+
+      const screenBounceLow = new THREE.PointLight(0x189c58, 0.56, 7.0, 2.0);
+      screenBounceLow.position.set(0, 1.35, 1.85);
+      scene.add(screenBounceLow);
+
+      // Warm tungsten wall sconce lights along left and right walls (giving velvety warm rim on seatbacks & walls)
+      const wallLightZ = [3.2, 7.2, 11.2];
+      for (const lz of wallLightZ) {
+        for (const side of [-1, 1]) {
+          const pl = new THREE.PointLight(0xffbd72, 0.84, 8.8, 1.9);
+          pl.position.set(side * (GEOM.hallHalfW - 0.65), 3.10 + (lz - 3.2) * 0.12, lz);
+          scene.add(pl);
+        }
+      }
+
+      /* --- Architecture: Tiered Flooring, Center Carpet Aisle, Front Platform --- */
+      const carpetMat = new THREE.MeshStandardMaterial({
+        map: carpetTex,
+        bumpMap: fabricBump,
+        bumpScale: 0.015,
+        roughness: 0.93,
+        metalness: 0.02
+      });
+
+      const aisleCarpetMat = new THREE.MeshStandardMaterial({
+        map: carpetTex,
+        color: 0x22242a,
+        bumpMap: fabricBump,
+        bumpScale: 0.012,
+        roughness: 0.92,
+        metalness: 0.02
+      });
+
+      const riserEdgeMat = new THREE.MeshStandardMaterial({
+        color: 0x16171b,
+        roughness: 0.75,
+        metalness: 0.12
+      });
+
+      const stepStripMat = new THREE.MeshBasicMaterial({
+        color: 0x997852,
+        transparent: true,
+        opacity: 0.34
+      });
+
+      const hallGroup = new THREE.Group();
+      scene.add(hallGroup);
+
+      // Main front floor (z = 0 to Row A front)
+      const frontFloor = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.hallHalfW * 2 + 0.4, GEOM.zA + 0.6),
+        carpetMat
+      );
+      frontFloor.rotation.x = -Math.PI / 2;
+      frontFloor.position.set(0, 0.02, (GEOM.zA + 0.2) * 0.5);
+      hallGroup.add(frontFloor);
+
+      // Left & Right tiered seating platforms + Central stepped carpet aisle
+      const aisleNetW = GEOM.aisleCenterGap - 0.68; // ~1.39m central carpet walkway
+      const blockW = GEOM.hallHalfW - aisleNetW * 0.5;
+      const blockCenterX = aisleNetW * 0.5 + blockW * 0.5;
+
+      for (let r = 0; r < 8; r++) {
+        const floorY = GEOM.floorA + r * GEOM.dy;
+        const zCenter = GEOM.zA + r * GEOM.dz + 0.04;
+        const depth = r === 7 ? GEOM.backWallZ - (zCenter - GEOM.dz * 0.5) : GEOM.dz + 0.02;
+        const zBox = r === 7 ? (zCenter - GEOM.dz * 0.5) + depth * 0.5 : zCenter;
+
+        // Left & right tiered risers
+        const tierGeo = new THREE.BoxGeometry(blockW, floorY + 0.1, depth);
+        for (const side of [-1, 1]) {
+          const tier = new THREE.Mesh(tierGeo, carpetMat);
+          tier.position.set(side * blockCenterX, (floorY - 0.1) * 0.5, zBox);
+          hallGroup.add(tier);
+        }
+
+        // Central dark-grey carpet aisle step matching the tier elevation
+        const aisleStepGeo = new THREE.BoxGeometry(aisleNetW, floorY + 0.1, depth);
+        const aisleStep = new THREE.Mesh(aisleStepGeo, aisleCarpetMat);
+        aisleStep.position.set(0, (floorY - 0.1) * 0.5, zBox);
+        hallGroup.add(aisleStep);
+
+        // Subtle warm step nosing along the aisle edges (very understated luxury detail)
+        const noseZ = zCenter - GEOM.dz * 0.5 + 0.01;
+        const noseBar = new THREE.Mesh(new THREE.BoxGeometry(aisleNetW - 0.12, 0.014, 0.025), stepStripMat);
+        noseBar.position.set(0, floorY + 0.006, noseZ);
+        hallGroup.add(noseBar);
+
+        // Thin dark trim separating aisle and seat blocks
+        for (const side of [-1, 1]) {
+          const trim = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.02, depth), riserEdgeMat);
+          trim.position.set(side * (aisleNetW * 0.5), floorY + 0.008, zBox);
+          hallGroup.add(trim);
+        }
+      }
+
+      /* --- Low Dark Stage Platform Beneath the Screen --- */
+      const stageMat = new THREE.MeshStandardMaterial({
+        color: 0x131418,
+        roughness: 0.62,
+        metalness: 0.14
+      });
+      const stageMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(GEOM.hallHalfW * 2, GEOM.stageHeight, GEOM.stageDepth),
+        stageMat
+      );
+      stageMesh.position.set(0, GEOM.stageHeight * 0.5, GEOM.stageDepth * 0.5 - 0.1);
+      hallGroup.add(stageMesh);
+
+      // Subtle emerald-green screen reflection glow resting softly on the stage top
+      const stageGlow = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.screenW * 1.05, GEOM.stageDepth * 1.15),
+        new THREE.MeshBasicMaterial({
+          map: greenFloorGlowTex,
+          transparent: true,
+          opacity: 0.16,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      stageGlow.rotation.x = -Math.PI / 2;
+      stageGlow.position.set(0, GEOM.stageHeight + 0.008, GEOM.stageDepth * 0.55);
+      hallGroup.add(stageGlow);
+
+      /* --- Cinema Screen + Matte Black Acoustic Frame --- */
+      const frameMat = new THREE.MeshStandardMaterial({
+        color: 0x060607,
+        roughness: 0.95,
+        metalness: 0.04
+      });
+      // Full front baffle wall behind screen
+      const frontWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.hallHalfW * 2 + 0.6, GEOM.ceilingY + 0.5),
+        frameMat
+      );
+      frontWall.position.set(0, GEOM.ceilingY * 0.5, -0.08);
+      hallGroup.add(frontWall);
+
+      // Sleek dark surround bezel around screen
+      const bezelMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(GEOM.screenW + 0.34, GEOM.screenH + 0.30, 0.10),
+        frameMat
+      );
+      bezelMesh.position.set(0, GEOM.screenCenterY, -0.02);
+      hallGroup.add(bezelMesh);
+
+      // Illuminated cinema screen surface
+      const screenMat = new THREE.MeshBasicMaterial({
+        map: screenTex,
+        toneMapped: true
+      });
+      const screenMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.screenW, GEOM.screenH),
+        screenMat
+      );
+      screenMesh.position.set(0, GEOM.screenCenterY, 0.04);
+      hallGroup.add(screenMesh);
+
+      // Subtle cold-green ambient halo behind the screen bezel onto front wall
+      const screenHalo = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.screenW * 1.24, GEOM.screenH * 1.38),
+        new THREE.MeshBasicMaterial({
+          map: greenFloorGlowTex,
+          transparent: true,
+          opacity: 0.14,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      screenHalo.position.set(0, GEOM.screenCenterY, -0.06);
+      hallGroup.add(screenHalo);
+
+      /* --- Dark Acoustic Side Walls + Dense Perspective Warm-White Vertical Light Strips --- */
+      const sideWallMat = new THREE.MeshStandardMaterial({
+        map: wallTex,
+        color: 0x16171c,
+        roughness: 0.90,
+        metalness: 0.05
+      });
+
+      const hallDepth = GEOM.backWallZ + 0.4;
+      const sideWallGeo = new THREE.PlaneGeometry(hallDepth, GEOM.ceilingY + 0.2);
+
+      const leftWall = new THREE.Mesh(sideWallGeo, sideWallMat);
+      leftWall.rotation.y = Math.PI / 2;
+      leftWall.position.set(-GEOM.hallHalfW, GEOM.ceilingY * 0.5, hallDepth * 0.5 - 0.15);
+      hallGroup.add(leftWall);
+
+      const rightWall = new THREE.Mesh(sideWallGeo, sideWallMat);
+      rightWall.rotation.y = -Math.PI / 2;
+      rightWall.position.set(GEOM.hallHalfW, GEOM.ceilingY * 0.5, hallDepth * 0.5 - 0.15);
+      hallGroup.add(rightWall);
+
+      // Back wall (FrontSide facing -Z, so invisible from outside Z > 14.35 during overview)
+      const backWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.hallHalfW * 2 + 0.4, GEOM.ceilingY + 0.2),
+        sideWallMat
+      );
+      backWall.rotation.y = Math.PI;
+      backWall.position.set(0, GEOM.ceilingY * 0.5, GEOM.backWallZ);
+      hallGroup.add(backWall);
+
+      // Dense warm-white vertical light strips along both side walls:
+      // Shorter & more tightly packed toward the screen -> powerful architectural perspective!
+      const STRIP_COUNT = 16;
+      const stripCoreMat = new THREE.MeshBasicMaterial({
+        color: 0xFFE9C6
+      });
+      const stripRecessMat = new THREE.MeshStandardMaterial({
+        color: 0x09090b,
+        roughness: 0.9
+      });
+      const stripHaloMat = new THREE.MeshBasicMaterial({
+        map: warmStripGlowTex,
+        transparent: true,
+        opacity: 0.66,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const stripWashMat = new THREE.MeshBasicMaterial({
+        map: wallWashTex,
+        transparent: true,
+        opacity: 0.25,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+
+      for (const side of [-1, 1]) {
+        const wallX = side * GEOM.hallHalfW;
+        const inward = -side; // +1 for left wall, -1 for right wall
+
+        for (let i = 0; i < STRIP_COUNT; i++) {
+          // t=0 near screen, t=1 near back audience rows
+          const t = i / (STRIP_COUNT - 1);
+          // Nonlinear spacing: tight near screen, progressively wider toward back rows
+          const z = 1.25 + 11.75 * Math.pow(t, 1.38);
+
+          // Floor elevation at this Z
+          const rowFrac = THREE.MathUtils.clamp((z - GEOM.zA) / (7 * GEOM.dz), 0, 1);
+          const localFloor = GEOM.floorA + rowFrac * 7 * GEOM.dy;
+
+          // Strip length shortens smoothly toward the screen (3.85m near rear -> 1.85m near screen)
+          const stripH = 1.85 + 2.05 * Math.pow(t, 0.92);
+          const stripBottom = localFloor + 0.95 + 0.12 * (1 - t);
+          const stripCenterY = stripBottom + stripH * 0.5;
+
+          // Subtle architectural vertical acoustic rib/recess
+          const rib = new THREE.Mesh(
+            new THREE.BoxGeometry(0.06, stripH + 0.18, 0.11),
+            stripRecessMat
+          );
+          rib.position.set(wallX + inward * 0.02, stripCenterY, z);
+          hallGroup.add(rib);
+
+          // Thin bright warm-white luminous filament
+          const coreW = 0.022 + 0.010 * t;
+          const core = new THREE.Mesh(
+            new THREE.BoxGeometry(0.018, stripH, coreW),
+            stripCoreMat
+          );
+          core.position.set(wallX + inward * 0.052, stripCenterY, z);
+          hallGroup.add(core);
+
+          // Soft blooming halo right over the strip
+          const haloPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.28 + 0.10 * t, stripH * 1.12),
+            stripHaloMat
+          );
+          haloPlane.rotation.y = side === -1 ? Math.PI / 2 : -Math.PI / 2;
+          haloPlane.position.set(wallX + inward * 0.075, stripCenterY, z);
+          hallGroup.add(haloPlane);
+
+          // Soft warm wash on the dark acoustic wall behind each strip
+          const washPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.66 + 0.24 * t, stripH * 1.26),
+            stripWashMat
+          );
+          washPlane.rotation.y = side === -1 ? Math.PI / 2 : -Math.PI / 2;
+          washPlane.position.set(wallX + inward * 0.015, stripCenterY, z);
+          hallGroup.add(washPlane);
+        }
+      }
+
+      /* --- Matte Black Ceiling + Sparse Warm Recessed Spotlights ---
+         FrontSide facing -Y, plus opacity fade when camera is above ceiling during overview! */
+      const ceilingGroup = new THREE.Group();
+      scene.add(ceilingGroup);
+
+      const ceilingMat = new THREE.MeshStandardMaterial({
+        color: 0x070709,
+        roughness: 0.96,
+        metalness: 0.02,
+        transparent: true,
+        opacity: 1
+      });
+      const ceilingMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(GEOM.hallHalfW * 2 + 0.4, hallDepth + 0.4),
+        ceilingMat
+      );
+      ceilingMesh.rotation.x = Math.PI / 2; // faces downward (-Y)
+      ceilingMesh.position.set(0, GEOM.ceilingY, hallDepth * 0.5 - 0.1);
+      ceilingGroup.add(ceilingMesh);
+
+      const ceilingSpotMats = [];
+      const spotPositions = [
+        [-2.5, 2.5], [2.5, 2.5],
+        [-2.5, 5.6], [2.5, 5.6],
+        [-2.5, 9.2], [2.5, 9.2],
+        [-2.5, 12.2], [2.5, 12.2]
+      ];
+      for (const [sx, sz] of spotPositions) {
+        const bulbMat = new THREE.MeshBasicMaterial({
+          color: 0xFFD292,
+          transparent: true,
+          opacity: 0.78
+        });
+        ceilingSpotMats.push(bulbMat);
+        const bulb = new THREE.Mesh(new THREE.CircleGeometry(0.068, 20), bulbMat);
+        bulb.rotation.x = Math.PI / 2;
+        bulb.position.set(sx, GEOM.ceilingY - 0.015, sz);
+        ceilingGroup.add(bulb);
+
+        const glowMat = new THREE.MeshBasicMaterial({
+          map: spotGlowTex,
+          transparent: true,
+          opacity: 0.36,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        ceilingSpotMats.push(glowMat);
+        const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.92), glowMat);
+        glow.rotation.x = Math.PI / 2;
+        glow.position.set(sx, GEOM.ceilingY - 0.025, sz);
+        ceilingGroup.add(glow);
+      }
+
+      /* --- 96 Boutique Plush Charcoal Fabric Cinema Seats (High-Detail Shared Geometry) --- */
+      function buildRoundedBoxGeometry(w, h, d, r, bevelSegs) {
+        // Extrude a rounded rectangle in XY and center along Z with smooth bevel
+        const hw = w * 0.5 - r;
+        const hh = h * 0.5 - r;
+        const shape = new THREE.Shape();
+        shape.moveTo(-hw, -hh - r);
+        shape.lineTo(hw, -hh - r);
+        shape.quadraticCurveTo(hw + r, -hh - r, hw + r, -hh);
+        shape.lineTo(hw + r, hh);
+        shape.quadraticCurveTo(hw + r, hh + r, hw, hh + r);
+        shape.lineTo(-hw, hh + r);
+        shape.quadraticCurveTo(-hw - r, hh + r, -hw - r, hh);
+        shape.lineTo(-hw - r, -hh);
+        shape.quadraticCurveTo(-hw - r, -hh - r, -hw, -hh - r);
+
+        const bevel = Math.min(r * 0.72, d * 0.34);
+        const geo = new THREE.ExtrudeGeometry(shape, {
+          depth: Math.max(0.01, d - bevel * 2),
+          bevelEnabled: true,
+          bevelThickness: bevel,
+          bevelSize: bevel,
+          bevelSegments: bevelSegs || 4,
+          curveSegments: 8
+        });
+        geo.center();
+        return geo;
+      }
+
+      function buildPlushSeatbackGeometry() {
+        // Wide, plush rounded-top cinema backrest (width 0.64m, height 0.78m, thickness 0.16m)
+        const geo = buildRoundedBoxGeometry(0.64, 0.76, 0.165, 0.11, 5);
+        // Gently curve the backrest crown and bolster edges for authentic boutique velvet highlights
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          let x = pos.getX(i);
+          let y = pos.getY(i);
+          let z = pos.getZ(i);
+          const nx = x / 0.32;
+          const ny = y / 0.38;
+          // Slight ergonomic wrap-around curve (edges curve slightly forward toward -Z)
+          z -= nx * nx * 0.026;
+          // Slight pillow puffiness in center of upper headrest
+          if (z < 0) z -= Math.max(0, 1 - nx * nx) * Math.max(0, 0.5 + ny * 0.5) * 0.018;
+          // Subtle taper at top corners for soft silhouette
+          const topTaper = 1.0 - Math.max(0, ny) * 0.045;
+          x *= topTaper;
+          pos.setXYZ(i, x, y, z);
+        }
+        geo.computeVertexNormals();
+        return geo;
+      }
+
+      const seatBackGeo = buildPlushSeatbackGeometry();
+      const seatCushionGeo = buildRoundedBoxGeometry(0.62, 0.16, 0.58, 0.075, 4);
+      const seatArmGeo = buildRoundedBoxGeometry(0.088, 0.11, 0.52, 0.036, 3);
+      const seatPedestalGeo = new THREE.BoxGeometry(0.46, 0.36, 0.32);
+
+      // Materials: dark charcoal plush velvet with subtle micro-sheen
+      const fabricBackMat = new THREE.MeshStandardMaterial({
+        color: 0x1b1c20,
+        bumpMap: fabricBump,
+        bumpScale: 0.012,
+        roughness: 0.84,
+        metalness: 0.04
+      });
+
+      const fabricBackTakenMat = new THREE.MeshStandardMaterial({
+        color: 0x141519,
+        bumpMap: fabricBump,
+        bumpScale: 0.012,
+        roughness: 0.87,
+        metalness: 0.03
+      });
+
+      const fabricCushionFreeMat = new THREE.MeshStandardMaterial({
+        color: 0x18191e,
+        bumpMap: fabricBump,
+        bumpScale: 0.012,
+        roughness: 0.84,
+        metalness: 0.04
+      });
+
+      const fabricCushionTakenMat = new THREE.MeshStandardMaterial({
+        color: 0x121317,
+        bumpMap: fabricBump,
+        bumpScale: 0.012,
+        roughness: 0.88,
+        metalness: 0.03
+      });
+
+      // Signature rich #4181F0 plush blue cushion (calibrated for ACES tone mapping so it stays vivid royal blue, not pastel!)
+      const fabricCushionSelectedMat = new THREE.MeshStandardMaterial({
+        color: 0x2668f0,
+        emissive: 0x1852d6,
+        emissiveIntensity: 0.48,
+        bumpMap: fabricBump,
+        bumpScale: 0.010,
+        roughness: 0.72,
+        metalness: 0.05
+      });
+
+      const fabricArmMat = new THREE.MeshStandardMaterial({
+        color: 0x14151a,
+        bumpMap: fabricBump,
+        bumpScale: 0.009,
+        roughness: 0.82,
+        metalness: 0.06
+      });
+
+      const seatPedestalMat = new THREE.MeshStandardMaterial({
+        color: 0x0c0d10,
+        roughness: 0.72,
+        metalness: 0.25
+      });
+
+      // Use InstancedMesh for static seatbacks, arms, pedestals -> super crisp & ultra-fast 60fps
+      const count96 = SEATS.length;
+      const instBack = new THREE.InstancedMesh(seatBackGeo, fabricBackMat, count96);
+      const instArmL = new THREE.InstancedMesh(seatArmGeo, fabricArmMat, count96);
+      const instArmR = new THREE.InstancedMesh(seatArmGeo, fabricArmMat, count96);
+      const instBase = new THREE.InstancedMesh(seatPedestalGeo, seatPedestalMat, count96);
+
+      const cushionMeshes = [];
+      const dummy = new THREE.Object3D();
+
+      SEATS.forEach((s, idx) => {
+        const { x, y, z, floorY } = s.world;
+
+        // 1. Individual cushion mesh positioned cleanly under the 2D seat footprint so full square cushion shows in overview!
+        const cushion = new THREE.Mesh(
+          seatCushionGeo,
+          s.taken ? fabricCushionTakenMat : fabricCushionFreeMat
+        );
+        cushion.position.set(x, y - 0.02, z - 0.03);
+        scene.add(cushion);
+        cushionMeshes.push(cushion);
+
+        // 2. Plush tall backrest positioned cleanly behind the cushion (+Z = bottom edge in overview!)
+        dummy.position.set(x, floorY + 0.75, z + 0.315);
+        dummy.rotation.set(-0.14, 0, 0); // subtle reclined lounge tilt
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        instBack.setMatrixAt(idx, dummy.matrix);
+
+        // 3. Left & right upholstered armrests
+        dummy.rotation.set(0, 0, 0);
+        dummy.position.set(x - 0.345, floorY + 0.62, z + 0.04);
+        dummy.updateMatrix();
+        instArmL.setMatrixAt(idx, dummy.matrix);
+
+        dummy.position.set(x + 0.345, floorY + 0.62, z + 0.04);
+        dummy.updateMatrix();
+        instArmR.setMatrixAt(idx, dummy.matrix);
+
+        // 4. Support base pedestal
+        dummy.position.set(x, floorY + 0.20, z + 0.06);
+        dummy.updateMatrix();
+        instBase.setMatrixAt(idx, dummy.matrix);
+      });
+
+      instBack.instanceMatrix.needsUpdate = true;
+      instArmL.instanceMatrix.needsUpdate = true;
+      instArmR.instanceMatrix.needsUpdate = true;
+      instBase.instanceMatrix.needsUpdate = true;
+
+      scene.add(instBack, instArmL, instArmR, instBase);
+
+      // Update which 3D seat cushions glow blue to match the active selected seats
+      function sync3DSelectedSeats() {
+        for (let i = 0; i < SEATS.length; i++) {
+          const s = SEATS[i];
+          const isSel = s.r === state.selectedRow && state.selectedCols.includes(s.c);
+          if (isSel) {
+            cushionMeshes[i].material = fabricCushionSelectedMat;
+          } else {
+            cushionMeshes[i].material = s.taken ? fabricCushionTakenMat : fabricCushionFreeMat;
+          }
+        }
+      }
+      sync3DSelectedSeats();
+
+      /* =====================================================================
+         5. 2D SEAT MAP, DRAG-TO-RELOCATE, MINI MAP & HUD DOM CONSTRUCTION
+         ===================================================================== */
+      const mapStage = document.getElementById('map-stage');
+      const screenArcGroup = document.getElementById('screen-arc-group');
+      const staticLayer = document.getElementById('seats-static-layer');
+      const ghostLayer = document.getElementById('seats-ghost-layer');
+      const selectedLayer = document.getElementById('seats-selected-layer');
+      const dragLayer = document.getElementById('seats-drag-layer');
+      const legendRow = document.getElementById('legend-row');
+      const mapDivider = document.getElementById('map-divider');
+      const theaterVeil = document.getElementById('theater-veil');
+      const lookLayer = document.getElementById('look-layer');
+
+      const hudHeader = document.getElementById('hud-header');
+      const hudStepper = document.getElementById('hud-stepper');
+      const hudBottom = document.getElementById('hud-bottom');
+      const miniMapWrap = document.getElementById('mini-map-wrap');
+      const miniMapTrack = document.getElementById('mini-map-track');
+      const dragTooltip = document.getElementById('drag-tooltip');
+      const bookingToast = document.getElementById('booking-toast');
+
+      const btnMinus = document.getElementById('btn-minus');
+      const btnPlus = document.getElementById('btn-plus');
+      const ticketCountLabel = document.getElementById('ticket-count-label');
+      const summarySeatsEl = document.getElementById('summary-seats');
+      const summaryPriceEl = document.getElementById('summary-price');
+      const btnPreview = document.getElementById('btn-preview');
+      const btnPreviewLabel = document.getElementById('btn-preview-label');
+      const btnBook = document.getElementById('btn-book');
+
+      function createSeatDom(sw, sh, className, labelText) {
+        const el = document.createElement('div');
+        el.className = `seat-node ${className}`;
+        el.style.setProperty('--sw', `${sw.toFixed(2)}px`);
+        el.style.setProperty('--sh', `${sh.toFixed(2)}px`);
+
+        const back = document.createElement('div');
+        back.className = 'seat-back';
+        if (labelText !== undefined && labelText !== '') back.textContent = labelText;
+
+        const bar = document.createElement('div');
+        bar.className = 'seat-bar';
+
+        el.appendChild(back);
+        el.appendChild(bar);
+        return el;
+      }
+
+      // Build static 96 seat slots + left/right row labels A–H
+      const staticSeatEls = [];
+      for (let r = 0; r < 8; r++) {
+        const rp = ROW_PROJ[r];
+        // Left & right row labels nestled cleanly inside x=244..756 alongside each expanding row
+        const pad = 25;
+        const leftLbl = document.createElement('div');
+        leftLbl.className = 'row-label';
+        leftLbl.textContent = ROWS[r];
+        leftLbl.style.left = `${Math.max(250, rp.leftX - pad).toFixed(1)}px`;
+        leftLbl.style.top = `${rp.y.toFixed(1)}px`;
+        staticLayer.appendChild(leftLbl);
+
+        const rightLbl = document.createElement('div');
+        rightLbl.className = 'row-label';
+        rightLbl.textContent = ROWS[r];
+        rightLbl.style.left = `${Math.min(750, rp.rightX + pad).toFixed(1)}px`;
+        rightLbl.style.top = `${rp.y.toFixed(1)}px`;
+        staticLayer.appendChild(rightLbl);
+      }
+
+      for (const s of SEATS) {
+        const el = createSeatDom(s.sw, s.sh, s.taken ? 'taken' : 'free', '');
+        el.style.left = `${s.dx.toFixed(2)}px`;
+        el.style.top = `${s.dy.toFixed(2)}px`;
+        el.dataset.row = s.r;
+        el.dataset.col = s.c;
+
+        // Clicking an empty seat smoothly moves the group to the nearest valid group containing it
+        if (!s.taken) {
+          el.addEventListener('click', () => {
+            if (state.mode !== 'MAP' || state.drag.active) return;
+            const groups = getAllValidGroups(state.ticketCount).filter(
+              g => g.r === s.r && g.cols.includes(s.c)
+            );
+            let target = null;
+            if (groups.length > 0) {
+              // Prefer group whose center is closest to clicked seat
+              target = groups.reduce((a, b) =>
+                Math.abs(a.cx - s.dx) <= Math.abs(b.cx - s.dx) ? a : b
+              );
+            } else {
+              target = findNearestValidGroup(s.dx, s.dy, state.ticketCount);
+            }
+            if (target) {
+              commitSeatSelection(target.r, target.cols);
+            }
+          });
+        }
+        staticLayer.appendChild(el);
+        staticSeatEls.push(el);
+      }
+
+      // Render the active blue selected seat nodes in selectedLayer
+      function renderSelectedSeats2D() {
+        selectedLayer.innerHTML = '';
+        if (state.drag.active) return; // While lifted, original slots show hollow Free seats beneath!
+
+        for (const col of state.selectedCols) {
+          const s = SEAT_BY_RC[state.selectedRow][col];
+          const el = createSeatDom(s.sw, s.sh, 'selected', String(col));
+          el.style.left = `${s.dx.toFixed(2)}px`;
+          el.style.top = `${s.dy.toFixed(2)}px`;
+          el.dataset.row = s.r;
+          el.dataset.col = s.c;
+          el.addEventListener('pointerdown', onSelectedSeatPointerDown);
+          selectedLayer.appendChild(el);
+        }
+      }
+
+      function renderGhostCandidate(cand) {
+        ghostLayer.innerHTML = '';
+        if (!cand) return;
+        for (const col of cand.cols) {
+          const s = SEAT_BY_RC[cand.r][col];
+          const el = createSeatDom(s.sw, s.sh, 'ghost', '');
+          el.style.left = `${s.dx.toFixed(2)}px`;
+          el.style.top = `${s.dy.toFixed(2)}px`;
+          ghostLayer.appendChild(el);
+        }
+      }
+
+      function updateSummaryUI() {
+        const count = state.ticketCount;
+        const total = (count * TICKET_PRICE).toFixed(2);
+        ticketCountLabel.textContent = count === 1 ? '1 ticket' : `${count} tickets`;
+        btnMinus.disabled = count <= 1;
+        btnPlus.disabled = count >= 4;
+
+        const rowLetter = ROWS[state.selectedRow];
+        const seatWord = count === 1 ? 'Seat' : 'Seats';
+        summarySeatsEl.textContent = `Row ${rowLetter} · ${seatWord} ${formatSeatRange(state.selectedCols)}`;
+        summaryPriceEl.textContent = `${count} × €${TICKET_PRICE.toFixed(2)}`;
+        btnBook.textContent = `Book seats · €${total}`;
+      }
+
+      // Build & update the translucent mini seat map shown below the seated view
+      function buildMiniMap() {
+        miniMapTrack.innerHTML = '';
+        for (let r = 0; r < 8; r++) {
+          const rowEl = document.createElement('div');
+          rowEl.className = 'mini-row';
+          rowEl.dataset.row = r;
+
+          const lLbl = document.createElement('div');
+          lLbl.className = 'mini-row-label';
+          lLbl.textContent = ROWS[r];
+          rowEl.appendChild(lLbl);
+
+          const leftSide = document.createElement('div');
+          leftSide.className = 'mini-side';
+          const rightSide = document.createElement('div');
+          rightSide.className = 'mini-side';
+
+          for (let c = 1; c <= 12; c++) {
+            const seatEl = document.createElement('div');
+            seatEl.className = 'mini-seat';
+            seatEl.dataset.row = r;
+            seatEl.dataset.col = c;
+            const b = document.createElement('div');
+            b.className = 'mini-seat-back';
+            const l = document.createElement('div');
+            l.className = 'mini-seat-bar';
+            seatEl.appendChild(b);
+            seatEl.appendChild(l);
+
+            if (!isTaken(r, c)) {
+              seatEl.addEventListener('click', () => {
+                if (state.mode !== 'SEATED') return;
+                const groups = getAllValidGroups(state.ticketCount).filter(
+                  g => g.r === r && g.cols.includes(c)
+                );
+                if (groups.length > 0) {
+                  const sRef = SEAT_BY_RC[r][c];
+                  const best = groups.reduce((a, b) =>
+                    Math.abs(a.cx - sRef.dx) <= Math.abs(b.cx - sRef.dx) ? a : b
+                  );
+                  commitSeatSelection(best.r, best.cols);
+                }
+              });
+            }
+            (c <= 6 ? leftSide : rightSide).appendChild(seatEl);
+          }
+
+          const aisle = document.createElement('div');
+          aisle.className = 'mini-aisle';
+
+          const rLbl = document.createElement('div');
+          rLbl.className = 'mini-row-label';
+          rLbl.textContent = ROWS[r];
+
+          rowEl.appendChild(leftSide);
+          rowEl.appendChild(aisle);
+          rowEl.appendChild(rightSide);
+          rowEl.appendChild(rLbl);
+          miniMapTrack.appendChild(rowEl);
+        }
+      }
+
+      function updateMiniMap() {
+        const rowEls = miniMapTrack.children;
+        for (let r = 0; r < 8; r++) {
+          const rowEl = rowEls[r];
+          const dist = Math.abs(r - state.selectedRow);
+          rowEl.classList.toggle('is-active', dist === 0);
+          rowEl.classList.toggle('is-near', dist === 1);
+          rowEl.classList.toggle('is-far', dist >= 2);
+
+          const seats = rowEl.querySelectorAll('.mini-seat');
+          seats.forEach(el => {
+            const c = Number(el.dataset.col);
+            const taken = isTaken(r, c);
+            const selected = r === state.selectedRow && state.selectedCols.includes(c);
+            el.className = 'mini-seat ' + (selected ? 'selected' : taken ? 'taken' : 'free');
+            el.firstChild.textContent = selected ? String(c) : '';
+          });
+        }
+        // Center the selected row inside the 100px viewport (row height 24px + gap 7px = 31px pitch)
+        const offsetY = 50 - (state.selectedRow * 31 + 12);
+        miniMapTrack.style.transform = `translateY(${offsetY}px)`;
+      }
+
+      function commitSeatSelection(r, cols) {
+        state.selectedRow = r;
+        state.selectedCols = cols.slice();
+        renderSelectedSeats2D();
+        updateSummaryUI();
+        updateMiniMap();
+        sync3DSelectedSeats();
+      }
+
+      buildMiniMap();
+      renderSelectedSeats2D();
+      updateSummaryUI();
+      updateMiniMap();
+
+      /* =====================================================================
+         6. GRAB & DRAG SELECTED SEATS INTERACTION
+            - Hover blue seats -> open hand (grab)
+            - Press -> closed hand (grabbing), blue cluster lifts smoothly,
+              original spots reveal hollow Free seats
+            - Drag -> solid blue seats track pointer, thin blue hollow outline
+              marks nearest valid group (can cross central aisle e.g. G9-10 -> E5-6),
+              white floating pill ~25px above pointer shows candidate ("Row F · 8–9")
+            - Bottom summary stays on previous selection until release!
+            - Release -> blue cluster settles gently into target outline, pill vanishes,
+              bottom summary updates!
+         ===================================================================== */
+      let activeDragClusterEl = null;
+
+      function clientToDesign(clientX, clientY) {
+        return {
+          x: (clientX - state.designOriginX) / state.designScale,
+          y: (clientY - state.designOriginY) / state.designScale
+        };
+      }
+
+      function positionDragTooltip(clientX, clientY, cand, isTouch) {
+        if (!cand) {
+          dragTooltip.classList.remove('visible');
+          return;
+        }
+        const rowLetter = ROWS[cand.r];
+        dragTooltip.textContent = `Row ${rowLetter} · ${formatSeatRange(cand.cols)}`;
+        // Float ~25px above mouse cursor, or ~50px above finger on touchscreens so thumb doesn't cover text
+        const tipScale = THREE.MathUtils.clamp(state.designScale, 0.76, 1.0);
+        const liftPx = isTouch ? 52 : Math.round(25 * tipScale);
+        dragTooltip.style.setProperty('--tip-scale', tipScale.toFixed(3));
+        dragTooltip.style.left = `${THREE.MathUtils.clamp(clientX, 64, state.vw - 64)}px`;
+        dragTooltip.style.top = `${Math.max(44, clientY - liftPx)}px`;
+        dragTooltip.classList.add('visible');
+      }
+
+      function onSelectedSeatPointerDown(e) {
+        if (state.mode !== 'MAP' || state.drag.active) return;
+        if (e.button !== undefined && e.button !== 0) return;
+        e.preventDefault();
+
+        const isTouch = e.pointerType === 'touch';
+        const p = clientToDesign(e.clientX, e.clientY);
+        const cols = state.selectedCols;
+        const r = state.selectedRow;
+
+        let cx = 0, cy = 0;
+        const relSeats = [];
+        for (const col of cols) {
+          const s = SEAT_BY_RC[r][col];
+          cx += s.dx;
+          cy += s.dy;
+        }
+        cx /= cols.length;
+        cy /= cols.length;
+
+        for (const col of cols) {
+          const s = SEAT_BY_RC[r][col];
+          relSeats.push({
+            col,
+            ox: s.dx - cx,
+            oy: s.dy - cy,
+            sw: s.sw,
+            sh: s.sh
+          });
+        }
+
+        state.drag.active = true;
+        state.drag.pointerId = e.pointerId;
+        state.drag.isTouch = isTouch;
+        state.drag.grabOffsetX = cx - p.x;
+        state.drag.grabOffsetY = (cy - p.y) - (isTouch ? 24 : 0);
+        state.drag.clusterX = cx;
+        state.drag.clusterY = cy;
+        state.drag.relSeats = relSeats;
+        state.drag.candidate = { r, cols: cols.slice(), cx, cy };
+
+        document.body.classList.add('is-dragging-seats');
+        renderSelectedSeats2D(); // Clears selected layer -> exposes original hollow free seats!
+        renderGhostCandidate(state.drag.candidate);
+
+        // Build lifted floating blue cluster
+        dragLayer.innerHTML = '';
+        const cluster = document.createElement('div');
+        cluster.className = 'drag-cluster';
+        for (const rs of relSeats) {
+          const node = createSeatDom(rs.sw, rs.sh, 'lifted', String(rs.col));
+          node.style.left = `${rs.ox.toFixed(2)}px`;
+          node.style.top = `${rs.oy.toFixed(2)}px`;
+          cluster.appendChild(node);
+        }
+        const liftY = isTouch ? 24 : 5;
+        cluster.style.transform = `translate3d(${cx.toFixed(2)}px, ${(cy - liftY).toFixed(2)}px, 0) scale(1.07)`;
+        dragLayer.appendChild(cluster);
+        activeDragClusterEl = cluster;
+
+        positionDragTooltip(e.clientX, e.clientY, state.drag.candidate, isTouch);
+
+        window.addEventListener('pointermove', onDragPointerMove, { passive: false });
+        window.addEventListener('pointerup', onDragPointerUp);
+        window.addEventListener('pointercancel', onDragPointerUp);
+      }
+
+      function onDragPointerMove(e) {
+        if (!state.drag.active) return;
+        e.preventDefault();
+        const p = clientToDesign(e.clientX, e.clientY);
+        const cx = p.x + state.drag.grabOffsetX;
+        const cy = p.y + state.drag.grabOffsetY;
+        state.drag.clusterX = cx;
+        state.drag.clusterY = cy;
+
+        if (activeDragClusterEl) {
+          activeDragClusterEl.style.transition = 'none';
+          activeDragClusterEl.style.transform = `translate3d(${cx.toFixed(2)}px, ${(cy - 5).toFixed(2)}px, 0) scale(1.07)`;
+        }
+
+        const nearest = findNearestValidGroup(cx, cy, state.ticketCount);
+        if (nearest) {
+          const prev = state.drag.candidate;
+          if (!prev || prev.r !== nearest.r || prev.cols[0] !== nearest.cols[0]) {
+            state.drag.candidate = nearest;
+            renderGhostCandidate(nearest);
+          }
+          positionDragTooltip(e.clientX, e.clientY, nearest, state.drag.isTouch);
+        }
+      }
+
+      function onDragPointerUp(e) {
+        if (!state.drag.active) return;
+        window.removeEventListener('pointermove', onDragPointerMove);
+        window.removeEventListener('pointerup', onDragPointerUp);
+        window.removeEventListener('pointercancel', onDragPointerUp);
+
+        document.body.classList.remove('is-dragging-seats');
+        dragTooltip.classList.remove('visible');
+
+        const target = state.drag.candidate || {
+          r: state.selectedRow,
+          cols: state.selectedCols,
+          cx: state.drag.clusterX,
+          cy: state.drag.clusterY
+        };
+
+        // Smoothly settle lifted blue seats into the target hollow outline
+        const settlingCluster = activeDragClusterEl;
+        activeDragClusterEl = null;
+
+        if (settlingCluster) {
+          // Update seat numbers & inter-seat spacing to match the destination row perspective
+          const nodes = settlingCluster.children;
+          for (let i = 0; i < nodes.length && i < target.cols.length; i++) {
+            const destSeat = SEAT_BY_RC[target.r][target.cols[i]];
+            nodes[i].style.transition = 'left 0.2s cubic-bezier(0.22,1,0.36,1), top 0.2s cubic-bezier(0.22,1,0.36,1)';
+            nodes[i].style.left = `${(destSeat.dx - target.cx).toFixed(2)}px`;
+            nodes[i].style.top = `${(destSeat.dy - target.cy).toFixed(2)}px`;
+            nodes[i].style.setProperty('--sw', `${destSeat.sw.toFixed(2)}px`);
+            nodes[i].style.setProperty('--sh', `${destSeat.sh.toFixed(2)}px`);
+            nodes[i].firstChild.textContent = String(target.cols[i]);
+          }
+          settlingCluster.style.transition = 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)';
+          settlingCluster.style.transform = `translate3d(${target.cx.toFixed(2)}px, ${target.cy.toFixed(2)}px, 0) scale(1.0)`;
+        }
+
+        // Update selection data & bottom bar right on drop
+        state.selectedRow = target.r;
+        state.selectedCols = target.cols.slice();
+        updateSummaryUI();
+        updateMiniMap();
+        sync3DSelectedSeats();
+
+        setTimeout(() => {
+          state.drag.active = false;
+          state.drag.candidate = null;
+          dragLayer.innerHTML = '';
+          ghostLayer.innerHTML = '';
+          renderSelectedSeats2D();
+        }, 225);
+      }
+
+      /* =====================================================================
+         7. TICKET COUNT STEPPER & BOOKING ACTION
+         ===================================================================== */
+      function changeTicketCount(delta) {
+        const nextCount = THREE.MathUtils.clamp(state.ticketCount + delta, 1, 4);
+        if (nextCount === state.ticketCount) return;
+
+        // Compute current center so we keep the user in the same spot if possible
+        let cx = 0, cy = 0;
+        for (const col of state.selectedCols) {
+          cx += SEAT_BY_RC[state.selectedRow][col].dx;
+          cy += SEAT_BY_RC[state.selectedRow][col].dy;
+        }
+        cx /= state.selectedCols.length;
+        cy /= state.selectedCols.length;
+
+        const sameRowGroups = getAllValidGroups(nextCount).filter(g => g.r === state.selectedRow);
+        let picked = null;
+        if (sameRowGroups.length > 0) {
+          picked = sameRowGroups.reduce((a, b) =>
+            Math.abs(a.cx - cx) <= Math.abs(b.cx - cx) ? a : b
+          );
+        } else {
+          picked = findNearestValidGroup(cx, cy, nextCount);
+        }
+        if (!picked) return;
+
+        state.ticketCount = nextCount;
+        commitSeatSelection(picked.r, picked.cols);
+      }
+
+      btnMinus.addEventListener('click', () => changeTicketCount(-1));
+      btnPlus.addEventListener('click', () => changeTicketCount(1));
+
+      let toastTimer = null;
+      btnBook.addEventListener('click', () => {
+        const rowLetter = ROWS[state.selectedRow];
+        const total = (state.ticketCount * TICKET_PRICE).toFixed(2);
+        bookingToast.textContent = `Confirmed · Row ${rowLetter}, Seats ${formatSeatRange(state.selectedCols)} (€${total})`;
+        bookingToast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => bookingToast.classList.remove('show'), 2600);
+      });
+
+      /* =====================================================================
+         8. SEATED LOOK-AROUND (HORIZONTAL DRAG IN PLACE)
+         ===================================================================== */
+      let lookDrag = { active: false, pointerId: null, startX: 0, startY: 0, baseYaw: 0, basePitch: 0 };
+
+      lookLayer.addEventListener('pointerdown', (e) => {
+        if (state.mode !== 'SEATED') return;
+        if (e.button !== undefined && e.button !== 0) return;
+        lookDrag.active = true;
+        lookDrag.pointerId = e.pointerId;
+        lookDrag.startX = e.clientX;
+        lookDrag.startY = e.clientY;
+        lookDrag.baseYaw = state.lookYawTarget;
+        lookDrag.basePitch = state.lookPitchTarget;
+        lookLayer.classList.add('dragging');
+        lookLayer.setPointerCapture(e.pointerId);
+      });
+
+      lookLayer.addEventListener('pointermove', (e) => {
+        if (!lookDrag.active || state.mode !== 'SEATED') return;
+        const dx = e.clientX - lookDrag.startX;
+        const dy = e.clientY - lookDrag.startY;
+        // Dragging right turns head left (or natural panoramic drag-the-world feel):
+        // Let dragging mouse LEFT look LEFT? Wait: test both intuitions:
+        // Prompt: "按住并横向拖动即可坐在原位左右转头。朝左看时，左墙灯带逐渐铺满视野，银幕向右侧滑出；反向拖动可以看见右墙。"
+        // In 360 viewers / Google Street View, dragging RIGHT pulls the left wall into view (screen slides right -> looking LEFT)!
+        // Let's make horizontal drag crisp and responsive (~0.0024 rad/px)
+        const sensitivity = 0.00235;
+        state.lookYawTarget = THREE.MathUtils.clamp(
+          lookDrag.baseYaw + dx * sensitivity,
+          THREE.MathUtils.degToRad(-74),
+          THREE.MathUtils.degToRad(74)
+        );
+        // Subtle vertical micro-freedom so looking around feels alive without breaking framing
+        state.lookPitchTarget = THREE.MathUtils.clamp(
+          lookDrag.basePitch + dy * 0.00075,
+          THREE.MathUtils.degToRad(-10),
+          THREE.MathUtils.degToRad(14)
+        );
+      });
+
+      function endLookDrag() {
+        if (!lookDrag.active) return;
+        lookDrag.active = false;
+        lookLayer.classList.remove('dragging');
+      }
+      lookLayer.addEventListener('pointerup', endLookDrag);
+      lookLayer.addEventListener('pointercancel', endLookDrag);
+
+      // Double-click in seated view smoothly re-centers gaze on screen
+      lookLayer.addEventListener('dblclick', () => {
+        if (state.mode !== 'SEATED') return;
+        state.lookYawTarget = 0;
+        state.lookPitchTarget = 0;
+      });
+
+      /* =====================================================================
+         9. PREVIEW <-> SEATS 4-SECOND TIMELINE TRANSITION
+            Forward (0.0 -> 4.0s):
+              0.0–0.8s: 3D theater reveals under aligned 2D map, then 2D fades out
+              0.8–3.4s: Smooth S-curve arc flight from overview to seated eye height;
+                        HUD smoothly migrates to viewport corners & bottom
+              3.4–4.0s: Camera settles, translucent mini seat map emerges,
+                        Preview button becomes four-square icon + "Seats"
+            Reverse (Seats clicked, 4.0 -> 0.0s):
+              Mini map fades out first, look-around smoothly centers, camera flies
+              back along the entry path to overview alignment, 2D map reappears over
+              aligned 3D seats, theater fades back to #0C0C0C.
+         ===================================================================== */
+      let returnStartYaw = 0;
+      let returnStartPitch = 0;
+
+      btnPreview.addEventListener('click', () => {
+        if (state.drag.active) return;
+        if (state.mode === 'MAP') {
+          state.mode = 'FLY_IN';
+          state.animTime = 0;
+          state.lookYaw = 0;
+          state.lookYawTarget = 0;
+          state.lookPitchOffset = 0;
+          state.lookPitchTarget = 0;
+          const st = getSeatedTargetForSelection(state.selectedRow, state.selectedCols);
+          state.seatedCamPos = st.pos.clone();
+          state.seatedCamYaw = st.yaw;
+          state.seatedCamPitch = st.pitch;
+        } else if (state.mode === 'SEATED') {
+          state.mode = 'FLY_OUT';
+          state.animTime = 4.0;
+          returnStartYaw = state.lookYaw;
+          returnStartPitch = state.lookPitchOffset;
+          lookLayer.classList.remove('active', 'dragging');
+        } else if (state.mode === 'FLY_IN') {
+          state.mode = 'FLY_OUT';
+          returnStartYaw = 0;
+          returnStartPitch = 0;
+        } else if (state.mode === 'FLY_OUT') {
+          state.mode = 'FLY_IN';
+        }
+      });
+
+      /* =====================================================================
+         10. CAMERA PROJECTION, HUD INTERPOLATION & RENDER LOOP
+         ===================================================================== */
+      function computeViewportMetrics() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        state.vw = vw;
+        state.vh = vh;
+        // Desktop preserves the exact 1000x1000 design canvas framing;
+        // Portrait phones focus comfortably on the 512px interactive core so seats are easy to grab with one thumb!
+        const sBase = Math.min(vw, vh) / 1000;
+        let s = sBase;
+        if (vw < 720 || vw < vh * 0.92) {
+          const sFocus = Math.min((vw - 24) / 512, (vh - 48) / 700);
+          s = Math.min(1.0, Math.max(sBase, sFocus));
+        }
+        state.designScale = s;
+        state.designOriginX = (vw - 1000 * s) * 0.5;
+        state.designOriginY = (vh - 1000 * s) * 0.5;
+
+        mapStage.style.transform = `translate3d(${state.designOriginX}px, ${state.designOriginY}px, 0) scale(${s})`;
+
+        renderer.setSize(vw, vh, false);
+        camera.aspect = vw / vh;
+      }
+
+      // Compute exact vertical FOV so Overview 3D projection matches 1000x1000 stage 1:1 at ANY aspect ratio
+      function getOverviewActualFov() {
+        const tanHalfDesign = Math.tan(THREE.MathUtils.degToRad(OVERVIEW_CAM.fovDesign * 0.5));
+        const tanHalfActual = (state.vh / (1000 * state.designScale)) * tanHalfDesign;
+        return THREE.MathUtils.radToDeg(2 * Math.atan(tanHalfActual));
+      }
+
+      // Compute Seated vertical FOV so when sitting in E5–6 the 9.2m screen covers ~70% of desktop viewport width
+      // and expands gracefully on narrow portrait phones so the AVENGERS: DOOMSDAY screen remains cleanly framed!
+      function getSeatedActualFov() {
+        const aspect = state.vw / state.vh;
+        if (aspect < 0.85) {
+          // Portrait mobile phone: natural wide theater lens so title + screen stay cleanly legible
+          const portraitFov = THREE.MathUtils.lerp(88, 74, THREE.MathUtils.clamp((aspect - 0.44) / 0.41, 0, 1));
+          return THREE.MathUtils.clamp(portraitFov, 74, 90);
+        }
+        // Desktop / landscape: Screen half-width 4.6m at z=8.38m -> tan(halfScreenAngle) = 0.549
+        // For ~70% horizontal screen coverage: tan(hfov/2) = 0.549 / 0.70 = 0.785
+        const targetTanHalfH = 0.790;
+        const tanHalfV = targetTanHalfH / Math.max(0.95, Math.min(1.92, aspect));
+        const vfov = THREE.MathUtils.radToDeg(2 * Math.atan(tanHalfV));
+        return THREE.MathUtils.clamp(vfov, 46, 76);
+      }
+
+      // Smooth S-curve: slow start, accelerated mid-section, gentle deceleration into the seat
+      function easeFlight(u) {
+        u = THREE.MathUtils.clamp(u, 0, 1);
+        // Quintic smootherstep blended slightly toward graceful long landing
+        const s = u * u * u * (u * (u * 6 - 15) + 10);
+        return s;
+      }
+
+      function easeInOutCubic(u) {
+        u = THREE.MathUtils.clamp(u, 0, 1);
+        return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      }
+
+      function cubicBezierVec3(p0, p1, p2, p3, t, out) {
+        const mt = 1 - t;
+        const a = mt * mt * mt;
+        const b = 3 * mt * mt * t;
+        const c = 3 * mt * t * t;
+        const d = t * t * t;
+        out.set(
+          a * p0.x + b * p1.x + c * p2.x + d * p3.x,
+          a * p0.y + b * p1.y + c * p2.y + d * p3.y,
+          a * p0.z + b * p1.z + c * p2.z + d * p3.z
+        );
+        return out;
+      }
+
+      // Position the 3 HUD blocks smoothly between design-stage coordinates (p=0) and preview-anchored coordinates (p=1)
+      function updateHudLayout(hudProgress) {
+        const p = easeInOutCubic(hudProgress);
+        const s = state.designScale;
+        const ox = state.designOriginX;
+        const oy = state.designOriginY;
+        const vw = state.vw;
+        const vh = state.vh;
+
+        // Preview-mode HUD scale & edge padding (clean 24px/28px on desktop, compact non-overlapping on narrow phones)
+        const isNarrow = vw < 640;
+        const edgePad = isNarrow ? 16 : 24;
+        const botPad = isNarrow ? 22 : 28;
+        const hudScalePreview = isNarrow
+          ? THREE.MathUtils.clamp((vw - edgePad * 2) / 485, 0.58, 0.84)
+          : THREE.MathUtils.clamp(Math.min(vw / 1180, vh / 860), 0.72, 1.0);
+        const curScale = THREE.MathUtils.lerp(s, hudScalePreview, p);
+
+        // 1. Header: map=(244, 166) -> preview=(edgePad, edgePad)
+        const hMapX = ox + 244 * s;
+        const hMapY = oy + 166 * s;
+        const hPrevX = edgePad;
+        const hPrevY = edgePad;
+        const hx = THREE.MathUtils.lerp(hMapX, hPrevX, p);
+        const hy = THREE.MathUtils.lerp(hMapY, hPrevY, p);
+        hudHeader.style.transform = `translate3d(${hx.toFixed(1)}px, ${hy.toFixed(1)}px, 0) scale(${curScale.toFixed(4)})`;
+
+        // 2. Ticket Stepper (188x48): map right-aligned to x=756 -> preview top-right
+        const stMapX = ox + (756 - 188) * s;
+        const stMapY = oy + 167 * s;
+        const stPrevX = vw - edgePad - 188 * hudScalePreview;
+        const stPrevY = edgePad;
+        const stx = THREE.MathUtils.lerp(stMapX, stPrevX, p);
+        const sty = THREE.MathUtils.lerp(stMapY, stPrevY, p);
+        hudStepper.style.transform = `translate3d(${stx.toFixed(1)}px, ${sty.toFixed(1)}px, 0) scale(${curScale.toFixed(4)})`;
+
+        // 3. Bottom Purchase Area (512px wide; summary row 46px + 64px buttons = 110px tall):
+        //    In design canvas: buttons top at y=764 -> block top at y=718 (buttons end at 828)
+        //    In preview mode: centered horizontally, 512px wide (scaled cleanly on phones), ~28px from bottom
+        const botScalePreview = isNarrow
+          ? Math.min(0.88, (vw - 24) / 512)
+          : Math.min(1.0, (vw - 32) / 512, Math.max(0.78, vh / 880));
+        const curBotScale = THREE.MathUtils.lerp(s, botScalePreview, p);
+        const bMapX = ox + 244 * s;
+        const bMapY = oy + 718 * s;
+        const bPrevX = (vw - 512 * botScalePreview) * 0.5;
+        const bPrevY = vh - botPad - 110 * botScalePreview;
+        const bx = THREE.MathUtils.lerp(bMapX, bPrevX, p);
+        const by = THREE.MathUtils.lerp(bMapY, bPrevY, p);
+        hudBottom.style.transform = `translate3d(${bx.toFixed(1)}px, ${by.toFixed(1)}px, 0) scale(${curBotScale.toFixed(4)})`;
+      }
+
+      const vecP0 = new THREE.Vector3(0, OVERVIEW_CAM.y, OVERVIEW_CAM.z);
+      const vecP1 = new THREE.Vector3();
+      const vecP2 = new THREE.Vector3();
+      const vecCam = new THREE.Vector3();
+
+      function applyTimeline(t, dt, elapsed) {
+        // t in [0, 4.0]
+        // --- Phase 1: 0.0 - 0.8s (Reveal 3D theater aligned under 2D map, then fade 2D out) ---
+        // Veil fades out over 0.0 -> 0.44s so the 3D hall & aligned blue cushions clearly show right behind the 2D seats
+        const veilAlpha = 1.0 - easeInOutCubic(THREE.MathUtils.clamp(t / 0.44, 0, 1));
+        theaterVeil.style.opacity = veilAlpha.toFixed(4);
+        theaterVeil.style.display = veilAlpha <= 0.002 ? 'none' : 'block';
+
+        // After full alignment is clearly visible (~0.44-0.50s), fade out 2D seat outlines, screen arc, row labels, legend
+        const mapChromeOpacity = 1.0 - easeInOutCubic(THREE.MathUtils.clamp((t - 0.48) / 0.28, 0, 1));
+        // Blue 2D selected seat icons linger slightly longer (0.54->0.80s) so the eye watches them become the 3D blue cushions!
+        const blueIconsOpacity = 1.0 - easeInOutCubic(THREE.MathUtils.clamp((t - 0.54) / 0.26, 0, 1));
+
+        screenArcGroup.style.opacity = mapChromeOpacity.toFixed(4);
+        staticLayer.style.opacity = mapChromeOpacity.toFixed(4);
+        legendRow.style.opacity = mapChromeOpacity.toFixed(4);
+        mapDivider.style.opacity = mapChromeOpacity.toFixed(4);
+        selectedLayer.style.opacity = blueIconsOpacity.toFixed(4);
+
+        const mapInteractive = t <= 0.02 && state.mode === 'MAP';
+        mapStage.style.visibility = blueIconsOpacity <= 0.002 ? 'hidden' : 'visible';
+        selectedLayer.style.pointerEvents = mapInteractive ? 'auto' : 'none';
+        staticLayer.style.pointerEvents = mapInteractive ? 'auto' : 'none';
+
+        // --- Phase 2: 0.8 - 3.4s (Smooth arc camera flight + HUD migration) ---
+        const uFlightRaw = THREE.MathUtils.clamp((t - 0.8) / 2.6, 0, 1);
+        const uPos = easeFlight(uFlightRaw);
+        // Pitch lifts slightly ahead of final arrival so the screen sweeps dramatically down from the top edge
+        const uLook = easeFlight(Math.pow(uFlightRaw, 0.90));
+        const uFov = easeInOutCubic(uFlightRaw);
+
+        // Seated target position (smoothly interpolates if user switches seats while already seated)
+        const targetSeat = getSeatedTargetForSelection(state.selectedRow, state.selectedCols);
+        if (!state.seatedCamPos) {
+          state.seatedCamPos = targetSeat.pos.clone();
+          state.seatedCamYaw = targetSeat.yaw;
+          state.seatedCamPitch = targetSeat.pitch;
+        } else if (state.mode === 'SEATED') {
+          const k = 1 - Math.exp(-dt * 6.5);
+          state.seatedCamPos.lerp(targetSeat.pos, k);
+          state.seatedCamYaw = THREE.MathUtils.lerp(state.seatedCamYaw, targetSeat.yaw, k);
+          state.seatedCamPitch = THREE.MathUtils.lerp(state.seatedCamPitch, targetSeat.pitch, k);
+        } else {
+          state.seatedCamPos.copy(targetSeat.pos);
+          state.seatedCamYaw = targetSeat.yaw;
+          state.seatedCamPitch = targetSeat.pitch;
+        }
+
+        // Control points for sweeping cinema arc from rear-above down into the chosen seats
+        vecP1.set(
+          state.seatedCamPos.x * 0.14,
+          15.8,
+          14.6
+        );
+        vecP2.set(
+          state.seatedCamPos.x * 0.84,
+          state.seatedCamPos.y + 3.25,
+          state.seatedCamPos.z + 2.95
+        );
+
+        cubicBezierVec3(vecP0, vecP1, vecP2, state.seatedCamPos, uPos, vecCam);
+        camera.position.copy(vecCam);
+
+        // Look-around damping when seated, or smooth re-centering during FLY_OUT
+        let activeLookYaw = 0;
+        let activeLookPitch = 0;
+        if (state.mode === 'SEATED') {
+          const damp = 1 - Math.exp(-dt * 10.5);
+          state.lookYaw = THREE.MathUtils.lerp(state.lookYaw, state.lookYawTarget, damp);
+          state.lookPitchOffset = THREE.MathUtils.lerp(state.lookPitchOffset, state.lookPitchTarget, damp);
+          activeLookYaw = state.lookYaw;
+          activeLookPitch = state.lookPitchOffset;
+        } else if (state.mode === 'FLY_OUT') {
+          // Smoothly unwind any head-turn over the first 0.7s of return (4.0 -> 3.3s)
+          const unwind = easeInOutCubic(THREE.MathUtils.clamp((t - 3.3) / 0.7, 0, 1));
+          activeLookYaw = returnStartYaw * unwind;
+          activeLookPitch = returnStartPitch * unwind;
+        }
+
+        const pitch0 = -THREE.MathUtils.degToRad(OVERVIEW_CAM.pitchDeg);
+        const curPitch = THREE.MathUtils.lerp(pitch0, state.seatedCamPitch, uLook) + activeLookPitch;
+        const curYaw = THREE.MathUtils.lerp(0, state.seatedCamYaw, uLook) + activeLookYaw;
+
+        camera.rotation.set(curPitch, curYaw, 0, 'YXZ');
+
+        const fovOver = getOverviewActualFov();
+        const fovSeat = getSeatedActualFov();
+        camera.fov = THREE.MathUtils.lerp(fovOver, fovSeat, uFov);
+        camera.updateProjectionMatrix();
+
+        // Seamlessly fade ceiling & ceiling spotlights as camera descends below ceiling plane (no clipping pop)
+        const ceilVis = THREE.MathUtils.clamp((7.8 - camera.position.y) / 1.7, 0, 1);
+        ceilingGroup.visible = ceilVis > 0.005;
+        ceilingMat.opacity = ceilVis;
+        for (let i = 0; i < ceilingSpotMats.length; i++) {
+          const baseOp = i % 2 === 0 ? 0.78 : 0.36;
+          ceilingSpotMats[i].opacity = baseOp * ceilVis;
+        }
+
+        // HUD migration follows the flight segment 0.8 -> 3.4s
+        updateHudLayout(uFlightRaw);
+
+        // --- Phase 3: 3.4 - 4.0s (Mini seat map fades in, Preview button becomes Seats) ---
+        const miniProg = easeInOutCubic(THREE.MathUtils.clamp((t - 3.42) / 0.56, 0, 1));
+        miniMapWrap.style.opacity = miniProg.toFixed(4);
+        miniMapWrap.style.transform = `translateX(-50%) translateY(${((1 - miniProg) * 10).toFixed(2)}px)`;
+        miniMapWrap.classList.toggle('interactive', state.mode === 'SEATED' && miniProg > 0.95);
+
+        const showSeatsBtn = t >= 3.45;
+        btnPreview.classList.toggle('is-seats', showSeatsBtn);
+        btnPreviewLabel.textContent = showSeatsBtn ? 'Seats' : 'Preview';
+
+        // Subtle cinema projector breathing on the localized screen bounce light
+        const flicker = 1.0 + Math.sin(elapsed * 2.1) * 0.022 + Math.sin(elapsed * 5.7) * 0.01;
+        screenBounceCenter.intensity = 0.72 * flicker;
+        screenBounceLow.intensity = 0.56 * flicker;
+      }
+
+      computeViewportMetrics();
+      window.addEventListener('resize', () => {
+        computeViewportMetrics();
+        applyTimeline(state.animTime, 0.016, 0);
+      });
+
+      // Main 60fps Animation Loop
+      let lastTs = performance.now();
+      let startTs = lastTs;
+
+      function tick(now) {
+        requestAnimationFrame(tick);
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) / 1000));
+        lastTs = now;
+        const elapsed = (now - startTs) / 1000;
+
+        if (state.mode === 'FLY_IN') {
+          state.animTime += dt;
+          if (state.animTime >= 4.0) {
+            state.animTime = 4.0;
+            state.mode = 'SEATED';
+            lookLayer.classList.add('active');
+          }
+        } else if (state.mode === 'FLY_OUT') {
+          state.animTime -= dt;
+          if (state.animTime <= 0) {
+            state.animTime = 0;
+            state.mode = 'MAP';
+            state.lookYaw = 0;
+            state.lookYawTarget = 0;
+            state.lookPitchOffset = 0;
+            state.lookPitchTarget = 0;
+          }
+        }
+
+        applyTimeline(state.animTime, dt, elapsed);
+
+        // Only run WebGL render when theater is at least slightly visible (saves GPU on pure black map screen)
+        if (state.animTime > 0.001 || state.mode !== 'MAP') {
+          renderer.render(scene, camera);
+        }
+      }
+
+      // Render one initial frame so shaders & textures are pre-warmed (zero stutter on Preview click!)
+      applyTimeline(0, 0.016, 0);
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+
+      // Expose read-only inspection helper for verification
+      window.__cinemaDebug = {
+        getState: () => ({
+          mode: state.mode,
+          animTime: state.animTime,
+          selectedRow: ROWS[state.selectedRow],
+          selectedCols: state.selectedCols.slice(),
+          ticketCount: state.ticketCount,
+          camPos: camera.position.toArray().map(v => +v.toFixed(2)),
+          camFov: +camera.fov.toFixed(2)
+        }),
+        getRowProj: () => ROW_PROJ.map(r => ({ row: ROWS[r.row], y: +r.y.toFixed(2), leftX: +r.leftX.toFixed(1), rightX: +r.rightX.toFixed(1) }))
+      };
+    }
+
+    window.__bootCinemaApp = bootApp;
+    if (typeof THREE !== 'undefined') {
+      bootApp();
+    } else {
+      window.addEventListener('load', bootApp);
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1424,5 +1424,50 @@
         "en": "asset categories"
       }
     ]
+  },
+  {
+    "sort": 310,
+    "published": true,
+    "category": "3d",
+    "status": "live",
+    "year": 2026,
+    "hue": "#4181f0",
+    "url": "https://works.sugarv.mom/cimine-chose-gpt/",
+    "repo": "https://github.com/SugarVei/Cimine-chose-gpt",
+    "images": [
+      "assets/cimine-chose-gpt.webp"
+    ],
+    "title_zh": "Cimine chose-gpt",
+    "title_en": "Cimine chose-gpt",
+    "kind_zh": "3D 影院选座",
+    "kind_en": "3D Cinema Seat Preview",
+    "line_zh": "拖动连座，飞进影厅，从自己的座位看银幕。",
+    "line_en": "Move your seats, fly into the auditorium and see the screen from your row.",
+    "lead_zh": "把连座拖到同排空位，点击 Preview 飞到椅子上。按住画面左右转头，点迷你座位图里的蓝色座号切换视角，再点 Seats 回到原来的座位图。",
+    "lead_en": "Drag the seats to an open block in the same row or another row. Choose Preview to fly in, drag to look around, and select a blue seat number on the mini map to switch viewpoints. Seats takes you back to the map.",
+    "tags_zh": [
+      "影院选座",
+      "连座拖放",
+      "实时渲染"
+    ],
+    "tags_en": [
+      "Cinema seating",
+      "Group drag and drop",
+      "Real-time rendering"
+    ],
+    "facts": [
+      {
+        "n": "96",
+        "zh": "个座位",
+        "en": "seats"
+      },
+      {
+        "n": "8",
+        "zh": "排座椅",
+        "en": "rows"
+      }
+    ],
+    "tech": "HTML · CSS · JavaScript · Three.js",
+    "host": "GitHub Pages"
   }
 ]

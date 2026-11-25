@@ -1,4 +1,4 @@
-import { compactSamples } from './compact-samples.js?v=1';
+import { compactSamples } from './compact-samples.js?v=2';
 
 // A replacement cover takes effect immediately. Locally hosted covers and posters
 // share a basename. These projects use remote cover URLs in the portfolio catalog.

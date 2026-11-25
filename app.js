@@ -4,7 +4,7 @@ import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-dem
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
 import { DissolveCarousel } from './dissolve-carousel.js?v=4';
-import { CompactGallery } from './compact-gallery.js?v=2';
+import { CompactGallery } from './compact-gallery.js?v=3';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -158,6 +158,8 @@ const tagsOf = idea => (state.lang === 'en' && idea.tags_en?.length ? idea.tags_
 
 const PUNCH_DRIVE_URL = 'https://works.sugarv.mom/sumo-cars/';
 const STILLROOM_URL = 'https://stillroom-studio-1.vercel.app/';
+const CASE_STUDIO_URL = 'https://works.sugarv.mom/case-studio/';
+const SEED_PROJECT_URLS = [CASE_STUDIO_URL, STILLROOM_URL];
 const PUNCH_DRIVE_DEFAULTS = {
   repo: 'https://github.com/SugarVei/sumo-cars',
   images: ['assets/punch-drive-menu.webp', 'assets/punch-drive-garage.webp', 'assets/punch-drive-sumo.webp', 'assets/punch-drive-race.webp']
@@ -175,9 +177,10 @@ async function loadIdeas() {
   if (sb) {
     const { data, error } = await sb.from('vault_ideas').select('*').order('sort').order('created_at');
     if (!error) { const featured = {"sort":5,"published":true,"category":"2d","status":"live","year":2026,"hue":"#628e85","url":"https://sugarvei.github.io/idea-vault/qinglian/","repo":"https://github.com/SugarVei/idea-vault/tree/main/qinglian","images":["assets/qinglian-cover.svg"],"title_zh":"轻练 · 四日训练","title_en":"Qinglian · Four-Day Training","kind_zh":"健身计划与记录","kind_en":"Workout Planner","line_zh":"按自己的节奏，安排训练、记录每一次进步。","line_en":"Plan your week and track your progress at your own pace.","lead_zh":"适合不同性别与训练基础的四日分化训练工具，支持拖拽安排一周、查看动作示范、调整训练组数、记录训练与备份数据。","lead_en":"A flexible four-day workout planner for different experience levels, with a draggable weekly schedule, exercise demonstrations, adjustable sets, training records and backups.","tags_zh":["训练计划","动作示范","记录与统计"],"tags_en":["Weekly plan","Exercise demos","Progress tracking"],"facts":[{"n":"4","zh":"个训练日","en":"training days"},{"n":"14","zh":"个动作示范","en":"exercise demos"},{"n":"1–4","zh":"组可调","en":"sets per exercise"}],"tech":"HTML · CSS · JavaScript","host":"GitHub Pages"}; const list = data.some(item => item.url === featured.url) ? [...data] : [featured, ...data];
-      if (!list.some(item => item.url === STILLROOM_URL)) {
-        const stillroom = (await loadSeed()).find(item => item.url === STILLROOM_URL);
-        if (stillroom) list.unshift(stillroom);
+      const missingUrls = SEED_PROJECT_URLS.filter(url => !list.some(item => item.url === url));
+      if (missingUrls.length) {
+        const featuredSeed = (await loadSeed()).filter(item => missingUrls.includes(item.url));
+        list.unshift(...featuredSeed);
       }
       state.ideas = list.map(enrichIdea);
       state.source = 'db';
@@ -194,7 +197,7 @@ let tutorials = {};
 fetch('data/tutorials.json').then(r => r.ok ? r.json() : {}).then(d => { tutorials = d || {}; }).catch(() => {});
 
 async function loadSeed() {
-  try { return await (await fetch('data/seed.json?v=stillroom')).json(); } catch { return []; }
+  try { return await (await fetch('data/seed.json?v=case-studio')).json(); } catch { return []; }
 }
 
 async function refreshAuth(session) {
@@ -544,7 +547,7 @@ function projectPreview(idea, carousel = false) {
   const film = !locked && isVideo(idea.url);
   // Resource pages use their official covers; their hosts may disallow embedding.
   // Carousels can embed Punch Drive; the grid uses its photo gallery.
-  const showCover = locked || idea.category === 'factory' || idea.url === STILLROOM_URL || (!carousel && idea.url === PUNCH_DRIVE_URL);
+  const showCover = locked || idea.category === 'factory' || idea.url === STILLROOM_URL || (!carousel && (idea.url === PUNCH_DRIVE_URL || idea.url === CASE_STUDIO_URL));
   const preview = showCover ? '' : previewUrl(idea.url, film);
   // This workspace requires sign-in; show its demo screenshots in the gallery.
   const resumeWorkspace = preview && ['sugarv.mom', 'www.sugarv.mom', 'sugar-job-system.vercel.app'].includes(new URL(preview).hostname);
@@ -584,7 +587,7 @@ function cardHtml(idea, index) {
   const bookmarkLabel = esc((active ? s.unsave : s.bookmark) + ' · ' + title);
   const pinned = pins.includes(bookmarkKey(idea));
   const pinLabel = esc((pinned ? s.unpin : s.pin) + ' · ' + title);
-  const experienceLink = idea.url === STILLROOM_URL
+  const experienceLink = SEED_PROJECT_URLS.includes(idea.url)
     ? '<a class="card-repo-link" href="' + esc(idea.url) + '" target="_blank" rel="noopener" aria-label="' + esc(title + ' · ' + s.open) + '">' + esc(s.open) + ' ↗</a>'
     : '';
   const media = projectMediaHtml(preview, { lazy: index > 5 || viewMode === 'compact' });

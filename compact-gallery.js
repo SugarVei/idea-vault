@@ -1,4 +1,4 @@
-import { compactArtwork } from './compact-artwork.js?v=2';
+import { compactArtwork } from './compact-artwork.js?v=3';
 
 export class CompactGallery {
   constructor(host, actions, icon) {

@@ -4,16 +4,18 @@ import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-dem
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
 import { DissolveCarousel } from './dissolve-carousel.js?v=4';
+import { CompactGallery } from './compact-gallery.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const UI = {
   zh: {
     title: 'Sugar 的仓库',
-    sub: '我的交互作品、设计实验与开源收藏。',
-    works: '作品', browse: '浏览作品', categories: '作品分类',
-    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示', arcView: '弧形展示', dissolveView: '粒子展示',
-    arcRegion: '弧形作品画廊',
+    rednoteProfile: 'SugarV 的小红书主页（在新标签页打开）',
+    githubProfile: 'SugarV 的 GitHub 主页（在新标签页打开）',
+    works: '作品', categories: '作品分类',
+    viewMode: '作品展示方式', gridView: '网格展示', panoramaView: '全景展示', arcView: '弧形展示', dissolveView: '粒子展示', compactView: '小卡片展示',
+    arcRegion: '弧形作品画廊', cardActions: '作品操作',
     dissolveRegion: '粒子作品轮播', dissolvePrevious: '上一件作品', dissolveNext: '下一件作品',
     dissolveDesktopHelp: '拖动、横向滚动或按方向键切换', dissolveTouchHelp: '左右滑动切换',
     panoramaRegion: '全景作品画廊', panoramaShow: '查看作品', panoramaDetails: '查看详情',
@@ -62,10 +64,11 @@ const UI = {
   },
   en: {
     title: "Sugar's Vault",
-    sub: 'My interactive projects, design experiments, and open-source finds.',
-    works: 'Work', browse: 'Browse work', categories: 'Project category',
-    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view', arcView: 'Arc view', dissolveView: 'Dissolve view',
-    arcRegion: 'Arc project gallery',
+    rednoteProfile: 'SugarV on Xiaohongshu (opens in a new tab)',
+    githubProfile: 'SugarV on GitHub (opens in a new tab)',
+    works: 'Work', categories: 'Project category',
+    viewMode: 'Project display mode', gridView: 'Grid view', panoramaView: 'Panorama view', arcView: 'Arc view', dissolveView: 'Dissolve view', compactView: 'Compact cards',
+    arcRegion: 'Arc project gallery', cardActions: 'Project actions',
     dissolveRegion: 'Dissolve project carousel', dissolvePrevious: 'Previous project', dissolveNext: 'Next project',
     dissolveDesktopHelp: 'Drag, scroll sideways or use the arrow keys', dissolveTouchHelp: 'Swipe to browse',
     panoramaRegion: 'Panoramic project gallery', panoramaShow: 'View project', panoramaDetails: 'View details',
@@ -246,7 +249,7 @@ let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 let savedOnly = false;
 let indexedIdeas = [];
 const VIEW_MODE_STORAGE_KEY = 'vault-view-mode';
-const VIEW_MODES = ['grid', 'panorama', 'arc', 'dissolve'];
+const VIEW_MODES = ['grid', 'panorama', 'arc', 'dissolve', 'compact'];
 function readViewMode() {
   const saved = store.get(VIEW_MODE_STORAGE_KEY);
   return VIEW_MODES.includes(saved) ? saved : 'grid';
@@ -255,6 +258,7 @@ let viewMode = readViewMode();
 const panoramaHost = $('#panorama');
 const arcHost = $('#arc-coverflow');
 const dissolveHost = $('#dissolve-carousel');
+const compactHost = $('#compact-gallery');
 const carouselHosts = { panorama: panoramaHost, arc: arcHost, dissolve: dissolveHost };
 let centeredPreview = null;
 const galleryActions = {
@@ -278,10 +282,11 @@ const galleryActions = {
 const panorama = new Panorama(panoramaHost, galleryActions);
 const arc = new ArcCoverflow(arcHost, galleryActions);
 const dissolve = new DissolveCarousel(dissolveHost, galleryActions);
+const compact = new CompactGallery(compactHost, galleryActions, icon);
 
 function renderViewSwitch() {
   const s = t();
-  const labels = { grid: s.gridView, panorama: s.panoramaView, arc: s.arcView, dissolve: s.dissolveView };
+  const labels = { grid: s.gridView, panorama: s.panoramaView, arc: s.arcView, dissolve: s.dissolveView, compact: s.compactView };
   $('#view-switch').setAttribute('aria-label', s.viewMode);
   for (const button of document.querySelectorAll('[data-view-mode]')) {
     const label = labels[button.dataset.viewMode];
@@ -416,9 +421,8 @@ function removeCenteredPreview() {
   centeredPreview = null;
 }
 
-function galleryCoverHtml(idea, locked, accent) {
+function galleryCoverHtml(idea, locked, accent, cover) {
   const title = pick(idea, 'title');
-  const cover = (idea.images || []).map(imgSrc).find(Boolean);
   const image = cover
     ? '<img src="' + esc(cover) + '" alt="" decoding="async" draggable="false" style="--preview-accent:' + accent + '">'
     : '<span class="cover-letter" aria-hidden="true">' + esc(title.slice(0, 1)) + '</span>';
@@ -437,13 +441,17 @@ function syncGalleryViews() {
     const key = bookmarkKey(idea);
     const locked = requiresCardPassword(idea);
     const accent = previewAccent(idea);
+    const coverSrc = (idea.images || []).map(imgSrc).find(Boolean) || '';
     return {
       key, index, title: pick(idea, 'title'), locked, accent: accent.startsWith('#') ? accent : '',
+      coverSrc,
       subtitle: locked ? s.passwordRequired : pick(idea, 'kind') || pick(idea, 'line'),
-      coverHtml: galleryCoverHtml(idea, locked, accent), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
+      coverHtml: galleryCoverHtml(idea, locked, accent, coverSrc), bookmarked: bookmarks.has(key), pinned: pins.includes(key)
     };
   });
   grid.hidden = viewMode !== 'grid';
+  const showsImportCard = !grid.hidden && grid.querySelector('.import-card:not([hidden])');
+  $('#empty-results').hidden = grid.hasAttribute('aria-busy') || items.length > 0 || Boolean(showsImportCard);
   const labels = {
     show: s.panoramaShow, details: s.panoramaDetails,
     bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
@@ -457,6 +465,8 @@ function syncGalleryViews() {
     desktopHelp: s.dissolveDesktopHelp, touchHelp: s.dissolveTouchHelp
   });
   dissolve.setActive(viewMode === 'dissolve' && items.length > 0);
+  compactHost.hidden = viewMode !== 'compact' || !items.length;
+  if (viewMode === 'compact') compact.setItems(items, { ...labels, actions: s.cardActions, region: s.compactView });
 }
 
 function setViewMode(mode, persist = true) {
@@ -639,7 +649,6 @@ function applyFilter() {
   });
   const ready = !grid.hasAttribute('aria-busy');
   $('#count').textContent = ready ? t().count(count) : '';
-  $('#empty-results').hidden = !ready || count > 0 || (importing && !importing.hidden);
   $('#empty-message').textContent = savedOnly && !bookmarks.size ? t().noSaved : t().noResults;
   syncGalleryViews();
   livePreviews.schedule();

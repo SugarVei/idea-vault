@@ -779,6 +779,14 @@ window.CaseThumbs = {"zip-06":"data:image/webp;base64,UklGRsgQAABXRUJQVlA4WAoAAA
 (() => {
   'use strict';
   const WIDTH = 300, HEIGHT = 610;
+  // +Z points out of the case back. Looking at the upright screen, left is +X.
+  const SCREEN_LEFT_X = 1, SCREEN_RIGHT_X = -1;
+  const sideButtons = [
+    {name:'操作按钮', normalX:SCREEN_LEFT_X, y:156, length:19},
+    {name:'音量加', normalX:SCREEN_LEFT_X, y:93, length:47},
+    {name:'音量减', normalX:SCREEN_LEFT_X, y:35, length:47},
+    {name:'侧边按钮', normalX:SCREEN_RIGHT_X, y:60, length:66}
+  ];
   const FRAME = { x: -10, y: -8, w: 320, h: 632 };
   const defaults = { series: '17', variant: 'Pro', base: 'transparent', body: '#e6e1d6', finish: 'gloss', layers: [] };
   function copy(value) {
@@ -1189,7 +1197,7 @@ window.CaseThumbs = {"zip-06":"data:image/webp;base64,UklGRsgQAABXRUJQVlA4WAoAAA
     }
     getModelMetrics(state=this.state) {
       const {x,cam,pro,big,next}=geometry(state);
-      return {w:WIDTH-2*x,h:HEIGHT,x,r:big?47:44,cam:{...cam},pro,big,next,cameraSrc:cameraSource(state)};
+      return {w:WIDTH-2*x,h:HEIGHT,x,r:big?47:44,cam:{...cam},pro,big,next,cameraSrc:cameraSource(state),sideButtons};
     }
     async exportSurface(state=this.getState()) {
       const visible=state.layers.filter(l=>!l.hidden && !['ring','heart-ring','heart-plate','plate','ribs'].includes(l.solid?.kind));
@@ -5388,10 +5396,10 @@ window.CaseAccessoryMeshes = (T,state) => {
       if(g.cameraSrc)parts.cameraFace=flat(group,'镜头保护盖图案',shield,mat('#fff',.10,.46,{transparent:true}),23.86,c.w,c.h,ix,iy);
     }
     // Side control caps retain their actual dimensions and are visibly raised above the bumper.
-    for(const [side,y,len,name] of [[-1,156,19,'操作按钮'],[-1,93,47,'音量加'],[-1,35,47,'音量减'],[1,60,66,'侧边按钮']]){
-      const key=slab(group,name,contour(len,10.5,4.8),mat(hex(state.rim,'#888c8d'),.50,.34),0,2.3,.65,side*(g.w/2+.4),y);
+    for(const {normalX,y,length,name} of g.sideButtons){
+      const key=slab(group,name,contour(length,10.5,4.8),mat(hex(state.rim,'#888c8d'),.50,.34),0,2.3,.65,normalX*(g.w/2+.4),y);
       // local X points up the side, local Z points away from the case.
-      key.quaternion.setFromRotationMatrix(sideMatrix(side));
+      key.quaternion.setFromRotationMatrix(sideMatrix(normalX));
     }
     return ink;
   }
@@ -5704,7 +5712,7 @@ window.CaseAccessoryMeshes = (T,state) => {
   .cl-screen{width:96%;height:98%;border-radius:inherit;position:relative;border:3px solid #0c0d0e;background:linear-gradient(133deg,#22282a 0%,#161a1c 41%,#1c2224 41.6%,#0b0e10 75%);overflow:hidden}
   .cl-screen::before{content:'';position:absolute;top:3.1%;left:36%;width:28%;height:3.4%;border-radius:50px;background:radial-gradient(circle at 84% 52%,#202c39 0 6%,#050607 9%);box-shadow:0 0 0 1px #202326}
   .cl-screen::after{content:'';position:absolute;bottom:2%;left:34%;height:2px;width:32%;border-radius:5px;background:#555956}
-  .cl-edge{left:0;top:0;transform-origin:0 0}.cl-edge-key{position:absolute;left:17%;top:25%;width:66%;height:12%;border-radius:3px;background:linear-gradient(90deg,#7a7b73,#dad9cc,#827f72);box-shadow:0 1px 1px #45463f}
+  .cl-edge{left:0;top:0;transform-origin:0 0}.cl-edge-key{position:absolute;left:17%;width:66%;border-radius:3px;background:linear-gradient(90deg,#7a7b73,#dad9cc,#827f72);box-shadow:0 1px 1px #45463f}
   .cl-angle{display:flex;align-items:center;gap:10px;margin:12px 0;color:#625c52;font-size:12px}.cl-angle input{flex:1;min-width:60px;accent-color:#d65c36}.cl-angle output{min-width:30px;text-align:right;font-variant-numeric:tabular-nums}
   @media(max-width:520px){.cl-main{padding:14px}.cl-modal header.cl-head{padding:13px 15px}.cl-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cl-thumb{height:110px}.cl-thumb img{height:98px}.cl-cardtools{padding:5px 3px 0;gap:0}.cl-cardtools .cl-btn{font-size:11px;padding:4px 6px;min-height:35px}.cl-card .cl-info{font-size:10px}.cl-form input{font-size:16px}.cl-modal .cl-btn{touch-action:manipulation}}
   `;
@@ -5876,10 +5884,10 @@ window.CaseAccessoryMeshes = (T,state) => {
       const {main,status,dialog}=modal('兼容预览');
       main.append(el('p','cl-muted','当前设备未能启用 WebGL，已切换为基础旋转视图。'));
       const stage=el('div','cl-stage'),model=el('div','cl-model'),img=el('img','cl-back');img.alt='包含机身、壳边和镜头开孔的成品背面效果';img.draggable=false;
-      const state=engine.getState(),big=/Plus|Max/.test(state.variant),inset=big?1:state.variant==='Pro'?4:6;
+      const state=engine.getState();
+      const {w:logicalWidth,h:logicalHeight,x:inset,r:cornerRadius,sideButtons}=engine.getModelMetrics(state);
       const rim=/^#[\da-f]{6}$/i.test(state.rim||'')?state.rim.slice(1).match(/../g).map(n=>parseInt(n,16)):null;
-      const logicalWidth=300-2*inset;
-      model.style.aspectRatio=logicalWidth+'/610';
+      model.style.aspectRatio=logicalWidth+'/'+logicalHeight;
       const front=el('div','cl-front');front.setAttribute('aria-hidden','true');front.append(el('div','cl-screen'));
       const loading=el('span','cl-muted','正在生成效果图…');stage.append(loading);main.append(stage);
       const control=el('label','cl-angle');control.append(el('span','','旋转角度'));
@@ -5911,7 +5919,7 @@ window.CaseAccessoryMeshes = (T,state) => {
       function buildSides() {
         const w=model.clientWidth,h=model.clientHeight;
         if(!w || !h)return;
-        const r=(big?47:44)*h/610,d=h*.039,edges=[],verts=[];
+        const scale=h/logicalHeight,r=cornerRadius*scale,d=h*.039,edges=[],verts=[];
         // Follow the same rounded silhouette as the rendered back. Each edge is a real
         // quadrilateral spanning the case depth, including at a strict 90-degree view.
         [[w-r,r,-90],[w-r,h-r,0],[r,h-r,90],[r,r,180]].forEach(([cx,cy,a])=>{
@@ -5930,7 +5938,19 @@ window.CaseAccessoryMeshes = (T,state) => {
             edge.style.background='linear-gradient(90deg,'+[tint(.68),tint(1.2)+' 23%',tint(.98)+' 54%',tint(1.12)+' 81%',tint(.65)].join(',')+')';
           }
           edge.style.transform='matrix3d(0,0,-1,0,'+[ux,uy,0,0,uy,-ux,0,0,x,y,d/2,1].join(',')+')';
-          if(len>h*.5)edge.append(el('i','cl-edge-key'));
+          if(len>h*.5){
+            const normalX=x>w/2?1:-1;
+            for(const button of sideButtons){
+              if(button.normalX!==normalX)continue;
+              const key=el('i','cl-edge-key');
+              const centerY=h/2-button.y*scale,buttonHeight=button.length*scale;
+              // The right edge runs downward around the outline and the left edge runs upward.
+              key.style.top=((centerY-y)*uy-buttonHeight/2)+'px';
+              key.style.height=buttonHeight+'px';
+              key.title=button.name;
+              edge.append(key);
+            }
+          }
           edges.push(edge);
         });
         img.style.cssText='width:'+320/logicalWidth*100+'%;height:'+632/610*100+'%;top:'+(-8/610*100)+'%;left:'+(-(10+inset)/logicalWidth*100)+'%;transform:translateZ('+(d/2+.1)+'px)';

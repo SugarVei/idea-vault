@@ -41,6 +41,9 @@ node serve.mjs
 弧形展示可用 Home / End 跳到首尾。手机纵向滑动可滚动页面。
 粒子展示参考 [MetalForge 的 Thanos 演示](https://metalforge.xyz/carousel#effect=thanos) 独立实现。卡片随拖动移动和缩放，离开中心的封面逐渐化成向外飘散的颗粒。支持手机横滑、横向滚动、轮播获得焦点后的滚轮操作，以及方向键和上一件／下一件按钮。有三件以上作品时循环浏览。
 小卡片按屏幕宽度调整列数。点击封面查看作品详情，卡片右上角的菜单可以收藏或置顶作品。
+上传新作品时，同时制作该作品的方形预览。根据内容选择实机画面、界面细节或视频帧，并在下方给标题留白。将 WebP 保存到 `assets/compact/`，与作品的本地首张封面同名。对于外部封面，在 `compact-artwork.js` 中登记封面网址和预览文件名。
+
+运行 `python scripts/build-compact-samples.py`（需要 Pillow）即可从成品生成随页面加载的低分辨率预览。更新已有小卡片时，同步更新浏览器缓存版本并在桌面和手机宽度下查看主体、标题和图片加载效果。
 五种样式共用分类、搜索、收藏、置顶和密码验证，支持双语、深色主题及减少动态效果设置。
 
 ## 导入新创意
@@ -110,3 +113,5 @@ Supabase Auth 的 Redirect URLs 已添加 `https://works.sugarv.mom/`，供注�
 - [22 个工厂仓储模型精选](https://works.sugarv.mom/factory-models/)：本仓库的轻量预览页，支持双语搜索和分类筛选，下载入口指向官方固定版本资产页。
 
 前四项卡片封面使用各官方页面／仓库公开的分享预览图。`factory-models/images/` 与 `assets/factory-models-cover.png` 为 NVIDIA SimReady Assets 随包提供的官方缩略图，保留原图；许可为 CC BY 4.0，完整来源与署名见 `factory-models/credits.html` 和 `factory-models/CC-BY-4.0.txt`。本站只发布预览图与资源链接，完整 USD、材质及纹理不进入此仓库。
+
+小卡片中的 NVIDIA CAD 转 SimReady、官方模型库和工厂仓储精选三张预览使用上述 NVIDIA 缩略图，做了抠图、重新构图、配色和线稿处理。两张 Airsup 小卡片取自对应官方示例的装配线与发动机剖面预览。

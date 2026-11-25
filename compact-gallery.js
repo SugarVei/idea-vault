@@ -1,4 +1,4 @@
-import { compactArtwork } from './compact-artwork.js?v=1';
+import { compactArtwork } from './compact-artwork.js?v=2';
 
 export class CompactGallery {
   constructor(host, actions, icon) {
@@ -9,7 +9,7 @@ export class CompactGallery {
       <article class="compact-card">
         <h2>
           <button type="button" class="compact-open">
-            <span class="compact-fallback" aria-hidden="true"></span>
+            <span class="compact-fallback" aria-hidden="true">${icon('image')}</span>
             <span class="compact-lock" aria-hidden="true">${icon('lock')}</span>
             <span class="compact-art" aria-hidden="true"><img alt="" decoding="async" draggable="false"></span>
             <span class="compact-caption"><span class="compact-title"></span><span class="compact-descriptor"></span></span>
@@ -91,14 +91,15 @@ export class CompactGallery {
   }
 
   updateCard(card, item, labels, position) {
-    const artwork = item.locked ? {} : compactArtwork(item);
-    card.dataset.treatment = artwork.treatment || 'full';
+    const artwork = compactArtwork(item);
     card.dataset.locked = String(item.locked);
-    card.style.setProperty('--compact-color', artwork.background || item.accent || '#585f6c');
-    card.style.setProperty('--compact-position', artwork.position || '50% 42%');
+    card.dataset.hasSample = String(Boolean(artwork.sample));
+    card.style.setProperty('--compact-color', item.accent || '#585f6c');
+    const art = card.querySelector('.compact-art');
+    art.style.backgroundImage = artwork.sample ? 'url("data:image/webp;base64,' + artwork.sample + '")' : '';
     const img = card.querySelector('img');
-    const src = item.locked ? '' : artwork.src || item.coverSrc;
-    img.loading = position < 7 ? 'eager' : 'lazy';
+    const src = artwork.src;
+    img.loading = position < 14 ? 'eager' : 'lazy';
     if (!src) {
       img.removeAttribute('src');
       img.classList.remove('is-ready');
@@ -120,7 +121,6 @@ export class CompactGallery {
     card.querySelector('.compact-title').textContent = primaryTitle;
     descriptor.textContent = hasDescriptor ? item.title.slice(separator + 1).trim() : '';
     descriptor.hidden = !hasDescriptor;
-    card.querySelector('.compact-fallback').textContent = Array.from(item.title.trim())[0] || '';
     const summary = card.querySelector('summary');
     summary.setAttribute('aria-label', labels.actions + ' · ' + item.title);
     summary.title = labels.actions;

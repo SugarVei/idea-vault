@@ -104,12 +104,16 @@ svg { display: block; flex: none; }
 .profile-actions, .admin-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
 .profile-actions { margin-bottom: 13px; }
 .profile-link {
-  position: relative; flex: none; display: grid; place-items: center; width: 38px; height: 38px;
+  --profile-size: 42px;
+  position: relative; flex: none; display: grid; place-items: center;
+  width: var(--profile-size); height: var(--profile-size);
   border-radius: 50%; transition: transform .18s var(--ease-ui);
 }
-.profile-link svg { fill: currentColor; }
+.profile-link svg { width: 78%; height: 78%; fill: currentColor; }
 .profile-rednote { background: #ff2442; color: #fff; }
-.profile-github { background: #f1f1ef; color: #202124; }
+.profile-github { background: currentColor; color: #24262a; }
+:root[data-theme="dark"] .profile-github { color: #f4f5f6; }
+:root[data-theme="dark"] .profile-github circle { fill: #202124; }
 @media (hover: hover) { .profile-link:hover { transform: translateY(-2px); } }
 .profile-link:active { transform: scale(.95); }
 .work-section.filtered { padding-top: 29px; }
@@ -429,7 +433,7 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   .grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
 }
 @media (hover: none) {
-  .profile-link { width: 44px; height: 44px; }
+  .profile-link { --profile-size: 44px; }
   .preview-toggle { opacity: 1; }
   .carousel-preview-toggle.pill { min-height: 44px; }
   .pin-button { min-height: 44px; }

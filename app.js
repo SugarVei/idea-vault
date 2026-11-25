@@ -4,7 +4,7 @@ import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-dem
 import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
 import { DissolveCarousel } from './dissolve-carousel.js?v=4';
-import { CompactGallery } from './compact-gallery.js?v=1';
+import { CompactGallery } from './compact-gallery.js?v=2';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -255,6 +255,7 @@ function readViewMode() {
   return VIEW_MODES.includes(saved) ? saved : 'grid';
 }
 let viewMode = readViewMode();
+let gridPreviewsPending = false;
 const panoramaHost = $('#panorama');
 const arcHost = $('#arc-coverflow');
 const dissolveHost = $('#dissolve-carousel');
@@ -456,14 +457,16 @@ function syncGalleryViews() {
     show: s.panoramaShow, details: s.panoramaDetails,
     bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
   };
-  panorama.setItems(items, { ...labels, region: s.panoramaRegion });
+  if (viewMode !== 'compact') {
+    panorama.setItems(items, { ...labels, region: s.panoramaRegion });
+    arc.setItems(items, { ...labels, region: s.arcRegion });
+    dissolve.setItems(items, {
+      ...labels, region: s.dissolveRegion, previous: s.dissolvePrevious, next: s.dissolveNext,
+      desktopHelp: s.dissolveDesktopHelp, touchHelp: s.dissolveTouchHelp
+    });
+  }
   panorama.setActive(viewMode === 'panorama' && items.length > 0);
-  arc.setItems(items, { ...labels, region: s.arcRegion });
   arc.setActive(viewMode === 'arc' && items.length > 0);
-  dissolve.setItems(items, {
-    ...labels, region: s.dissolveRegion, previous: s.dissolvePrevious, next: s.dissolveNext,
-    desktopHelp: s.dissolveDesktopHelp, touchHelp: s.dissolveTouchHelp
-  });
   dissolve.setActive(viewMode === 'dissolve' && items.length > 0);
   compactHost.hidden = viewMode !== 'compact' || !items.length;
   if (viewMode === 'compact') compact.setItems(items, { ...labels, actions: s.cardActions, region: s.compactView });
@@ -474,6 +477,7 @@ function setViewMode(mode, persist = true) {
   viewMode = mode;
   if (persist) store.set(VIEW_MODE_STORAGE_KEY, mode);
   if (mode !== 'grid') grid.querySelectorAll('video').forEach(video => video.pause());
+  if (mode === 'grid' && gridPreviewsPending) mountGridPreviews();
   renderViewSwitch();
   syncGalleryViews();
   livePreviews.schedule();
@@ -583,7 +587,7 @@ function cardHtml(idea, index) {
   const experienceLink = idea.url === STILLROOM_URL
     ? '<a class="card-repo-link" href="' + esc(idea.url) + '" target="_blank" rel="noopener" aria-label="' + esc(title + ' · ' + s.open) + '">' + esc(s.open) + ' ↗</a>'
     : '';
-  const media = projectMediaHtml(preview, { lazy: index > 5 });
+  const media = projectMediaHtml(preview, { lazy: index > 5 || viewMode === 'compact' });
   const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
   const sourceLabel = idea.url === STILLROOM_URL ? 'GitHub' : s.source;
   const repoLink = !locked && isHttp(idea.repo)
@@ -602,11 +606,20 @@ function cardHtml(idea, index) {
 }
 
 function renderGrid() {
+  grid.hidden = viewMode !== 'grid';
   indexedIdeas = state.ideas.map(searchIndex);
   grid.innerHTML = state.ideas.map(cardHtml).join('') +
     (state.isAdmin ? '<button type="button" class="stage import-card" data-act="add"><span aria-hidden="true">+</span>' + esc(t().add) + '</button>' : '');
   grid.removeAttribute('aria-busy');
   applyPinOrder(false);
+  gridPreviewsPending = viewMode === 'compact';
+  if (gridPreviewsPending) livePreviews.reset([]);
+  else mountGridPreviews();
+  applyFilter();
+}
+
+function mountGridPreviews() {
+  gridPreviewsPending = false;
   for (const card of grid.querySelectorAll('.project-card')) {
     if (card.dataset.passwordRequired === 'true') continue;
     const demo = card.querySelector('.card-demo');
@@ -620,7 +633,6 @@ function renderGrid() {
     }
   }
   livePreviews.reset(grid.querySelectorAll('.project-frame[data-preview-url]:not([data-kind="cover"])'));
-  applyFilter();
 }
 
 function applyFilter() {

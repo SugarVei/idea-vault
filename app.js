@@ -197,7 +197,7 @@ let tutorials = {};
 fetch('data/tutorials.json').then(r => r.ok ? r.json() : {}).then(d => { tutorials = d || {}; }).catch(() => {});
 
 async function loadSeed() {
-  try { return await (await fetch('data/seed.json?v=case-studio')).json(); } catch { return []; }
+  try { return await (await fetch('data/seed.json?v=case-studio-repo')).json(); } catch { return []; }
 }
 
 async function refreshAuth(session) {

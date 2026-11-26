@@ -19,7 +19,7 @@ export class ArcCoverflow {
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     host.classList.add('arc-coverflow');
     host.innerHTML = `
-      <div class="arc-stage" tabindex="0" role="region" aria-roledescription="carousel"></div>
+      <div class="arc-stage" tabindex="0" role="region"></div>
       <div class="arc-caption">
         <button type="button" class="arc-title"></button>
         <p class="arc-subtitle"></p>
@@ -99,6 +99,7 @@ export class ArcCoverflow {
     const previousIndex = items.findIndex(item => item.key === previousKey);
     this.index = previousIndex >= 0 ? previousIndex : Math.min(4, Math.floor(Math.max(0, items.length - 1) / 2));
     this.stage.setAttribute('aria-label', labels.region);
+    this.stage.setAttribute('aria-roledescription', labels.carouselRole);
     this.title.title = labels.details;
 
     const keys = new Set(items.map(item => item.key));

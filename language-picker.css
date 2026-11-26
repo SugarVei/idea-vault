@@ -81,6 +81,9 @@
   inset-inline-end: 0;
   top: calc(100% + 10px);
   width: min(212px, calc(100vw - 26px));
+  max-height: calc(100dvh - 66px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin: 0;
   padding: 6px;
   list-style: none;

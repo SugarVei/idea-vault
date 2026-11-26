@@ -1,7 +1,10 @@
 // Lucian UX/UI Prompt #448 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#448
 const languages = [
-  { key: 'zh', tag: 'zh-Hans', name: '简体中文', menu: '选择语言' },
+  { key: 'ko', tag: 'ko', name: '한국어', menu: '언어 선택' },
   { key: 'en', tag: 'en', name: 'English', menu: 'Choose language' },
+  { key: 'ja', tag: 'ja', name: '日本語', menu: '言語を選択' },
+  { key: 'zh', tag: 'zh-Hans', name: '简体中文', menu: '选择语言' },
+  { key: 'es', tag: 'es', name: 'Español', menu: 'Elegir idioma' },
 ];
 
 export function mountLanguagePicker(button, onChange) {
@@ -46,7 +49,11 @@ export function mountLanguagePicker(button, onChange) {
   function highlight(index) {
     active = (index + options.length) % options.length;
     options.forEach((option, i) => option.classList.toggle('is-active', i === active));
-    list.setAttribute('aria-activedescendant', options[active].id);
+    const option = options[active];
+    list.setAttribute('aria-activedescendant', option.id);
+    const bottom = option.offsetTop + option.offsetHeight;
+    if (option.offsetTop < list.scrollTop) list.scrollTop = option.offsetTop;
+    else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight;
   }
 
   function open() {
@@ -67,7 +74,7 @@ export function mountLanguagePicker(button, onChange) {
 
   function select(index) {
     close(true);
-    if (index !== selected) onChange(languages[index].key);
+    onChange(languages[index].key);
   }
 
   button.addEventListener('click', () => list.inert ? open() : close(true));

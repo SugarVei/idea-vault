@@ -19,12 +19,10 @@ export function cardDemo(url) {
   }
 }
 
-export function demoHint(demo, language) {
-  if (demo === 'earth') return language === 'zh' ? '拖动' : 'Drag';
-  if (demo === 'harbor') return language === 'zh' ? '点击' : 'Click';
-  const touch = !matchMedia('(hover: hover)').matches;
-  if (language === 'zh') return touch ? '触碰' : '悬停';
-  return touch ? 'Tap' : 'Hover';
+export function demoHint(demo, labels) {
+  if (demo === 'earth') return labels.drag;
+  if (demo === 'harbor') return labels.click;
+  return matchMedia('(hover: hover)').matches ? labels.hover : labels.tap;
 }
 
 function element(tag, className) {
@@ -48,9 +46,8 @@ function image(name) {
   return node;
 }
 
-function harbor(host, zh) {
+function harbor(host, labels) {
   const scenes = ['harbor-1.jpg', 'harbor-3.jpg', 'harbor-2.jpg'];
-  const labels = zh ? ['日落', '夜景', '集市'] : ['Sunset', 'Night', 'Market'];
   const view = element('div', 'demo-view');
   const frames = scenes.map((name, index) => {
     const frame = image(name);
@@ -59,8 +56,8 @@ function harbor(host, zh) {
   });
   const choices = element('div', 'harbor-scenes');
   choices.setAttribute('role', 'group');
-  choices.setAttribute('aria-label', zh ? '切换柑橘港场景' : 'Change harbor scene');
-  const controls = labels.map((label, index) => {
+  choices.setAttribute('aria-label', labels.harbor);
+  const controls = labels.scenes.map((label, index) => {
     const control = button('');
     control.textContent = label;
     control.setAttribute('aria-pressed', String(index === 0));
@@ -91,7 +88,7 @@ function globeTexture() {
   return texture;
 }
 
-function earth(host, zh) {
+function earth(host, labels) {
   const size = 248;
   const canvas = element('canvas', 'earth-globe');
   canvas.width = canvas.height = size;
@@ -103,7 +100,7 @@ function earth(host, zh) {
   }
   canvas.tabIndex = 0;
   canvas.setAttribute('role', 'slider');
-  canvas.setAttribute('aria-label', zh ? '拖动或使用左右方向键旋转地球' : 'Rotate Earth by dragging or using the arrow keys');
+  canvas.setAttribute('aria-label', labels.earth);
   canvas.setAttribute('aria-valuemin', '0');
   canvas.setAttribute('aria-valuemax', '359');
   canvas.setAttribute('aria-valuenow', '95');
@@ -182,12 +179,12 @@ function earth(host, zh) {
   });
 }
 
-function jolly(host, zh) {
+function jolly(host, labels) {
   const columns = 9;
   const rows = 7;
   const middleX = (columns - 1) / 2;
   const middleY = (rows - 1) / 2;
-  const view = button('jolly-gaze', zh ? '移动指针或轻触，让 Jolly 看向你' : 'Move the pointer or tap to make Jolly look');
+  const view = button('jolly-gaze', labels.jolly);
   const stage = host.closest('.stage') || host;
   const sprite = image('card-jolly-smooth.webp');
   sprite.className = 'jolly-sprite';
@@ -275,8 +272,8 @@ function jolly(host, zh) {
   });
 }
 
-function particles(host, zh, mono) {
-  const view = button('demo-view particle-preview', zh ? '移动指针或轻触拨开粒子' : 'Move the pointer or tap to scatter the particles');
+function particles(host, labels, mono) {
+  const view = button('demo-view particle-preview', labels.particles);
   const canvas = document.createElement('canvas');
   const width = canvas.width = 560;
   const height = canvas.height = 268;
@@ -351,22 +348,21 @@ function particles(host, zh, mono) {
   draw();
 }
 
-export function mountCardDemo(host, language) {
-  const zh = language === 'zh';
+export function mountCardDemo(host, labels) {
   switch (host.dataset.demo) {
-    case 'harbor': harbor(host, zh); break;
-    case 'earth': earth(host, zh); break;
-    case 'jolly': jolly(host, zh); break;
-    case 'neon': particles(host, zh, false); break;
-    case 'mono': particles(host, zh, true); break;
+    case 'harbor': harbor(host, labels); break;
+    case 'earth': earth(host, labels); break;
+    case 'jolly': jolly(host, labels); break;
+    case 'neon': particles(host, labels, false); break;
+    case 'mono': particles(host, labels, true); break;
   }
 }
 
-export function mountCoverPreview(host, photos, language) {
+export function mountCoverPreview(host, photos, labels) {
   if (photos.length < 2) return;
   const image = host.querySelector('img');
   if (!image) return;
-  const next = button('preview-next', language === 'zh' ? '下一张预览图' : 'Next preview image');
+  const next = button('preview-next', labels.next);
   const count = element('span', 'preview-count');
   count.setAttribute('aria-hidden', 'true');
   let current = 0;

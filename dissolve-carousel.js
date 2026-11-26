@@ -25,7 +25,7 @@ export class DissolveCarousel {
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     host.classList.add('dissolve-gallery');
     host.innerHTML = `
-      <div class="dissolve-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-describedby="dissolve-help">
+      <div class="dissolve-stage" tabindex="0" role="region" aria-describedby="dissolve-help">
         <canvas class="dissolve-dust" width="1" height="1" aria-hidden="true"></canvas>
       </div>
       <div class="dissolve-footer">
@@ -122,6 +122,7 @@ export class DissolveCarousel {
     this.items = items;
     this.labels = labels;
     this.stage.setAttribute('aria-label', labels.region);
+    this.stage.setAttribute('aria-roledescription', labels.carouselRole);
     this.title.title = labels.details;
     this.previous.setAttribute('aria-label', labels.previous);
     this.previous.title = labels.previous;

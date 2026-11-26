@@ -27,7 +27,7 @@ export class Panorama {
     this.captionKey = null;
     this.reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     host.innerHTML = `
-      <div class="panorama-stage" tabindex="0" role="region" aria-roledescription="carousel">
+      <div class="panorama-stage" tabindex="0" role="region">
         <div class="panorama-ring"></div>
       </div>
       <div class="panorama-caption">
@@ -156,6 +156,7 @@ export class Panorama {
     const previousKey = this.items.length ? this.items[mod(Math.round(this.position), this.items.length)].key : null;
     const sameOrder = items.length === this.items.length && items.every((item, i) => item.key === this.items[i].key);
     this.items = items;
+    if (labels.region !== this.labels.region && this.announcement.textContent) this.announceAtRest = true;
     this.labels = labels;
     if (!sameOrder) {
       this.position = Math.max(0, items.findIndex(item => item.key === previousKey));
@@ -164,6 +165,7 @@ export class Panorama {
       this.drag = null;
     }
     this.stage.setAttribute('aria-label', labels.region);
+    this.stage.setAttribute('aria-roledescription', labels.carouselRole);
     this.title.title = labels.details;
     this.captionKey = null;
     this.measure();

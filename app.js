@@ -1,18 +1,25 @@
 import { SUPABASE_URL, SUPABASE_KEY, BUCKET } from './config.js';
 import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
-import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=3';
-import { Panorama } from './panorama.js?v=4';
-import { ArcCoverflow } from './arc-coverflow.js?v=3';
-import { DissolveCarousel } from './dissolve-carousel.js?v=4';
+import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=4';
+import { Panorama } from './panorama.js?v=5';
+import { ArcCoverflow } from './arc-coverflow.js?v=4';
+import { DissolveCarousel } from './dissolve-carousel.js?v=5';
 import { CompactGallery } from './compact-gallery.js?v=3';
 import { mountThemeSwitch } from './theme-switch.js?v=1';
-import { mountLanguagePicker } from './language-picker.js?v=1';
+import { mountLanguagePicker } from './language-picker.js?v=2';
+import ko from './locales/ko-ui.js';
+import ja from './locales/ja-ui.js';
+import es from './locales/es-ui.js';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const UI = {
+  ko, ja, es,
   zh: {
-    title: 'Sugar 的仓库',
+    title: 'Sugar 的仓库', carouselRole: '轮播',
+    description: 'SugarV 的交互作品、设计实验与开源收藏。', languageError: '未能加载该语言，请重试。',
+    demo: { drag: '拖动', click: '点击', tap: '触碰', hover: '悬停', scenes: ['日落', '夜景', '集市'], harbor: '切换柑橘港场景', earth: '拖动或使用左右方向键旋转地球', jolly: '移动指针或轻触，让 Jolly 看向你', particles: '移动指针或轻触拨开粒子', next: '下一张预览图' },
+    officialDocs: '官方文档', simulation: '离散事件仿真', materials: '材质', physicsMetadata: '物理元数据', nvidiaAssets: 'NVIDIA OpenUSD 资产',
     rednoteProfile: 'SugarV 的小红书主页（在新标签页打开）',
     githubProfile: 'SugarV 的 GitHub 主页（在新标签页打开）',
     works: '作品', categories: '作品分类',
@@ -65,7 +72,10 @@ const UI = {
     jsonFilled: '已从 JSON 填入表单，检查后保存'
   },
   en: {
-    title: "Sugar's Vault",
+    title: "Sugar's Vault", carouselRole: 'carousel',
+    description: 'Interactive projects, design experiments, and open-source finds by SugarV.', languageError: 'Could not load this language. Please try again.',
+    demo: { drag: 'Drag', click: 'Click', tap: 'Tap', hover: 'Hover', scenes: ['Sunset', 'Night', 'Market'], harbor: 'Change harbor scene', earth: 'Rotate Earth by dragging or using the arrow keys', jolly: 'Move the pointer or tap to make Jolly look', particles: 'Move the pointer or tap to scatter the particles', next: 'Next preview image' },
+    officialDocs: 'Official docs', simulation: 'Discrete-event Simulation', materials: 'Materials', physicsMetadata: 'Physics Metadata', nvidiaAssets: 'NVIDIA OpenUSD Assets',
     rednoteProfile: 'SugarV on Xiaohongshu (opens in a new tab)',
     githubProfile: 'SugarV on GitHub (opens in a new tab)',
     works: 'Work', categories: 'Project category',
@@ -144,8 +154,14 @@ function requiresCardPassword(idea) {
   } catch { return false; }
 }
 
+const catalogLoaders = {
+  ko: () => import('./locales/ko-content.js'),
+  ja: () => import('./locales/ja-content.js'),
+  es: () => import('./locales/es-content.js')
+};
+const savedLanguage = store.get('vault-lang');
 const state = {
-  lang: store.get('vault-lang') === 'en' ? 'en' : 'zh',
+  lang: Object.hasOwn(UI, savedLanguage) ? savedLanguage : 'zh',
   filter: new URLSearchParams(location.search).get('category') === 'factory' ? 'factory' : 'all',
   ideas: [],
   source: 'db',
@@ -153,8 +169,24 @@ const state = {
   isAdmin: false
 };
 const t = () => UI[state.lang];
-const pick = (idea, f) => (state.lang === 'en' && idea[`${f}_en`]) || idea[`${f}_zh`] || '';
-const tagsOf = idea => (state.lang === 'en' && idea.tags_en?.length ? idea.tags_en : idea.tags_zh) || [];
+let catalog;
+let languageRequest = 0;
+if (catalogLoaders[state.lang]) {
+  try { catalog = await catalogLoaders[state.lang](); }
+  catch { state.lang = 'zh'; }
+}
+function translatedProject(idea) {
+  const entry = catalog?.projects[idea.url || idea.title_zh];
+  // The live bumper-car description and the bundled edition describe different releases.
+  if (entry && idea.url === PUNCH_DRIVE_URL && idea.kind_en === '3D Bumper Car Game') {
+    return { ...entry, ...catalog.punchDriveLive };
+  }
+  return entry;
+}
+function pick(idea, field) {
+  return idea[`${field}_${state.lang}`] || translatedProject(idea)?.[field] ||
+    (state.lang !== 'zh' && idea[`${field}_en`]) || idea[`${field}_zh`] || '';
+}
 
 /* ---------------- 数据 ---------------- */
 
@@ -230,7 +262,8 @@ const bookmarkKey = idea => idea.url || idea.id || idea.title_zh;
 const searchIndex = idea => searchText([
   idea.title_zh, idea.title_en, idea.kind_zh, idea.kind_en,
   idea.line_zh, idea.line_en, idea.lead_zh, idea.lead_en,
-  idea.tags_zh, idea.tags_en, idea.tech, idea.host
+  idea.tags_zh, idea.tags_en, idea.tech, idea.host,
+  ...['title', 'kind', 'line', 'lead', 'tags'].map(field => pick(idea, field))
 ].flat().join(' '));
 
 function readBookmarks() {
@@ -251,7 +284,25 @@ let pins = readPins();
 let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
 const themeSwitch = $('#theme');
 mountThemeSwitch(themeSwitch);
-const updateLanguagePicker = mountLanguagePicker($('#language'), lang => {
+const languageButton = $('#language');
+const updateLanguagePicker = mountLanguagePicker(languageButton, async lang => {
+  const request = ++languageRequest;
+  if (lang === state.lang) {
+    languageButton.removeAttribute('aria-busy');
+    return;
+  }
+  languageButton.setAttribute('aria-busy', 'true');
+  let nextCatalog;
+  try {
+    nextCatalog = await catalogLoaders[lang]?.();
+  } catch {
+    if (request === languageRequest) toast(t().languageError);
+    return;
+  } finally {
+    if (request === languageRequest) languageButton.removeAttribute('aria-busy');
+  }
+  if (request !== languageRequest) return;
+  catalog = nextCatalog;
   state.lang = lang;
   store.set('vault-lang', lang);
   renderAll();
@@ -335,7 +386,7 @@ function updateCenteredPreview(view, card, index) {
   let open = () => {};
   if (preview.kind === 'cover' && !preview.demo) {
     surface.innerHTML = projectMediaHtml(preview);
-    mountCoverPreview(surface.firstElementChild, preview.photos, language);
+    mountCoverPreview(surface.firstElementChild, preview.photos, UI[language].demo);
     if (view === panoramaHost) surface.addEventListener('click', () => panorama.settlePreview());
   } else {
     const toggle = document.createElement('button');
@@ -406,7 +457,7 @@ function updateCenteredPreview(view, card, index) {
       surface.prepend(frame);
       const media = frame.firstElementChild;
       if (preview.demo) {
-        mountCardDemo(media, language);
+        mountCardDemo(media, UI[language].demo);
       } else {
         carouselLivePreviews.reset([media]);
         if (preview.kind === 'film') media.querySelector('.video-start').click();
@@ -464,7 +515,7 @@ function syncGalleryViews() {
   const showsImportCard = !grid.hidden && grid.querySelector('.import-card:not([hidden])');
   $('#empty-results').hidden = grid.hasAttribute('aria-busy') || items.length > 0 || Boolean(showsImportCard);
   const labels = {
-    show: s.panoramaShow, details: s.panoramaDetails,
+    show: s.panoramaShow, details: s.panoramaDetails, carouselRole: s.carouselRole,
     bookmark: s.bookmark, unbookmark: s.unsave, pin: s.pin, unpin: s.unpin
   };
   if (viewMode !== 'compact') {
@@ -504,8 +555,11 @@ function renderTheme() {
 
 function renderStatic() {
   const s = t();
-  document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+  document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : state.lang;
   document.title = s.title + ' · SugarV';
+  $('meta[property="og:title"]').content = document.title;
+  $('meta[name="description"]').content = s.description;
+  $('meta[property="og:description"]').content = s.description;
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = s[el.dataset.t]; });
   search.placeholder = s.search;
   search.setAttribute('aria-label', s.search);
@@ -595,7 +649,7 @@ function cardHtml(idea, index) {
     ? '<a class="card-repo-link" href="' + esc(idea.url) + '" target="_blank" rel="noopener" aria-label="' + esc(title + ' · ' + s.open) + '">' + esc(s.open) + ' ↗</a>'
     : '';
   const media = projectMediaHtml(preview, { lazy: index > 5 || viewMode === 'compact' });
-  const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, state.lang) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
+  const hint = locked ? s.passwordRequired : idea.published === false ? s.draft : idea.category === 'factory' ? s.resource : demo ? demoHint(demo, s.demo) : kind === 'film' ? s.film : kind === 'site' ? s.preview : s.cover;
   const sourceLabel = idea.url === STILLROOM_URL ? 'GitHub' : s.source;
   const repoLink = !locked && isHttp(idea.repo)
     ? '<a class="card-repo-link" href="' + esc(idea.repo) + '" target="_blank" rel="noopener" aria-label="' + esc(title + ' · ' + sourceLabel) + '">' + esc(sourceLabel) + ' ↗</a>'
@@ -631,12 +685,12 @@ function mountGridPreviews() {
     if (card.dataset.passwordRequired === 'true') continue;
     const demo = card.querySelector('.card-demo');
     if (demo) {
-      mountCardDemo(demo, state.lang);
+      mountCardDemo(demo, t().demo);
     } else {
       const host = card.querySelector('.project-frame');
       if (host.dataset.kind === 'film') continue;
       const idea = state.ideas[Number(card.dataset.index)];
-      mountCoverPreview(host, (idea.images || []).map(imgSrc).filter(Boolean), state.lang);
+      mountCoverPreview(host, (idea.images || []).map(imgSrc).filter(Boolean), t().demo);
     }
   }
   livePreviews.reset(grid.querySelectorAll('.project-frame[data-preview-url]:not([data-kind="cover"])'));
@@ -875,8 +929,14 @@ function showSheet(idea, origin) {
   const s = t();
   const title = pick(idea, 'title');
   const imgs = (idea.images || []).map(imgSrc).filter(Boolean);
-  const facts = (idea.facts || []).filter(f => f && f.n);
-  const meta = [[s.type, pick(idea, 'kind')], [s.tech, idea.tech], [s.host, idea.host], [s.year, idea.year]].filter(([, v]) => v);
+  const record = translatedProject(idea);
+  const facts = (idea.facts || []).flatMap((fact, index) => fact?.n ? [{
+    n: fact.n, label: fact[state.lang] || record?.facts[index] || (state.lang !== 'zh' && fact.en) || fact.zh || ''
+  }] : []);
+  const techTerms = { 'Discrete-event Simulation': s.simulation, 'Materials': s.materials, 'Physics Metadata': s.physicsMetadata, 'NVIDIA OpenUSD Assets': s.nvidiaAssets };
+  const tech = idea.tech?.split(' · ').map(term => techTerms[term] || term).join(' · ');
+  const host = idea.host?.replace('官方文档 / Official docs', s.officialDocs);
+  const meta = [[s.type, pick(idea, 'kind')], [s.tech, tech], [s.host, host], [s.year, idea.year]].filter(([, v]) => v);
   const video = isVideo(idea.url);
   const mainHtml = video
     ? `<video src="${esc(idea.url)}" ${imgs.length ? `poster="${esc(imgs[0])}"` : ''} controls playsinline preload="metadata" aria-label="${esc(title)}"></video>`
@@ -890,7 +950,7 @@ function showSheet(idea, origin) {
       <button type="button" class="close" aria-label="${s.close}" autofocus>×</button>
       <h2 id="sheet-title">${esc(title)}</h2>
       ${pick(idea, 'lead') || pick(idea, 'line') ? `<p class="lead">${esc(pick(idea, 'lead') || pick(idea, 'line'))}</p>` : ''}
-      ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc((state.lang === 'en' && f.en) || f.zh || '')}</span></div>`).join('')}</div>` : ''}
+      ${facts.length ? `<div class="facts">${facts.map(f => `<div><b>${esc(f.n)}</b><span>${esc(f.label)}</span></div>`).join('')}</div>` : ''}
       ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       <div class="actions">
         ${isHttp(idea.url) ? `<a class="btn primary" href="${esc(idea.url)}" target="_blank" rel="noopener">${video ? s.openVideo : ['other', 'factory'].includes(idea.category) ? s.openResource : s.open} ↗</a>` : ''}
@@ -908,7 +968,7 @@ function showSheet(idea, origin) {
   sheet.querySelector('.close').addEventListener('click', () => sheet.close());
   sheet.querySelector('[data-edit]')?.addEventListener('click', () => { sheet.close(); openEditor(idea); });
   sheet.querySelector('[data-delete]')?.addEventListener('click', () => deleteIdea(idea));
-  sheet.querySelector('[data-tutorial]')?.addEventListener('click', () => openTutorial(tutorials[idea.url]));
+  sheet.querySelector('[data-tutorial]')?.addEventListener('click', () => openTutorial(idea.url));
   sheet.showModal();
   if (origin) {
     const c = origin.getBoundingClientRect();
@@ -919,17 +979,20 @@ function showSheet(idea, origin) {
 /* ---------------- 教程 ---------------- */
 
 const tutorialDlg = $('#tutorial');
-function openTutorial(tut) {
+function openTutorial(url) {
+  const tut = tutorials[url];
   if (!tut) return;
   const s = t();
-  const copy = tut[state.lang] || tut.zh;
-  const imgs = tut.images || [];
-  const cap = im => (state.lang === 'en' && im.en) || im.zh || '';
+  const translation = catalog?.tutorials[url];
+  const copy = tut[state.lang] || translation?.copy || tut.en || tut.zh;
+  const imgs = (tut.images || []).map((im, index) => ({
+    src: im.src, caption: im[state.lang] || translation?.captions[index] || im.en || im.zh || ''
+  }));
   tutorialDlg.innerHTML = `<div class="tut">
     <div class="tut-media">
-      <a class="tut-main" href="${esc(imgs[0]?.src || '')}" target="_blank" rel="noopener"><img src="${esc(imgs[0]?.src || '')}" alt="${esc(cap(imgs[0] || {}))}"></a>
-      <p class="tut-cap">${esc(cap(imgs[0] || {}))}</p>
-      ${imgs.length > 1 ? `<div class="thumbs">${imgs.map((im, j) => `<button type="button" aria-label="${esc(cap(im))}" aria-current="${j === 0}" data-i="${j}"><img src="${esc(im.src)}" alt=""></button>`).join('')}</div>` : ''}
+      <a class="tut-main" href="${esc(imgs[0]?.src || '')}" target="_blank" rel="noopener"><img src="${esc(imgs[0]?.src || '')}" alt="${esc(imgs[0]?.caption || '')}"></a>
+      <p class="tut-cap">${esc(imgs[0]?.caption || '')}</p>
+      ${imgs.length > 1 ? `<div class="thumbs">${imgs.map((im, j) => `<button type="button" aria-label="${esc(im.caption)}" aria-current="${j === 0}" data-i="${j}"><img src="${esc(im.src)}" alt=""></button>`).join('')}</div>` : ''}
     </div>
     <div class="tut-text">
       <button type="button" class="close" aria-label="${s.close}" autofocus>×</button>
@@ -943,7 +1006,7 @@ function openTutorial(tut) {
   tutorialDlg.querySelectorAll('.thumbs button').forEach(b => b.addEventListener('click', () => {
     const im = imgs[+b.dataset.i];
     img.src = link.href = im.src;
-    img.alt = caption.textContent = cap(im);
+    img.alt = caption.textContent = im.caption;
     tutorialDlg.querySelectorAll('.thumbs button').forEach(x => x.setAttribute('aria-current', String(x === b)));
   }));
   tutorialDlg.querySelector('.close').addEventListener('click', () => tutorialDlg.close());

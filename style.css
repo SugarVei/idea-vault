@@ -56,15 +56,13 @@ svg { display: block; flex: none; }
 
 .topbar {
   position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: minmax(140px, 1fr) minmax(210px, 342px) minmax(125px, 1fr);
+  display: grid; grid-template-columns: minmax(max-content, 1fr) minmax(0, 342px) minmax(max-content, 1fr);
   align-items: center; gap: 20px;
   height: 65px; padding: 0 28px; border-bottom: 1px solid var(--edge); background: var(--bg);
 }
-.header-start, .brand, .header-actions { display: flex; align-items: center; }
-.header-start { gap: 29px; }
-.brand { gap: 9px; flex: none; font-size: 17px; line-height: 1; font-weight: 650; letter-spacing: -.035em; }
-.primary-nav a { font-size: 13px; font-weight: 580; white-space: nowrap; padding-block: 8px; }
-.header-actions { justify-self: end; gap: 4px; }
+.brand, .header-actions { display: flex; align-items: center; }
+.brand { justify-self: start; gap: 9px; font-size: 17px; line-height: 1; font-weight: 650; letter-spacing: -.035em; }
+.header-actions { justify-self: end; gap: 8px; }
 .search {
   display: flex; align-items: center; gap: 9px; min-width: 0; height: 38px;
   padding: 0 10px 0 13px; border: 1px solid transparent; border-radius: 999px;
@@ -77,16 +75,15 @@ svg { display: block; flex: none; }
 .search input::-webkit-search-cancel-button { display: none; }
 .search kbd { flex: none; padding: 3px 6px; border: 1px solid var(--edge); border-radius: 5px; background: var(--bg); font: 500 11px/1 Geist, monospace; white-space: nowrap; }
 .shortcut-hidden { display: none; }
-.icon-button, .language-button {
+.icon-button {
   display: inline-grid; place-items: center; min-width: 36px; height: 36px;
   border-radius: 999px; color: var(--ink-2); transition: background .16s, color .16s, scale .18s var(--ease-ui);
 }
 .icon-button svg { width: 17px; height: 17px; }
-.icon-button:hover, .language-button:hover { color: var(--ink); background: var(--hair); }
-.icon-button:active, .language-button:active { scale: .94; }
+.icon-button:hover { color: var(--ink); background: var(--hair); }
+.icon-button:active { scale: .94; }
 .icon-button[aria-pressed="true"] { color: var(--ink); background: var(--hair); }
 .icon-button[aria-pressed="true"] svg { fill: currentColor; }
-.language-button { font-size: 12px; font-weight: 620; padding-inline: 7px; }
 .search .search-clear { min-width: 24px; height: 24px; font-size: 20px; line-height: 1; }
 
 .wrap { width: calc(100% - 40px); margin-inline: auto; }
@@ -396,13 +393,12 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   .stage { border-radius: 24px; }
 }
 @media (max-width: 760px) {
-  .topbar { grid-template-columns: 94px minmax(0, 1fr) 94px; padding-inline: 16px; height: 61px; gap: 11px; }
-  .primary-nav, .search kbd { display: none; }
+  .topbar { grid-template-columns: auto minmax(0, 1fr) auto; padding-inline: 16px; height: 61px; gap: 11px; }
+  .search kbd { display: none; }
   .brand { gap: 6px; }
   .brand svg { width: 23px; height: 23px; }
   .search { height: 36px; }
-  .header-actions { gap: 1px; }
-  .header-actions button { min-width: 30px; }
+  .header-actions { gap: 6px; }
   .wrap { width: calc(100% - 36px); }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sheet-in { grid-template-columns: 1fr; gap: 8px; }
@@ -416,8 +412,10 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   .facts-edit .row { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
-  html { scroll-padding-top: 73px; }
-  .topbar { height: 59px; padding-inline: 13px; gap: 9px; }
+  html { scroll-padding-top: 110px; }
+  .topbar { grid-template-columns: auto 1fr; height: auto; padding: 6px 13px 9px; gap: 4px 6px; }
+  .topbar .header-actions { grid-area: 1 / 2; }
+  .topbar .search { grid-area: 2 / 1 / auto / -1; }
   .brand { font-size: 15px; }
   .brand svg { width: 20px; height: 20px; }
   .search { padding-inline: 8px; gap: 5px; }
@@ -431,6 +429,12 @@ dialog.form-sheet { width: min(860px, calc(100% - 24px)); background: var(--glas
   .chip { height: 33px; padding-inline: 11px; font-size: 12px; }
   .count { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+}
+@media (max-width: 360px) {
+  .topbar { padding-inline: 8px; column-gap: 3px; }
+  .brand { gap: 4px; }
+  .header-actions { gap: 3px; }
+  .header-actions > .icon-button { min-width: 32px; }
 }
 @media (hover: none) {
   .profile-link { --profile-size: 44px; }

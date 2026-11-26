@@ -1,0 +1,151 @@
+/* Lucian UX/UI Prompt #448 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#448 */
+.language-picker {
+  --language-spring: cubic-bezier(.34, 1.45, .64, 1);
+  --language-accent: #6a57f2;
+  --language-line: rgb(22 21 27 / 17%);
+  --language-shadow: rgb(40 30 80 / 30%);
+  position: relative;
+  flex: none;
+}
+[data-theme="dark"] .language-picker {
+  --language-accent: #b7a4ff;
+  --language-line: rgb(255 255 255 / 17%);
+  --language-shadow: rgb(0 0 0 / 60%);
+}
+.language-picker .language-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  background: var(--glass);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px var(--language-line), 0 6px 16px -10px var(--language-shadow);
+  transition: box-shadow .2s, transform .4s var(--language-spring);
+}
+.language-picker .language-trigger:hover {
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--ink-3), 0 8px 18px -10px var(--language-shadow);
+}
+.language-picker .language-trigger:active { scale: none; transform: scale(.96); }
+.language-picker .language-trigger:focus-visible { outline: 2px solid var(--language-accent); outline-offset: 3px; }
+.language-picker .language-globe, .language-picker .language-globe svg { width: 22px; height: 22px; flex: none; }
+.language-picker .language-globe svg {
+  overflow: visible;
+  fill: none;
+  stroke: var(--language-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.language-picker .is-spinning .language-meridians { animation: language-picker-roll .9s cubic-bezier(.3,.7,.2,1); }
+.language-picker .is-spinning svg { animation: language-picker-tilt .9s var(--language-spring); }
+@keyframes language-picker-roll { from { transform: translateX(-16px); } }
+@keyframes language-picker-tilt { 30% { transform: rotate(-24deg) scale(1.12); } }
+
+.language-picker .language-label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow-x: clip;
+  transition: width .45s var(--language-spring);
+}
+.language-picker .language-label span {
+  grid-area: 1 / 1;
+  justify-self: start;
+  width: max-content;
+  white-space: nowrap;
+  transition: opacity .2s, transform .4s var(--language-spring), filter .2s;
+}
+.language-picker .language-label .is-out { opacity: 0; transform: translateY(-10px); filter: blur(2px); }
+.language-picker .language-label .is-in { animation: language-picker-in .45s var(--language-spring); }
+@keyframes language-picker-in { from { opacity: 0; transform: translateY(10px); filter: blur(2px); } }
+.language-picker .language-chevron {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .4s var(--language-spring);
+}
+.language-picker.is-open .language-chevron { transform: rotate(180deg); }
+
+.language-picker .language-options {
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: 0;
+  top: calc(100% + 10px);
+  width: min(212px, calc(100vw - 26px));
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 16px;
+  color: var(--ink);
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--edge), 0 22px 44px -18px var(--language-shadow), 0 4px 12px -6px var(--language-shadow);
+  transform-origin: calc(100% - 50px) -24px;
+  transform: scale(.3) translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  outline: none;
+  transition: transform .25s var(--ease-ui), opacity .18s, visibility 0s .25s;
+}
+.language-picker.is-open .language-options {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition: transform .55s var(--language-spring), opacity .15s, visibility 0s;
+}
+.language-picker [role="option"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: background .15s, opacity .15s, transform .35s var(--language-spring);
+}
+.language-picker.is-open [role="option"] {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s, calc(60ms + var(--option-index) * 30ms), calc(60ms + var(--option-index) * 30ms);
+}
+.language-picker [role="option"].is-active { background: var(--hair); }
+.language-picker .language-options:focus-visible .is-active { outline: 2px solid var(--language-accent); outline-offset: -2px; }
+.language-picker [role="option"] span { flex: 1; }
+.language-picker [role="option"] small { color: var(--ink-3); font-size: 11px; font-weight: 600; letter-spacing: .04em; }
+.language-picker [role="option"] svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--language-accent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(.4);
+  transition: opacity .2s, transform .35s var(--language-spring);
+}
+.language-picker [aria-selected="true"] { font-weight: 600; }
+.language-picker [aria-selected="true"] svg { opacity: 1; transform: none; }
+@media (max-width: 760px) {
+  .language-picker .language-trigger { height: 36px; padding-inline: 8px; gap: 5px; font-size: 13px; }
+  .language-picker .language-globe, .language-picker .language-globe svg { width: 20px; height: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-picker *, .language-picker.is-open [role="option"] {
+    animation-duration: .001ms !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

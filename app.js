@@ -5,6 +5,8 @@ import { Panorama } from './panorama.js?v=4';
 import { ArcCoverflow } from './arc-coverflow.js?v=3';
 import { DissolveCarousel } from './dissolve-carousel.js?v=4';
 import { CompactGallery } from './compact-gallery.js?v=3';
+import { mountThemeSwitch } from './theme-switch.js?v=1';
+import { mountLanguagePicker } from './language-picker.js?v=1';
 
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
@@ -24,7 +26,7 @@ const UI = {
     savedWork: '收藏作品', bookmark: '收藏', unsave: '取消收藏',
     pin: '置顶', pinned: '已置顶', unpin: '取消置顶', unpinned: '已取消置顶',
     pinSessionOnly: '本次浏览有效，未能保存设置',
-    dark: '切换深色模式', light: '切换浅色模式',
+    darkMode: '深色模式', dark: '切换深色模式', light: '切换浅色模式',
     preview: '实时预览', film: '视频', draft: '草稿', resource: '资源',
     passwordRequired: '需要密码', enterPassword: '输入密码', unlock: '解锁', checkingPassword: '验证中…',
     memoryPasswordHint: '输入密码后查看 Sugar\' memory。',
@@ -77,7 +79,7 @@ const UI = {
     savedWork: 'Saved projects', bookmark: 'Save', unsave: 'Remove from saved',
     pin: 'Pin', pinned: 'Pinned', unpin: 'Unpin', unpinned: 'Unpinned',
     pinSessionOnly: 'For this visit only; preferences could not be saved',
-    dark: 'Switch to dark mode', light: 'Switch to light mode',
+    darkMode: 'Dark mode', dark: 'Switch to dark mode', light: 'Switch to light mode',
     preview: 'Live preview', film: 'Video', draft: 'Draft', resource: 'Resource',
     passwordRequired: 'Password required', enterPassword: 'Enter password', unlock: 'Unlock', checkingPassword: 'Checking…',
     memoryPasswordHint: 'Enter the password to view Sugar\' memory.',
@@ -214,8 +216,6 @@ async function refreshAuth(session) {
 const icons = {
   pin: '<path d="m16 3 5 5-4 1-4 4-1 4-5-5 4-1 4-4 1-4Z"/><path d="m7 17-4 4"/>',
   bookmark: '<path d="M7 4.75h10a1 1 0 0 1 1 1v14l-6-3.9-6 3.9v-14a1 1 0 0 1 1-1Z"/>',
-  moon: '<path d="M19.7 15a8.2 8.2 0 0 1-10.7-10.7A8.25 8.25 0 1 0 19.7 15Z"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/>',
   play: '<path d="M8 5.5 18 12 8 18.5Z" fill="currentColor" stroke="none"/>',
   lock: '<rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/>',
   image: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m6 17 5-4 2 2 3-3 2 2"/>'
@@ -249,6 +249,13 @@ function readPins() {
 }
 let pins = readPins();
 let theme = store.get('vault-theme') === 'dark' ? 'dark' : 'light';
+const themeSwitch = $('#theme');
+mountThemeSwitch(themeSwitch);
+const updateLanguagePicker = mountLanguagePicker($('#language'), lang => {
+  state.lang = lang;
+  store.set('vault-lang', lang);
+  renderAll();
+});
 let savedOnly = false;
 let indexedIdeas = [];
 const VIEW_MODE_STORAGE_KEY = 'vault-view-mode';
@@ -490,10 +497,9 @@ function renderTheme() {
   document.documentElement.dataset.theme = theme;
   const dark = theme === 'dark';
   $('meta[name="theme-color"]').content = dark ? '#151516' : '#ffffff';
-  const toggle = $('#theme');
-  toggle.innerHTML = icon(dark ? 'sun' : 'moon');
-  toggle.setAttribute('aria-label', dark ? t().light : t().dark);
-  toggle.title = dark ? t().light : t().dark;
+  themeSwitch.setAttribute('aria-checked', String(dark));
+  themeSwitch.setAttribute('aria-label', t().darkMode);
+  themeSwitch.title = dark ? t().light : t().dark;
 }
 
 function renderStatic() {
@@ -506,9 +512,7 @@ function renderStatic() {
   $('#search-clear').setAttribute('aria-label', s.clear);
   $('#works').setAttribute('aria-label', s.works);
   $('#chips').setAttribute('aria-label', s.categories);
-  const language = $('#language');
-  language.textContent = state.lang === 'zh' ? 'EN' : '中';
-  language.setAttribute('aria-label', state.lang === 'zh' ? 'Switch to English' : '切换到中文');
+  updateLanguagePicker(state.lang);
   $('#saved').innerHTML = icon('bookmark');
   $('#saved').setAttribute('aria-label', s.savedWork);
   $('#saved').title = s.savedWork;
@@ -1359,7 +1363,6 @@ $('#search-clear').addEventListener('click', () => {
   search.focus();
 });
 $('#reset-filters').addEventListener('click', resetFilters);
-$('.primary-nav a').addEventListener('click', resetFilters);
 $('#saved').addEventListener('click', () => {
   savedOnly = !savedOnly;
   search.value = '';
@@ -1367,15 +1370,10 @@ $('#saved').addEventListener('click', () => {
   applyFilter();
   $('#works').scrollIntoView({ block: 'start' });
 });
-$('#theme').addEventListener('click', () => {
+themeSwitch.addEventListener('click', () => {
   theme = theme === 'light' ? 'dark' : 'light';
   store.set('vault-theme', theme);
   renderTheme();
-});
-$('#language').addEventListener('click', () => {
-  state.lang = state.lang === 'zh' ? 'en' : 'zh';
-  store.set('vault-lang', state.lang);
-  renderAll();
 });
 $('#shortcut').textContent = navigator.platform.toLowerCase().includes('mac') ? '⌘ K' : 'Ctrl K';
 document.addEventListener('keydown', event => {

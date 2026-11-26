@@ -67,40 +67,49 @@
 .dissolve-card .carousel-preview { cursor: default; }
 
 .dissolve-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px 20px;
-  padding: 19px 2px 0;
+  display: grid;
+  justify-items: center;
+  gap: clamp(12px, 1.4vw, 18px);
+  padding: clamp(20px, 2.4vw, 32px) 4px 0;
+  text-align: center;
 }
-.dissolve-caption { min-width: 0; }
 .dissolve-title {
   display: block;
-  max-width: 100%;
-  font-size: clamp(18px, 2.6vw, 26px);
-  font-weight: 600;
-  line-height: 1.28;
-  letter-spacing: -.023em;
-  text-align: left;
+  max-width: min(100%, 42ch);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 650;
+  line-height: 1.22;
+  letter-spacing: -.035em;
+  text-align: center;
+  text-wrap: balance;
   overflow-wrap: anywhere;
 }
-.dissolve-title:hover { text-decoration: underline; text-underline-offset: 4px; }
-.dissolve-subtitle { margin-top: 5px; color: var(--ink-2); font-size: 13px; }
-.dissolve-subtitle:empty { display: none; }
-.dissolve-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
-.dissolve-actions .pill { min-height: 32px; padding: 0 12px; font-size: 12px; }
+.dissolve-title:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .15em; }
+.dissolve-toolbar, .dissolve-actions, .dissolve-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dissolve-toolbar { max-width: 100%; flex-wrap: wrap; gap: 10px 16px; }
+.dissolve-actions { max-width: 100%; flex-wrap: wrap; gap: 8px; }
+.dissolve-actions .pill {
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 550;
+  line-height: 1.3;
+}
+.dissolve-actions svg { width: 18px; height: 18px; }
 .dissolve-actions .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 
-.dissolve-controls { flex: none; text-align: right; }
-.dissolve-navigation { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+.dissolve-navigation { gap: 2px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--edge); }
 .dissolve-navigation button {
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--edge);
   border-radius: 50%;
-  background: var(--glass);
 }
 .dissolve-navigation button:hover:not(:disabled) { background: var(--hair); }
 .dissolve-navigation button:disabled { cursor: default; opacity: .4; }
@@ -113,8 +122,7 @@
   transform: translateX(-2px) rotate(45deg);
 }
 .dissolve-navigation .dissolve-previous::after { transform: translateX(2px) rotate(-135deg); }
-.dissolve-count { min-width: 54px; text-align: center; font: 400 12px/1 var(--mono); color: var(--ink-2); }
-#dissolve-help { margin-top: 7px; color: var(--ink-3); font-size: 11px; }
+.dissolve-count { min-width: 4em; font-size: 17px; font-weight: 550; line-height: 1; font-variant-numeric: tabular-nums; }
 .dissolve-touch-help { display: none; }
 .dissolve-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -126,13 +134,8 @@
     mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
   }
   .dissolve-card { border-radius: 12px; }
-  .dissolve-footer { flex-wrap: wrap; align-items: center; padding-top: 13px; }
-  .dissolve-caption { flex-basis: 100%; }
-  .dissolve-controls { display: flex; flex: 1; justify-content: space-between; align-items: center; gap: 8px; }
-  #dissolve-help { margin-top: 0; }
 }
 @media (pointer: coarse) {
-  .dissolve-actions .pill { min-height: 44px; }
   .dissolve-desktop-help { display: none; }
   .dissolve-touch-help { display: inline; }
 }

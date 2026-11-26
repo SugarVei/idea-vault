@@ -5,7 +5,7 @@ const wrap = (value, count) => ((value % count) + count) % count;
 const VISIBLE_DISTANCE = 1.48;
 
 export class DissolveCarousel {
-  constructor(host, actions) {
+  constructor(host, actions, icon) {
     this.host = host;
     this.actions = actions;
     this.items = [];
@@ -29,22 +29,20 @@ export class DissolveCarousel {
         <canvas class="dissolve-dust" width="1" height="1" aria-hidden="true"></canvas>
       </div>
       <div class="dissolve-footer">
-        <div class="dissolve-caption">
-          <button type="button" class="dissolve-title"></button>
-          <p class="dissolve-subtitle"></p>
-          <div class="dissolve-actions">
-            <button type="button" class="dissolve-bookmark pill" aria-pressed="false"></button>
-            <button type="button" class="dissolve-pin pill" aria-pressed="false"></button>
-          </div>
-        </div>
-        <div class="dissolve-controls">
+        <button type="button" class="dissolve-title" aria-describedby="dissolve-subtitle"></button>
+        <p id="dissolve-subtitle" class="dissolve-subtitle visually-hidden"></p>
+        <div class="dissolve-toolbar">
           <div class="dissolve-navigation">
             <button type="button" class="dissolve-previous"></button>
             <span class="dissolve-count" aria-hidden="true"></span>
             <button type="button" class="dissolve-next"></button>
           </div>
-          <p id="dissolve-help"><span class="dissolve-desktop-help"></span><span class="dissolve-touch-help"></span></p>
+          <div class="dissolve-actions">
+            <button type="button" class="dissolve-bookmark pill" aria-pressed="false">${icon('bookmark')}<span></span></button>
+            <button type="button" class="dissolve-pin pill" aria-pressed="false">${icon('pin')}<span></span></button>
+          </div>
         </div>
+        <p id="dissolve-help" class="visually-hidden"><span class="dissolve-desktop-help"></span><span class="dissolve-touch-help"></span></p>
       </div>
       <span class="dissolve-announcement" role="status" aria-live="polite" aria-atomic="true"></span>`;
     this.stage = host.querySelector('.dissolve-stage');
@@ -279,9 +277,9 @@ export class DissolveCarousel {
     this.host.style.setProperty('--dissolve-accent', item.accent || 'var(--ink)');
     const count = `${this.index + 1} / ${this.items.length}`;
     this.count.textContent = count;
-    this.bookmark.textContent = item.bookmarked ? this.labels.unbookmark : this.labels.bookmark;
+    this.bookmark.querySelector('span').textContent = item.bookmarked ? this.labels.unbookmark : this.labels.bookmark;
     this.bookmark.setAttribute('aria-pressed', String(item.bookmarked));
-    this.pin.textContent = item.pinned ? this.labels.unpin : this.labels.pin;
+    this.pin.querySelector('span').textContent = item.pinned ? this.labels.unpin : this.labels.pin;
     this.pin.setAttribute('aria-pressed', String(item.pinned));
     this.previous.disabled = !this.looping && this.index === 0;
     this.next.disabled = !this.looping && this.index === this.items.length - 1;

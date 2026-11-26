@@ -3,7 +3,7 @@ import { LivePreviews, previewUrl } from './live-previews.js?v=sugar-vault-3';
 import { cardDemo, demoHint, mountCardDemo, mountCoverPreview } from './card-demos.js?v=4';
 import { Panorama } from './panorama.js?v=5';
 import { ArcCoverflow } from './arc-coverflow.js?v=4';
-import { DissolveCarousel } from './dissolve-carousel.js?v=5';
+import { DissolveCarousel } from './dissolve-carousel.js?v=6';
 import { CompactGallery } from './compact-gallery.js?v=3';
 import { mountThemeSwitch } from './theme-switch.js?v=1';
 import { mountLanguagePicker } from './language-picker.js?v=2';
@@ -343,7 +343,7 @@ const galleryActions = {
 };
 const panorama = new Panorama(panoramaHost, galleryActions);
 const arc = new ArcCoverflow(arcHost, galleryActions);
-const dissolve = new DissolveCarousel(dissolveHost, galleryActions);
+const dissolve = new DissolveCarousel(dissolveHost, galleryActions, icon);
 const compact = new CompactGallery(compactHost, galleryActions, icon);
 
 function renderViewSwitch() {
